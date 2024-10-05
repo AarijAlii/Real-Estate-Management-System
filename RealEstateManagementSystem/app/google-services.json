@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "394169160573",
+    "project_id": "real-estate-mis",
+    "storage_bucket": "real-estate-mis.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394169160573:android:0521cd8d67261d86b7f214",
+        "android_client_info": {
+          "package_name": "com.example.realestatemanagementsystem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0Lm2gQObY_8eZT8J9e0jAi8grMAAxinw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
