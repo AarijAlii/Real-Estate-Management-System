@@ -38,8 +38,8 @@ class MainActivity : ComponentActivity() {
             val authViewModel: AuthViewModel = viewModel()
             RealEstateManagementSystemTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    UserProfileScreen(viewModel)
-                    //NavigationGraph(navController, authViewModel)
+                    //UserProfileScreen(viewModel)
+                    NavigationGraph(navController, authViewModel)
                 }
             }
         }
