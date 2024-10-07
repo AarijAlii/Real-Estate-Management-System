@@ -126,13 +126,11 @@ fun SignUpScreen(
                         OutlinedTextField(
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Done
+                                imeAction = ImeAction.Next
                             ),
                             keyboardActions = KeyboardActions(
-                                onDone = {
-                                    authViewModel.signUp(email, password)
-                                    email = ""
-                                    password = ""
+                                onNext = {
+                                    focusManager.moveFocus(FocusDirection.Down)
                                 }),
                             value = password,
                             onValueChange = { password = it },
