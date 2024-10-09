@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.user.profile
+package com.example.realestatemanagementsystem.user.UserProfile
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

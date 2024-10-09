@@ -181,8 +181,7 @@ fun SignUpScreen(
                         Button(
                             onClick = {
                                 authViewModel.signUp(email, password)
-                                email = ""
-                                password = ""
+                                navHostController.navigate(Screen.UserProfileScreen.route)
                                 //              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
                             },
                             modifier = Modifier

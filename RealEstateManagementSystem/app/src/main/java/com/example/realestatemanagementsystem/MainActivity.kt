@@ -13,8 +13,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.realestatemanagementsystem.NavGraph.NavigationGraph
 import com.example.realestatemanagementsystem.ui.theme.RealEstateManagementSystemTheme
+import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
-import com.example.realestatemanagementsystem.user.profile.UserProfileViewModel
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 
 class MainActivity : ComponentActivity() {
     private val viewModel: UserProfileViewModel by viewModels()
@@ -30,8 +31,8 @@ class MainActivity : ComponentActivity() {
             val authViewModel: AuthViewModel = viewModel()
             RealEstateManagementSystemTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    //UserProfileScreen(viewModel)
-                    NavigationGraph(navController, authViewModel)
+                    UserProfileScreen(viewModel)
+                    //NavigationGraph(navController, authViewModel)
                 }
             }
         }
