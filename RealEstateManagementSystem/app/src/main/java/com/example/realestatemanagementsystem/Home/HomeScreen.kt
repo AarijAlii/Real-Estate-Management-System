@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.user.authentication
+package com.example.realestatemanagementsystem.Home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,17 +10,20 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.realestatemanagementsystem.NavGraph.Screen
+import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
+import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 
 @Composable
-fun HomeScreen(authViewModel: AuthViewModel = viewModel(), OnNavigateToLogin: () -> Unit = {})
+fun HomeScreen(authViewModel: AuthViewModel = viewModel(), navHostController: NavHostController)
 {
     val authState = authViewModel.authState.observeAsState()
 
     LaunchedEffect(authState.value){
         if (authState.value == AuthState.Failed) {
-            OnNavigateToLogin()
+            navHostController.navigate(route = Screen.LoginScreen.route)
         }
     }
 

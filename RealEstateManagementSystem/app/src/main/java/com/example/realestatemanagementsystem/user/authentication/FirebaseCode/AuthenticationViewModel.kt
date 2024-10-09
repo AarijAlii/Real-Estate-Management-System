@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.user.authentication
+package com.example.realestatemanagementsystem.user.authentication.FirebaseCode
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
