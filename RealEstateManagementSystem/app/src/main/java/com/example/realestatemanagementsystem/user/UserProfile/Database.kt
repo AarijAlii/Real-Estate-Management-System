@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.user.profile
+package com.example.realestatemanagementsystem.user.UserProfile
 
 import androidx.room.Database
 import androidx.room.Room
