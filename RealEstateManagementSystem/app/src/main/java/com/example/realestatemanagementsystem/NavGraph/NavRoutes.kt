@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.user.authentication
+package com.example.realestatemanagementsystem.NavGraph
 
 sealed class Screen(val route:String){
     data object LoginScreen: Screen("loginscreen")

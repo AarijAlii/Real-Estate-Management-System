@@ -8,20 +8,12 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.realestatemanagementsystem.NavGraph.NavigationGraph
 import com.example.realestatemanagementsystem.ui.theme.RealEstateManagementSystemTheme
-import com.example.realestatemanagementsystem.user.authentication.AuthViewModel
-import com.example.realestatemanagementsystem.user.authentication.HomeScreen
-import com.example.realestatemanagementsystem.user.authentication.LoginScreen
-import com.example.realestatemanagementsystem.user.authentication.Screen
-import com.example.realestatemanagementsystem.user.authentication.SignUpScreen
-import com.example.realestatemanagementsystem.user.profile.UserProfileScreen
+import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.user.profile.UserProfileViewModel
 
 class MainActivity : ComponentActivity() {
@@ -47,34 +39,3 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@Composable
-fun NavigationGraph(
-    navController: NavHostController,
-    authViewModel: AuthViewModel
-) {
-    NavHost(
-        navController = navController,
-        startDestination = Screen.SignupScreen.route
-    ) {
-        composable(Screen.SignupScreen.route) {
-            SignUpScreen(
-                authViewModel,
-                onNavigateToLogin = { navController.navigate(Screen.LoginScreen.route) },
-                onNavigateToHome = { navController.navigate(Screen.HomeScreen.route) }
-            )
-        }
-        composable(Screen.LoginScreen.route) {
-            LoginScreen(
-                authViewModel,
-                onNavigateToSignUp = { navController.navigate(Screen.SignupScreen.route) },
-                onNavigateToHome = { navController.navigate(Screen.HomeScreen.route) }
-            )
-        }
-        composable(Screen.HomeScreen.route) {
-            HomeScreen(
-                authViewModel,
-                OnNavigateToLogin = { navController.navigate(Screen.LoginScreen.route) }
-            )
-        }
-    }
-}

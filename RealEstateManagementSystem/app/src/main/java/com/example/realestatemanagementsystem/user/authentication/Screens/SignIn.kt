@@ -1,12 +1,10 @@
-package com.example.realestatemanagementsystem.user.authentication
+package com.example.realestatemanagementsystem.user.authentication.Screens
 
 
 import androidx.compose.material3.OutlinedTextField
 import android.widget.Toast
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,13 +17,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -37,34 +36,41 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.realestatemanagementsystem.NavGraph.Screen
+import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
+import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 
 
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    onNavigateToSignUp: () -> Unit = {},
-    onNavigateToHome: () -> Unit = {}
+    navHostController: NavHostController
 ) {
     //val result by authViewModel.authState.observeAsState()
     val focusManager= LocalFocusManager.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val authState = authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Success -> {
-                onNavigateToHome()
+                navHostController.navigate(route= Screen.HomeScreen.route)
             }
 
             is AuthState.Error -> {
@@ -151,7 +157,20 @@ fun LoginScreen(
                                 .padding(8.dp)
 
                             ,
-                            visualTransformation = PasswordVisualTransformation())
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                val image = if (passwordVisible)
+                                    painterResource(id = R.drawable.baseline_visibility_24)
+                                else
+                                    painterResource(id = R.drawable.baseline_visibility_off_24)
+
+                                // IconButton to toggle password visibility
+                                IconButton(onClick = {
+                                    passwordVisible = !passwordVisible
+                                }) {
+                                    Icon(painter=image, contentDescription = "show pass")
+                                }
+                            })
         Button(
             onClick = {
                 authViewModel.login(email, password)
@@ -187,12 +206,12 @@ fun LoginScreen(
 
             Text("Don't have an account? ",
                 modifier = Modifier.clickable {
-                    onNavigateToSignUp()
+                    navHostController.navigate(route = Screen.SignupScreen.route)
                 }
 
             )
             Text(text= "Sign up.",modifier=Modifier
-                .clickable { onNavigateToSignUp() },
+                .clickable { navHostController.navigate(route = Screen.SignupScreen.route) },
                 color = Color.Red)}
     }
 }
