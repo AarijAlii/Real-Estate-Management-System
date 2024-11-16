@@ -202,7 +202,7 @@ import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.A
 fun SignUpScreen(
     authViewModel: AuthViewModel,
     navController: NavHostController,
-    appDatabase: AppDatabase
+    appDatabase: AppDatabase,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -211,6 +211,7 @@ fun SignUpScreen(
     var lastName by remember { mutableStateOf("") }
     var contactInfo by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
+
 
     // Profile data object
     val userProfile = UserProfile(
@@ -287,12 +288,13 @@ fun SignUpScreen(
 
         Button(
             onClick = {
+
                 authViewModel.signUp(
                     email = email,
                     password = password,
                     confirmPassword = confirmPassword,
                     userProfile = userProfile,
-                    appDatabase = appDatabase // Pass appDatabase here
+                    appDatabase = appDatabase// Pass appDatabase here
                 )
             },
             modifier = Modifier

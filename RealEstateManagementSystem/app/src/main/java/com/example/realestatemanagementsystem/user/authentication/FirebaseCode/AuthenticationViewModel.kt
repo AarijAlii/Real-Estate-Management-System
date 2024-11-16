@@ -132,7 +132,7 @@ class AuthViewModel : ViewModel() {
         password: String,
         confirmPassword: String,
         userProfile: UserProfile,
-        appDatabase: AppDatabase
+        appDatabase: AppDatabase,
     ) {
         if (email.isEmpty() || password.isEmpty()) {
             _authState.value = AuthState.Error("Please fill all fields")
@@ -149,7 +149,7 @@ class AuthViewModel : ViewModel() {
             if (task.isSuccessful) {
                 val currentUserEmail = auth.currentUser?.email
                 if (currentUserEmail != null) {
-                    val userProfileViewModel = UserProfileViewModel(appDatabase)
+                    val userProfileViewModel = UserProfileViewModel(appDatabase )
                     userProfileViewModel.insertUserProfile(
                         userProfile = userProfile,
                         onSuccess = {

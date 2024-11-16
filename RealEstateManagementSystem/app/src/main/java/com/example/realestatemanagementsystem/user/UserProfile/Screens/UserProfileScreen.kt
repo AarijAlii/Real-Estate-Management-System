@@ -1,6 +1,7 @@
 package com.example.realestatemanagementsystem.user.UserProfile.Screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -10,10 +11,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 
 //@Composable
 //fun UserProfileScreen(
@@ -114,50 +118,88 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 //}
 
 
+
+
+
+//FIREBASE CONNECTED
 //@Composable
-//fun ProfileScreen(email: String, userProfileDao: UserProfileDao) {
-//    val userProfile = remember(email) { mutableStateOf<UserProfile?>(null) }
-//    val context = LocalContext.current
+//fun ProfileScreen(
+//    email: String,
+//    userProfileDao: UserProfileDao
+//) {
+//    // State to hold the user profile data
+//    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+//    var isLoading by remember { mutableStateOf(true) }
+//    var errorMessage by remember { mutableStateOf("") }
 //
+//    // Load the user profile data asynchronously using LaunchedEffect
 //    LaunchedEffect(email) {
-//        // Fetch user data from local database
-//        val profile = userProfileDao.getUserByEmail(email)
-//        if (profile != null) {
-//            userProfile.value = profile
-//        } else {
-//            Toast.makeText(context, "User not found in the database.", Toast.LENGTH_SHORT).show()
+//        try {
+//            // Fetch the user profile from the database in a coroutine
+//            val profile = userProfileDao.getUserByEmail(email)
+//            userProfile = profile
+//            isLoading = false
+//        } catch (e: Exception) {
+//            errorMessage = "Failed to load profile: ${e.message}"
+//            isLoading = false
 //        }
 //    }
 //
-//    if (userProfile.value != null) {
-//        // Show the profile information
-//        Column(
-//            modifier = Modifier.fillMaxSize().padding(16.dp),
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            Text("Name: ${userProfile.value?.firstName.orEmpty()} ${userProfile.value?.lastName.orEmpty()}")
-//            Text("Contact: ${userProfile.value?.contact.orEmpty()}")
-//            Text("City: ${userProfile.value?.city.orEmpty()}")
-//            Text("Region: ${userProfile.value?.region.orEmpty()}")
-//            Text("Postal Code: ${userProfile.value?.postalCode.orEmpty()}")
-//        }
+//    // UI to display the profile data
+//    if (isLoading) {
+//        // Show a loading indicator while data is being fetched
+//        CircularProgressIndicator()
 //    } else {
-//        Text("Loading profile...")
+//        if (userProfile != null) {
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .padding(16.dp)
+//            ) {
+//                Text("Profile", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+//                Spacer(modifier = Modifier.height(16.dp))
+//
+//                Text("Email: ${userProfile?.email}")
+//                Text("First Name: ${userProfile?.firstName}")
+//                Text("Last Name: ${userProfile?.lastName}")
+//                Text("Contact Info: ${userProfile?.contact ?: "N/A"}")
+//            }
+//        } else {
+//            Text("User profile not found.")
+//        }
+//
+//        // Show error message if any
+//        if (errorMessage.isNotEmpty()) {
+//            Text(
+//                text = errorMessage,
+//                color = Color.Red,
+//                modifier = Modifier.padding(top = 8.dp)
+//            )
+//        }
 //    }
 //}
 
 
+
+//PROFILE EDITING
 @Composable
 fun ProfileScreen(
     email: String,
-    userProfileDao: UserProfileDao
+    userProfileDao: UserProfileDao,
+   profileViewModel: UserProfileViewModel
 ) {
+
+    // State to hold the user profile data
+////    val userProfileState by profileViewModel.userProfile.collectAsState()
+////    val isLoading by profileViewModel.isLoading.collectAsState()
+////    val errorMessage by profileViewModel.errorMessage.collectAsState()
+
     // State to hold the user profile data
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf("") }
 
-    // Load the user profile data asynchronously using LaunchedEffect
+    // Load the user profile when the screen is shown
     LaunchedEffect(email) {
         try {
             // Fetch the user profile from the database in a coroutine
@@ -172,28 +214,102 @@ fun ProfileScreen(
 
     // UI to display the profile data
     if (isLoading) {
-        // Show a loading indicator while data is being fetched
         CircularProgressIndicator()
     } else {
         if (userProfile != null) {
+            var firstName by remember { mutableStateOf(userProfile!!.firstName) }
+            var lastName by remember { mutableStateOf(userProfile!!.lastName) }
+            var contact by remember { mutableStateOf(userProfile!!.contact ?: "") }
+            var city by remember { mutableStateOf(userProfile!!.city ?: "") }
+            var region by remember { mutableStateOf(userProfile!!.region ?: "") }
+            var postalCode by remember { mutableStateOf(userProfile!!.postalCode ?: "") }
+            val overallRating = userProfile!!.rating ?: "No ratings yet"
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Text("Profile", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Text("Edit Profile", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Email: ${userProfile?.email}")
-                Text("First Name: ${userProfile?.firstName}")
-                Text("Last Name: ${userProfile?.lastName}")
-                Text("Contact Info: ${userProfile?.contact ?: "N/A"}")
+                Text("Email: ${userProfile!!.email}")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Editable fields
+                OutlinedTextField(
+                    value = firstName,
+                    onValueChange = { firstName = it },
+                    label = { Text("First Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    label = { Text("Last Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = contact,
+                    onValueChange = { contact = it },
+                    label = { Text("Contact Info") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = city,
+                    onValueChange = { city = it },
+                    label = { Text("City") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = region,
+                    onValueChange = { region = it },
+                    label = { Text("Region") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = postalCode,
+                    onValueChange = { postalCode = it },
+                    label = { Text("Postal Code") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text("Overall Rating: $overallRating", fontSize = 16.sp)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        profileViewModel.updateUserrProfile(
+                            email = email,
+                            firstName = firstName,
+                            lastName = lastName,
+                            contact = contact,
+                            city = city,
+                            region = region,
+                            postalCode = postalCode
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Save")
+                }
             }
         } else {
             Text("User profile not found.")
         }
 
-        // Show error message if any
         if (errorMessage.isNotEmpty()) {
             Text(
                 text = errorMessage,
@@ -203,3 +319,4 @@ fun ProfileScreen(
         }
     }
 }
+

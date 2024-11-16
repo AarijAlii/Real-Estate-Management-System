@@ -13,6 +13,8 @@ import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Home.Screens.SellScreen
 import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.ProfileScreen
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
+import com.example.realestatemanagementsystem.user.UserProfile.UserViewModelFactory
 import com.example.realestatemanagementsystem.user.authentication.Screens.SignInScreen
 import com.example.realestatemanagementsystem.user.authentication.Screens.SignUpScreen
 
@@ -56,13 +58,21 @@ fun NavigationGraph(
             }
 
         composable(Screen.ProfileScreen.route) { backStackEntry ->
-                val email = backStackEntry.arguments?.getString("email")
-                val context = LocalContext.current
-                val appDatabase = AppDatabase.getDatabase(context) // Get the database instance
-                if (email != null) {
-                    ProfileScreen(email = email, userProfileDao = appDatabase.userProfileDao())
-                }
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
+
+            if (email != null) {
+                ProfileScreen(
+                    email = email,
+                    userProfileDao = appDatabase.userProfileDao(),
+                    profileViewModel = userProfileViewModel
+                )
             }
+        }
+
 
         composable(Screen.HomeScreen.route) {
             HomeScreen(
