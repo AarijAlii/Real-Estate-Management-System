@@ -1,11 +1,13 @@
 package com.example.realestatemanagementsystem.user.UserProfile
 
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import android.content.Context
 
-@Database(entities = [UserProfile::class], version = 1)
+@Database(entities = [UserProfile::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
 
@@ -19,10 +21,47 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ).build()
+                ) .addMigrations(MIGRATION_1_2) // Add the migration here
+                 .build()
                 INSTANCE = db
                 db
             }
         }
+    }
+}
+
+
+
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Create a new table with the updated schema
+        database.execSQL(
+            """
+            CREATE TABLE user_profile_new (
+                email TEXT NOT NULL PRIMARY KEY,
+                firstName TEXT NOT NULL,
+                lastName TEXT NOT NULL,
+                contact TEXT NOT NULL,
+                city TEXT NOT NULL
+                region TEXT NOT NULL,
+                postalCode INT NOT NULL,
+                rating INT NOT NULL
+            )
+            """.trimIndent()
+        )
+
+        // Copy data from the old table to the new table
+        database.execSQL(
+            """
+            INSERT INTO user_profile_new (email, firstName, lastName, contact, city, region, postalCode)
+            SELECT email, firstName, lastName, contact, city, region, postalCode, rating FROM user_profile
+            """.trimIndent()
+        )
+
+        // Drop the old table
+        database.execSQL("DROP TABLE user_profile")
+
+        // Rename the new table to the original table name
+        database.execSQL("ALTER TABLE user_profile_new RENAME TO user_profile")
     }
 }

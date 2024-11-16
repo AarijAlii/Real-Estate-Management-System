@@ -19,6 +19,7 @@ runtimeLivedata = "1.5.2"
 firebaseFirestoreKtx = "25.1.0"
 ui = "1.7.3"
 uiToolingPreview = "1.5.0"
+foundationAndroid = "1.7.2"
 
 [libraries]
 androidx-activity-compose-v172 = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
@@ -55,6 +56,7 @@ androidx-compose-ui = { module = "androidx.compose.ui:ui", version = "1.7.2" }
 androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version = "1.7.2" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version = "1.7.2" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 
 
 [plugins]

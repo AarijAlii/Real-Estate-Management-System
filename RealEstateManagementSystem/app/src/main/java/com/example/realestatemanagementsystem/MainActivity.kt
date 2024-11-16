@@ -15,7 +15,7 @@ import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Navigation.NavigationGraph
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.ui.theme.RealEstateManagementSystemTheme
-import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
+//import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.example.realestatemanagementsystem.user.authentication.Screens.SignUpScreen

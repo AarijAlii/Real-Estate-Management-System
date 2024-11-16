@@ -29,6 +29,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +58,7 @@ import com.example.realestatemanagementsystem.util.PropertyCards
 @Composable
 fun HomeScreen(authViewModel: AuthViewModel = viewModel(),navHostController: NavHostController)
 {
-    val authState = authViewModel.authState.observeAsState()
+    val authState = authViewModel.authState.collectAsState()
 
     LaunchedEffect(authState.value){
         if (authState.value == AuthState.Failed) {

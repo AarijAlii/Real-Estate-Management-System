@@ -62,6 +62,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.foundation.android)
+    implementation(libs.androidx.foundation.android)
+    implementation(libs.androidx.foundation.android)
     ksp(libs.androidx.room.compiler)
     //navbar
     implementation("com.exyte:animated-navigation-bar:1.0.0")
