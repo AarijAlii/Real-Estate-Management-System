@@ -11,11 +11,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.realestatemanagementsystem.NavGraph.NavigationGraph
+import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
+import com.example.realestatemanagementsystem.Navigation.NavigationGraph
+import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.ui.theme.RealEstateManagementSystemTheme
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
+import com.example.realestatemanagementsystem.user.authentication.Screens.SignUpScreen
 
 class MainActivity : ComponentActivity() {
     private val viewModel: UserProfileViewModel by viewModels()
@@ -31,8 +34,9 @@ class MainActivity : ComponentActivity() {
             val authViewModel: AuthViewModel = viewModel()
             RealEstateManagementSystemTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    UserProfileScreen(viewModel)
-                    //NavigationGraph(navController, authViewModel)
+                    //SignUpScreen(authViewModel,navController)
+//                    HomeScreen(navController)
+                   NavigationGraph(navController, authViewModel)
                 }
             }
         }
