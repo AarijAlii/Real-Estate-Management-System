@@ -1,5 +1,7 @@
 package com.example.realestatemanagementsystem.user.authentication.FirebaseCode
 
+import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -40,6 +42,7 @@ class AuthViewModel : ViewModel() {
         if (auth.currentUser == null){
             _authState.value = AuthState.Failed
         }else {
+
             _authState.value = AuthState.Success
         }
     }
@@ -77,9 +80,10 @@ class AuthViewModel : ViewModel() {
     }
 
     fun signOut() {
-        _authState.value = AuthState.Failed
-        auth.signOut()
+        if (auth.currentUser != null) {
 
-
+            _authState.value = AuthState.Failed
+        }
     }
+
 }

@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.R
@@ -65,20 +66,12 @@ fun LoginScreen(
     val context = LocalContext.current
     val authState = authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
-        when (authState.value) {
-            is AuthState.Success -> {
-                navHostController.navigate(route= Screen.HomeScreen.route)
-            }
+        if (authState.value is AuthState.Success) {
+            navHostController.navigate(route = Screen.HomeScreen.route)
 
-            is AuthState.Error -> {
-                Toast.makeText(
-                    context,
-                    (authState.value as AuthState.Error).message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            } else if (authState.value is AuthState.Error) {
+            Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show()
 
-            else ->{}
         }
     }
 

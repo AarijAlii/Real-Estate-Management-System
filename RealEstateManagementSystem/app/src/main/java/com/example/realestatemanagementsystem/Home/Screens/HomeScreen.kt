@@ -60,26 +60,21 @@ import com.example.realestatemanagementsystem.util.PropertyCards
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(authViewModel: AuthViewModel = viewModel(),navHostController: NavHostController)
+fun HomeScreen(authViewModel: AuthViewModel ,navHostController: NavHostController)
 {
     val authState = authViewModel.authState.observeAsState()
 
+
+
     LaunchedEffect(authState.value) {
-        when (authState.value) {
-
-            AuthState.Failed -> {
-                // User is not authenticated, navigate to LoginScreen
-                navHostController.navigate(Screen.LoginScreen.route){
-                    popUpTo(Screen.HomeScreen.route){inclusive=true}
-                }
-            }
-
-            else -> {} // Handle other states if needed
+        if (authState.value is AuthState.Failed ) {
+            navHostController.navigate(Screen.LoginScreen.route)
         }
     }
 
 
-        val items= getNavigationItems()
+
+    val items= getNavigationItems()
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope= rememberCoroutineScope()
         var selectedIndex by remember {
@@ -139,6 +134,8 @@ fun HomeScreen(authViewModel: AuthViewModel = viewModel(),navHostController: Nav
 
 
                     Row(modifier=Modifier.padding(horizontal = 27.dp, vertical = 8.dp).clickable {  authViewModel.signOut()
+                        // Navigate to login screen
+                        navHostController.navigate(Screen.LoginScreen.route)
 
                                                                                                     },
                         verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Start) {
