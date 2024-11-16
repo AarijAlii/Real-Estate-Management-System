@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.NavGraph
+package com.example.realestatemanagementsystem.Navigation
 
 import android.app.Application
 import androidx.compose.runtime.Composable
@@ -38,7 +38,7 @@ fun NavigationGraph(
         }
         composable(Screen.HomeScreen.route) {
             HomeScreen(
-                authViewModel,
+//                authViewModel,
                 navHostController=navController
             )
         }
