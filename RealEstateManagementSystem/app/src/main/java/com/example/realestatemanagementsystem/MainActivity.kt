@@ -11,14 +11,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Navigation.NavigationGraph
-import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.ui.theme.RealEstateManagementSystemTheme
-//import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
-import com.example.realestatemanagementsystem.user.authentication.Screens.SignUpScreen
 
 class MainActivity : ComponentActivity() {
     private val viewModel: UserProfileViewModel by viewModels()
@@ -26,21 +22,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            // Assuming you're fetching user profile ID dynamically or hardcoding for demo
-            //val userProfile = viewModel.userProfile.collectAsState()
-            //val viewModel: UserProfileViewModel = viewModel()
-            //val profile = viewModel.getProfile(1).collectAsState(initial = null)
             val navController = rememberNavController()
             val authViewModel: AuthViewModel = viewModel()
             RealEstateManagementSystemTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     //SignUpScreen(authViewModel,navController)
-//                    HomeScreen(navController)
+                    //HomeScreen(navController)
                    NavigationGraph(navController, authViewModel)
                 }
             }
         }
     }
 }
-
-

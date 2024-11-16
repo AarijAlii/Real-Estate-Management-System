@@ -1,66 +1,13 @@
 package com.example.realestatemanagementsystem.user.UserProfile
 
-import android.app.Application
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-
-//class UserProfileViewModel(application: Application) : AndroidViewModel(application) {
-//    private val _userProfileDao = AppDatabase.getDatabase(application).userProfileDao()
-//    val userProfileDao : UserProfileDao = _userProfileDao
-////    val userProf : LiveData<UserProfile> = userProfileDao.getUserProfile(1)
-//
-//    fun saveProfile(userProfile: UserProfile) {
-//        viewModelScope.launch {
-//            userProfileDao.insertOrUpdate(userProfile)
-//        }
-//    }
-//
-//    fun getProfile(id: Int): LiveData<UserProfile> {
-//            return userProfileDao.getUserProfile(id)
-//    }
-//
-//    fun clearProfile(id: Int) {
-//        viewModelScope.launch {
-//            userProfileDao.clearProfile(id)
-//        }
-//    }
-//}
-
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-
-//class UserProfileViewModel(private val userProfileDao: UserProfileDao) : ViewModel() {
-//    val userProfile = mutableStateOf<UserProfile?>(null)
-//
-//    fun fetchUserProfile(email: String) {
-//        viewModelScope.launch {
-//            userProfile.value = userProfileDao.getUserByEmail(email)
-//        }
-//    }
-//}
-
-//val appDatabase = AppDatabase.getDatabase(context)
-//val userProfileDao = appDatabase.userProfileDao()
-//
-//// Inserting user profile:
-//userProfileDao.insert(userProfile)
-//
-//// Fetching user profile:
-//val userProfile = userProfileDao.getUserProfileByEmail(userEmail)
-
-
-
-
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
 
-    // Function to get the user profile from the local database by email
+    // Function to get the user profile from the local database by email(PK)
     fun getUserByEmail(email: String, onSuccess: (UserProfile) -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             try {

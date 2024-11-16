@@ -1,36 +1,23 @@
 package com.example.realestatemanagementsystem.user.authentication.FirebaseCode
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
-import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
     private val _authState = MutableStateFlow<AuthState>(AuthState.Loading)
     val authState: StateFlow<AuthState> = _authState
-    val userEmail = mutableStateOf<String?>(null)
-
-    //private val userRepository: UserRepository
+    //val userEmail = mutableStateOf<String?>(null)
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-
-//    private val _authState = MutableLiveData<AuthState>()
-//    val authState: LiveData<AuthState> = _authState
+    //private val userRepository: UserRepository
 
     init {
         checkAuthStatus()
     }
-
 
     private fun checkAuthStatus() {
         if (auth.currentUser == null) {
@@ -39,6 +26,7 @@ class AuthViewModel : ViewModel() {
             _authState.value = AuthState.Success
         }
     }
+
 
 //    fun login(email: String, password: String) {
 //        if (email.isEmpty() || password.isEmpty()) {
@@ -55,27 +43,6 @@ class AuthViewModel : ViewModel() {
 //            }
 //        }
 //    }
-
-//    fun signUp(email: String, password: String) {
-//        if (email.isEmpty() || password.isEmpty()) {
-//            _authState.value = AuthState.Error("Please fill all fields")
-//            return
-//        }
-//
-//        _authState.value = AuthState.Loading
-//        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-//            if (task.isSuccessful) {
-//                _authState.value = AuthState.Success
-//            } else {
-//                _authState.value = AuthState.Error(task.exception?.message ?: "SignUp failed")
-//            }
-//        }
-//    }
-
-    fun signOut() {
-        auth.signOut()
-        _authState.value = AuthState.Failed
-    }
 
 //    fun signIn(
 //        email: String,
@@ -115,6 +82,27 @@ class AuthViewModel : ViewModel() {
 //        }
 //    }
 
+
+//    fun signUp(email: String, password: String) {
+//        if (email.isEmpty() || password.isEmpty()) {
+//            _authState.value = AuthState.Error("Please fill all fields")
+//            return
+//        }
+//
+//        _authState.value = AuthState.Loading
+//        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+//            if (task.isSuccessful) {
+//                _authState.value = AuthState.Success
+//            } else {
+//                _authState.value = AuthState.Error(task.exception?.message ?: "SignUp failed")
+//            }
+//        }
+//    }
+
+    fun signOut() {
+        auth.signOut()
+        _authState.value = AuthState.Failed
+    }
 
 
     fun signIn(
@@ -178,5 +166,3 @@ class AuthViewModel : ViewModel() {
         }
     }
 }
-
-

@@ -30,12 +30,10 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 
-
-
 val MIGRATION_1_2 = object : Migration(1, 2) {
-    override fun migrate(database: SupportSQLiteDatabase) {
+    override fun migrate(db: SupportSQLiteDatabase) {
         // Create a new table with the updated schema
-        database.execSQL(
+        db.execSQL(
             """
             CREATE TABLE user_profile_new (
                 email TEXT NOT NULL PRIMARY KEY,
@@ -49,19 +47,15 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
             )
             """.trimIndent()
         )
-
         // Copy data from the old table to the new table
-        database.execSQL(
+        db.execSQL(
             """
             INSERT INTO user_profile_new (email, firstName, lastName, contact, city, region, postalCode)
             SELECT email, firstName, lastName, contact, city, region, postalCode, rating FROM user_profile
             """.trimIndent()
         )
-
-        // Drop the old table
-        database.execSQL("DROP TABLE user_profile")
-
-        // Rename the new table to the original table name
-        database.execSQL("ALTER TABLE user_profile_new RENAME TO user_profile")
+        // Drop and rename to the original table name
+        db.execSQL("DROP TABLE user_profile")
+        db.execSQL("ALTER TABLE user_profile_new RENAME TO user_profile")
     }
 }
