@@ -119,3 +119,8 @@ fun UserProfileScreen(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+private fun PreviewUP() {
+
+}

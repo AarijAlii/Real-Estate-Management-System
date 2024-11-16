@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.NavGraph
+package com.example.realestatemanagementsystem.Navigation
 
 sealed class Screen(val route:String){
     data object LoginScreen: Screen("login_screen")
