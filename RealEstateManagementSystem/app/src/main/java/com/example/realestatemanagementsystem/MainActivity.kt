@@ -16,6 +16,7 @@ import com.example.realestatemanagementsystem.ui.theme.RealEstateManagementSyste
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
+import com.example.realestatemanagementsystem.user.authentication.Screens.SignUpScreen
 
 class MainActivity : ComponentActivity() {
     private val viewModel: UserProfileViewModel by viewModels()
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
             val authViewModel: AuthViewModel = viewModel()
             RealEstateManagementSystemTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    UserProfileScreen(viewModel)
+                    //UserProfileScreen(viewModel)
                     //NavigationGraph(navController, authViewModel)
                 }
             }
