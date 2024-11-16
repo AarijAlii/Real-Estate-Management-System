@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.NavGraph
+package com.example.realestatemanagementsystem.Navigation
 
 import com.example.realestatemanagementsystem.R
 
