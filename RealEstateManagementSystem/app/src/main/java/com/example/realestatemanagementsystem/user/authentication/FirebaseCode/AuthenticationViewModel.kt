@@ -39,7 +39,7 @@ class AuthViewModel : ViewModel() {
     private fun checkAuthStatus(){
         if (auth.currentUser == null){
             _authState.value = AuthState.Failed
-        }else{
+        }else {
             _authState.value = AuthState.Success
         }
     }
@@ -77,7 +77,9 @@ class AuthViewModel : ViewModel() {
     }
 
     fun signOut() {
-        auth.signOut()
         _authState.value = AuthState.Failed
+        auth.signOut()
+
+
     }
 }

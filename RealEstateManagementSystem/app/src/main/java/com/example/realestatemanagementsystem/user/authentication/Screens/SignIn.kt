@@ -78,7 +78,7 @@ fun LoginScreen(
                 ).show()
             }
 
-            else -> Unit
+            else ->{}
         }
     }
 

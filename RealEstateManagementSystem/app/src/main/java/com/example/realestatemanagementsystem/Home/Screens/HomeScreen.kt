@@ -3,6 +3,7 @@ package com.example.realestatemanagementsystem.Home.Screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,9 +40,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -59,9 +64,17 @@ fun HomeScreen(authViewModel: AuthViewModel = viewModel(),navHostController: Nav
 {
     val authState = authViewModel.authState.observeAsState()
 
-    LaunchedEffect(authState.value){
-        if (authState.value == AuthState.Failed) {
-            navHostController.navigate(route = Screen.LoginScreen.route)
+    LaunchedEffect(authState.value) {
+        when (authState.value) {
+
+            AuthState.Failed -> {
+                // User is not authenticated, navigate to LoginScreen
+                navHostController.navigate(Screen.LoginScreen.route){
+                    popUpTo(Screen.HomeScreen.route){inclusive=true}
+                }
+            }
+
+            else -> {} // Handle other states if needed
         }
     }
 
@@ -122,6 +135,17 @@ fun HomeScreen(authViewModel: AuthViewModel = viewModel(),navHostController: Nav
                         }
                     },modifier=Modifier.padding(2.dp))
                 }
+
+
+
+                    Row(modifier=Modifier.padding(horizontal = 27.dp, vertical = 8.dp).clickable {  authViewModel.signOut()
+
+                                                                                                    },
+                        verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Start) {
+                    Icon(painter = painterResource(R.drawable.baseline_logout_24), contentDescription = "Logout", modifier = Modifier.size(22.dp))
+                    Text(text = "  Logout", fontSize = 14.sp)
+                    }
+
             }
         }, drawerState = drawerState) {
             Scaffold(
@@ -137,7 +161,9 @@ fun HomeScreen(authViewModel: AuthViewModel = viewModel(),navHostController: Nav
 
                 ){innerPadding->
                 Column (modifier = Modifier
-                    .padding(innerPadding).fillMaxWidth().padding(16.dp)){
+                    .padding(innerPadding)
+                    .fillMaxWidth()
+                    .padding(16.dp)){
                         PropertyCards(modifier = Modifier)
 
                 }
