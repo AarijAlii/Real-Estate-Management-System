@@ -32,7 +32,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -48,6 +50,7 @@ import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.Navigation.getNavigationItems
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.util.PropertyCards
 import kotlinx.coroutines.launch
@@ -59,8 +62,14 @@ fun SellScreen(authViewModel:AuthViewModel,modifier: Modifier = Modifier,navHost
     val items= getNavigationItems()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope= rememberCoroutineScope()
+    val authState = authViewModel.authState.observeAsState()
     var selectedIndex by remember {
         mutableStateOf(1)
+    }
+    LaunchedEffect(authState.value) {
+        if (authState.value is AuthState.Failed ) {
+            navHostController.navigate(Screen.LoginScreen.route)
+        }
     }
     ModalNavigationDrawer(drawerContent = {
         Spacer(modifier = Modifier.height(16.dp))

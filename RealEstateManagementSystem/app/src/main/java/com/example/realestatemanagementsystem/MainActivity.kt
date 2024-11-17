@@ -21,7 +21,7 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewMo
 import com.example.realestatemanagementsystem.user.authentication.Screens.SignUpScreen
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: UserProfileViewModel by viewModels()
+    private val userProfileViewModel: UserProfileViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     //SignUpScreen(authViewModel,navController)
 //                    HomeScreen(navController)
-                   NavigationGraph(navController, authViewModel)
+                   NavigationGraph(navController, authViewModel,userProfileViewModel)
                 }
             }
         }

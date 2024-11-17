@@ -56,8 +56,10 @@ fun SignUpScreen(
 ) {
     val focusManager= LocalFocusManager.current
     var email by remember { mutableStateOf("") }
+    var confirmPassword by remember{ mutableStateOf("")}
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val authState = authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
@@ -170,18 +172,34 @@ fun SignUpScreen(
                                     email = ""
                                     password = ""
                                 }),
-                            value = password,
-                            onValueChange = { password = it },
+                            value = confirmPassword,
+                            onValueChange = { confirmPassword = it },
                             label = { Text("Confirm Password") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
-                            visualTransformation = PasswordVisualTransformation()
+                            visualTransformation = PasswordVisualTransformation(),
+                            trailingIcon = {
+                                val image = if (confirmPasswordVisible)
+                                    painterResource(id = R.drawable.baseline_visibility_24)
+                                else
+                                    painterResource(id = R.drawable.baseline_visibility_off_24)
+
+                                // IconButton to toggle password visibility
+                                IconButton(onClick = {
+                                    confirmPasswordVisible = !confirmPasswordVisible
+                                }) {
+                                    Icon(painter=image, contentDescription = "show pass")
+                                }
+                            }
                         )
                         Button(
                             onClick = {
+                                if(confirmPassword==password){
                                 authViewModel.signUp(email, password)
                                 navHostController.navigate(Screen.UserProfileScreen.route)
+
+                                }
                                 //              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
                             },
                             modifier = Modifier

@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.example.realestatemanagementsystem.Home.Screens.BuyScreen
 import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
@@ -20,11 +21,12 @@ import com.example.realestatemanagementsystem.user.authentication.Screens.SignUp
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    userProfileViewModel: UserProfileViewModel
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.SignupScreen.route
+        startDestination = Screen.LoginScreen.route
     ) {
         composable(Screen.SignupScreen.route) {
             SignUpScreen(
@@ -34,13 +36,13 @@ fun NavigationGraph(
         }
         composable(Screen.LoginScreen.route) {
             LoginScreen(
-                authViewModel,
+                authViewModel=AuthViewModel(),
               navHostController = navController
             )
         }
         composable(Screen.HomeScreen.route) {
             HomeScreen(
-                authViewModel,
+                authViewModel= AuthViewModel(),
                 navHostController=navController
             )
         }
@@ -60,7 +62,7 @@ fun NavigationGraph(
         }
         composable(Screen.UserProfileScreen.route){
             UserProfileScreen(
-                UserProfileViewModel(application = Application())
+                userProfileViewModel
             )
         }
         composable(Screen.CreateListingScreen.route){

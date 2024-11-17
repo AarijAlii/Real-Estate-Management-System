@@ -2,10 +2,15 @@ package com.example.realestatemanagementsystem.user.authentication.FirebaseCode
 
 import android.app.Application
 import android.widget.Toast
+import androidx.activity.result.launch
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+
+import kotlinx.coroutines.launch
 
 class AuthViewModel : ViewModel() {
     //private val userRepository: UserRepository
@@ -80,8 +85,14 @@ class AuthViewModel : ViewModel() {
     }
 
     fun signOut() {
-        if (auth.currentUser != null) {
+        viewModelScope.launch {
+            // Sign out from Firebase or your authentication service
+            FirebaseAuth.getInstance().signOut()
 
+            // Clear authentication state (e.g., using DataStore)
+
+
+            // Update authState to reflect the logout
             _authState.value = AuthState.Failed
         }
     }
