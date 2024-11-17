@@ -195,9 +195,15 @@ fun SignUpScreen(
                         )
                         Button(
                             onClick = {
-                                if(confirmPassword==password){
+                                if(confirmPassword==password&&email.isNotEmpty()&&password.isNotEmpty()){
                                 authViewModel.signUp(email, password)
                                 navHostController.navigate(Screen.UserProfileScreen.route)
+
+                                }
+                                else{
+                                    Toast.makeText(context, "Password does not match or fields are empty", Toast.LENGTH_LONG).show()
+                                    password=""
+                                    confirmPassword=""
 
                                 }
                                 //              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
