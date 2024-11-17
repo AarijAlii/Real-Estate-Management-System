@@ -1,6 +1,7 @@
 package com.example.realestatemanagementsystem.Navigation
 
 import android.app.Application
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -45,7 +46,8 @@ fun NavigationGraph(
         composable(Screen.BuyScreen.route){
             BuyScreen(
                 modifier=Modifier,
-                navHostController = navController
+                navHostController = navController,
+                innerPadding = PaddingValues()
             )
         }
         composable(Screen.SellScreen.route){

@@ -57,6 +57,7 @@ import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.A
 import com.example.realestatemanagementsystem.util.PropertyCards
 import kotlinx.coroutines.launch
 import com.example.realestatemanagementsystem.util.PropertyCards
+import com.google.android.play.integrity.internal.al
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,12 +74,12 @@ fun HomeScreen(authViewModel: AuthViewModel ,navHostController: NavHostControlle
     }
 
 
-
-    val items= getNavigationItems()
+        val currentRoute = navHostController.currentBackStackEntry?.destination?.route
+        val items= getNavigationItems()
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         val scope= rememberCoroutineScope()
         var selectedIndex by remember {
-            mutableStateOf(-1)
+            mutableStateOf(0)
         }
         ModalNavigationDrawer(drawerContent = {
         Spacer(modifier = Modifier.height(16.dp))
@@ -123,10 +124,12 @@ fun HomeScreen(authViewModel: AuthViewModel ,navHostController: NavHostControlle
                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                                 .size(18.dp))
                             Text(text = navigationItem.title)}
-                    }, selected = index==selectedIndex, onClick = { selectedIndex=index
-                        navHostController.navigate(navigationItem.route)
-                        scope.launch {
-                            drawerState.close()
+                    }, selected = currentRoute == navigationItem.route || (currentRoute == null && index == 0)
+                        , onClick = { if(index!=selectedIndex){
+                            selectedIndex=index
+                            scope.launch { drawerState.close() }
+                            navHostController.navigate(navigationItem.route)
+
                         }
                     },modifier=Modifier.padding(2.dp))
                 }
@@ -157,13 +160,7 @@ fun HomeScreen(authViewModel: AuthViewModel ,navHostController: NavHostControlle
                          }
 
                 ){innerPadding->
-                Column (modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxWidth()
-                    .padding(16.dp)){
-                        PropertyCards(modifier = Modifier)
-
-                }
+                    BuyScreen(modifier=Modifier,navHostController,innerPadding=innerPadding)
             }
         }}
 @Preview (showBackground = true)
