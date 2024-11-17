@@ -1,5 +1,6 @@
 package com.example.realestatemanagementsystem.Home.Screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -127,6 +128,7 @@ fun HomeScreen(authViewModel: AuthViewModel ,navHostController: NavHostControlle
                     }, selected = currentRoute == navigationItem.route || (currentRoute == null && index == 0)
                         , onClick = { if(index!=selectedIndex){
                             selectedIndex=index
+
                             scope.launch { drawerState.close() }
                             navHostController.navigate(navigationItem.route)
 

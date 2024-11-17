@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.realestatemanagementsystem.Home.Screens.BuyScreen
+import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Home.Screens.SellScreen
@@ -52,6 +53,7 @@ fun NavigationGraph(
         }
         composable(Screen.SellScreen.route){
             SellScreen(
+                authViewModel = AuthViewModel(),
                 modifier=Modifier,
                 navHostController = navController
             )
@@ -59,6 +61,12 @@ fun NavigationGraph(
         composable(Screen.UserProfileScreen.route){
             UserProfileScreen(
                 UserProfileViewModel(application = Application())
+            )
+        }
+        composable(Screen.CreateListingScreen.route){
+           CreateListingScreen(
+                modifier=Modifier,
+                navHostController = navController
             )
         }
     }
