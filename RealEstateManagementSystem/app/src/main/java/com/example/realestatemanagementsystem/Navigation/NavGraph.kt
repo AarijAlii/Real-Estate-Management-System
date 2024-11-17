@@ -5,12 +5,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.realestatemanagementsystem.Home.Screens.BuyScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Home.Screens.SellScreen
+import com.example.realestatemanagementsystem.property.AddPropertyScreen
+import com.example.realestatemanagementsystem.property.Property
+import com.example.realestatemanagementsystem.property.PropertyScreen
+import com.example.realestatemanagementsystem.property.PropertyViewModel
+import com.example.realestatemanagementsystem.property.PropertyViewModelFactory
+import com.example.realestatemanagementsystem.property.SoldPropertiesScreen
+import com.example.realestatemanagementsystem.property.UpdatePropertyScreen
 import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.ProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -68,7 +77,8 @@ fun NavigationGraph(
                 ProfileScreen(
                     email = email,
                     userProfileDao = appDatabase.userProfileDao(),
-                    profileViewModel = userProfileViewModel
+                    profileViewModel = userProfileViewModel,
+                    navController = navController
                 )
             }
         }
@@ -92,10 +102,67 @@ fun NavigationGraph(
                 navHostController = navController
             )
         }
-//        composable(Screen.UserProfileScreen.route){
-//            UserProfileScreen(
-//                UserProfileViewModel(application = Application())
-//            )
+
+        composable(Screen.PropertyScreen.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
+            if (email != null) {
+                PropertyScreen(
+                    email = email, propertyViewModel = propertyViewModel,
+                    navController = navController
+                )
+            }
+        }
+        //TESTING PROPERTY NAVS
+        composable("add_property_screen/{email}") { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
+            if (email != null) {
+                AddPropertyScreen(email = email, navController = navController, propertyViewModel = propertyViewModel)
+            }
+        }
+
+//        composable("update_property_screen/{propertyId}") { backStackEntry ->
+//            val propertyId = backStackEntry.arguments?.getString("propertyId")?.toIntOrNull()
+//            val context = LocalContext.current
+//            val appDatabase = AppDatabase.getDatabase(context)
+//            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+//            val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
+//            if (propertyId != null) {
+//                UpdatePropertyScreen(propertyId = propertyId, navController = navController, propertyViewModel = propertyViewModel)
+//            }
 //        }
+
+//        composable(route = "update_property_screen",
+//            arguments = listOf(navArgument("property") { type = NavType.ParcelableType(Property::class.java) })
+//        ) { backStackEntry ->
+//            val property = backStackEntry.arguments?.getParcelable<Property>("property")
+//            val context = LocalContext.current
+//            val appDatabase = AppDatabase.getDatabase(context)
+//            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+//            val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
+//            if (property != null) {
+//                UpdatePropertyScreen(property, propertyViewModel, navController)
+//            }
+//        }
+
+
+        composable("sold_properties_screen/{email}") { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
+            if (email != null) {
+                SoldPropertiesScreen(email = email, propertyViewModel = propertyViewModel, navController = navController)
+            }
+        }
+
     }
 }

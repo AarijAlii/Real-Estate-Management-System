@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 
@@ -186,7 +187,8 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewMo
 fun ProfileScreen(
     email: String,
     userProfileDao: UserProfileDao,
-   profileViewModel: UserProfileViewModel
+    profileViewModel: UserProfileViewModel,
+    navController: NavHostController,
 ) {
 
     // State to hold the user profile data
@@ -305,6 +307,14 @@ fun ProfileScreen(
                 ) {
                     Text("Save")
                 }
+                Button(
+                    onClick = { navController.navigate("property_screen/${email}")}
+
+                ) {
+                    Text("Property")
+                }
+
+
             }
         } else {
             Text("User profile not found.")
