@@ -1,6 +1,7 @@
 package com.example.realestatemanagementsystem.Navigation
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -46,10 +47,24 @@ fun NavigationGraph(
             )
         }
         composable(Screen.HomeScreen.route) {
-            HomeScreen(
-                authViewModel= AuthViewModel(),
-                navHostController=navController
-            )
+                backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
+
+            if (email != null) {
+                Log.d("HomeScreen", "Email received: $email")
+                HomeScreen(
+
+                    email = email,
+                    authViewModel = AuthViewModel(),
+                    navHostController = navController,
+                    userProfileDao = appDatabase.userProfileDao(),
+                    profileViewModel = userProfileViewModel
+                )
+            }
         }
         composable(Screen.BuyScreen.route){
             BuyScreen(

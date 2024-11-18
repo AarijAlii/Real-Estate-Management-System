@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -181,7 +182,7 @@ fun UserProfileScreen(
                                 region = region,
                                 postalCode = postalCode
                             )
-                            // Save the user profile using the ViewModel
+                            navHostController.navigate(Screen.HomeScreen.route)// Save the user profile using the ViewModel
 
                         },
                         colors = ButtonColors(

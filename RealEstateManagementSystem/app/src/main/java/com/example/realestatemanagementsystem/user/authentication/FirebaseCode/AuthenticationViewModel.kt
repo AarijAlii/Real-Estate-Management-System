@@ -1,18 +1,27 @@
 package com.example.realestatemanagementsystem.user.authentication.FirebaseCode
 
+
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
+
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class AuthViewModel : ViewModel() {
+import kotlinx.coroutines.launch
+
+
+class AuthViewModel() : ViewModel() {
     private val _authState = MutableStateFlow<AuthState>(AuthState.Failed)
     val authState: StateFlow<AuthState> = _authState
     //val userEmail = mutableStateOf<String?>(null)
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+
     //private val userRepository: UserRepository
 
     init {
@@ -105,6 +114,7 @@ class AuthViewModel : ViewModel() {
     }
 
 
+
     fun signIn(
         email: String,
         password: String,
@@ -114,8 +124,10 @@ class AuthViewModel : ViewModel() {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 // Get the logged-in user's email
+
                 val currentUserEmail = auth.currentUser?.email
-                if (currentUserEmail != null) {
+
+                    if (currentUserEmail != null) {
                     onSuccess(currentUserEmail) // Pass the email to the onSuccess callback
                 } else {
                     onError("Unable to retrieve user email.")

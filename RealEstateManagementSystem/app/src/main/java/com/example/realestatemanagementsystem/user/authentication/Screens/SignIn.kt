@@ -1,6 +1,7 @@
 package com.example.realestatemanagementsystem.user.authentication.Screens
 
 
+import android.util.Log
 import androidx.compose.material3.OutlinedTextField
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -71,7 +72,8 @@ fun LoginScreen(
     val authState=authViewModel.authState.collectAsState()
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Success) {
-            navHostController.navigate(route = Screen.HomeScreen.route)
+
+            navHostController.navigate(Screen.HomeScreen.route)
 
             } else if (authState.value is AuthState.Error) {
             Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show()
@@ -172,7 +174,8 @@ fun LoginScreen(
                     password = password,
                     onSuccess = { userEmail ->
                         // Navigate to the Profile screen after successful sign-in
-                        navHostController.navigate("profile_screen/${userEmail}")
+                        Log.d("LoginScreen", "User email: $userEmail")
+                        navHostController.navigate("home_screen/${userEmail}")
                     },
                     onError = { error ->
                         // Use error message directly

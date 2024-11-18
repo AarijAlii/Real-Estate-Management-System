@@ -182,7 +182,14 @@ fun SignUpScreen(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-
+                                    authViewModel.signUp(
+                                        email = email,
+                                        password = password,
+                                        confirmPassword = confirmPassword,
+                                        userProfile = userProfile,
+                                        appDatabase = appDatabase// Pass appDatabase here
+                                    )
+                                    navHostController.navigate("home_screen/${email}")
                                 }),
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it },
@@ -214,7 +221,7 @@ fun SignUpScreen(
                                     userProfile = userProfile,
                                     appDatabase = appDatabase// Pass appDatabase here
                                 )
-                                //              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
+                                navHostController.navigate("home_screen/${email}")//              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
