@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +63,7 @@ fun SellScreen(authViewModel:AuthViewModel,modifier: Modifier = Modifier,navHost
     val items= getNavigationItems()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope= rememberCoroutineScope()
-    val authState = authViewModel.authState.observeAsState()
+    val authState = authViewModel.authState.collectAsState()
     var selectedIndex by remember {
         mutableStateOf(1)
     }

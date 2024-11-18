@@ -181,7 +181,6 @@ fun UserProfileScreen(
                                 region = region,
                                 postalCode = postalCode
                             )
-
                             // Save the user profile using the ViewModel
 
                         },

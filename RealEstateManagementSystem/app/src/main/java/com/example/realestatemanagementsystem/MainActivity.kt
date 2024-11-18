@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
     private val userProfileViewModel: UserProfileViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
             // Assuming you're fetching user profile ID dynamically or hardcoding for demo
             //val userProfile = viewModel.userProfile.collectAsState()
@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     //SignUpScreen(authViewModel,navController)
 //                    HomeScreen(navController)
-                   NavigationGraph(navController, authViewModel,userProfileViewModel)
+                   NavigationGraph(navController, authViewModel)
                 }
             }
         }

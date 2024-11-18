@@ -6,13 +6,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import android.content.Context
-import com.example.realestatemanagementsystem.property.Property
-import com.example.realestatemanagementsystem.property.PropertyDao
 
-@Database(entities = [UserProfile::class, Property::class], version = 3)
+
+@Database(entities = [UserProfile::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
-    abstract fun propertyDao(): PropertyDao
+
 
     companion object {
         @Volatile

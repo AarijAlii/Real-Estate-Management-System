@@ -32,6 +32,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -64,7 +65,7 @@ import com.google.android.play.integrity.internal.al
 @Composable
 fun HomeScreen(authViewModel: AuthViewModel ,navHostController: NavHostController)
 {
-    val authState = authViewModel.authState.observeAsState()
+    val authState = authViewModel.authState.collectAsState()
 
 
 
@@ -100,7 +101,7 @@ fun HomeScreen(authViewModel: AuthViewModel ,navHostController: NavHostControlle
                             .clip(CircleShape)
                             .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                             .clickable {
-                                navHostController.navigate(route = Screen.UserProfileScreen.route) //make an update prof screen for updating profile
+                                //make an update prof screen for updating profile
                             }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -116,6 +117,10 @@ fun HomeScreen(authViewModel: AuthViewModel ,navHostController: NavHostControlle
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(16.dp))
+
+
+
+
                     Divider()}
                 items.forEachIndexed{
                         index, navigationItem ->

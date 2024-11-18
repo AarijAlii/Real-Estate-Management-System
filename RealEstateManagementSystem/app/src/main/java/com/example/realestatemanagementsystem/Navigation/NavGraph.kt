@@ -25,8 +25,7 @@ import com.example.realestatemanagementsystem.user.authentication.Screens.SignUp
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    authViewModel: AuthViewModel,
-    userProfileViewModel: UserProfileViewModel
+    authViewModel: AuthViewModel
 ) {
     NavHost(
         navController = navController,
