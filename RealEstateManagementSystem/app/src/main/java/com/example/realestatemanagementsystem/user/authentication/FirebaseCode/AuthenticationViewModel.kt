@@ -103,6 +103,7 @@ class AuthViewModel : ViewModel() {
                     val userProfileViewModel = UserProfileViewModel(appDatabase )
                     userProfileViewModel.insertUserProfile(
                         userProfile = userProfile,
+
                         onSuccess = {
                             _authState.value = AuthState.Success
                         },

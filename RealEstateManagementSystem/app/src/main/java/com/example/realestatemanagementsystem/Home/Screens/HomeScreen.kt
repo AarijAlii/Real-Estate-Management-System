@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -90,13 +91,15 @@ fun HomeScreen(authViewModel: AuthViewModel,
             val profile = userProfileDao.getUserByEmail(email)
             userProfile = profile
             isLoading = false
+            Log.d("HomeScreen", "User profile loaded successfully: $profile")
         } catch (e: Exception) {
             errorMessage = "Failed to load profile: ${e.message}"
             isLoading = false
+            errorMessage = "Failed to load profile: ${e.message}"
         }
     }
     if (isLoading) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(Modifier.fillMaxSize(), color = Color.White)
     } else {
         if (userProfile != null) {
             var firstName by remember { mutableStateOf(userProfile!!.firstName) }
