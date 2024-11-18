@@ -55,9 +55,9 @@ import com.example.realestatemanagementsystem.Navigation.getNavigationItems
 import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
-import com.example.realestatemanagementsystem.util.PropertyCards
+
 import kotlinx.coroutines.launch
-import com.example.realestatemanagementsystem.util.PropertyCards
+
 import com.google.android.play.integrity.internal.al
 
 @OptIn(ExperimentalMaterial3Api::class)

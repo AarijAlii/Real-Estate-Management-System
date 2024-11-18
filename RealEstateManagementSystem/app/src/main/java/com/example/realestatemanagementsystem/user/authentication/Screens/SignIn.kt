@@ -49,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 
@@ -56,7 +57,8 @@ import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.A
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    appDatabase: AppDatabase
 ) {
     //val result by authViewModel.authState.observeAsState()
     val focusManager= LocalFocusManager.current
@@ -64,7 +66,7 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val authState = authViewModel.authState.observeAsState()
+    val authState=authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Success) {
             navHostController.navigate(route = Screen.HomeScreen.route)
