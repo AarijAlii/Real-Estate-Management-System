@@ -46,13 +46,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 
 @Composable
 fun SignUpScreen(
-    authViewModel: AuthViewModel = viewModel(),
-    navHostController: NavHostController
+    authViewModel: AuthViewModel,
+    navHostController: NavHostController,
+    appDatabase: AppDatabase,
 ) {
     val focusManager= LocalFocusManager.current
     var email by remember { mutableStateOf("") }
@@ -60,8 +63,17 @@ fun SignUpScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var contactInfo by remember { mutableStateOf("") }
     val context = LocalContext.current
     val authState = authViewModel.authState.observeAsState()
+    val userProfile = UserProfile(
+        email = email,
+        firstName = firstName,
+        lastName = lastName,
+        contact = contactInfo
+    )
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Success -> {
@@ -168,9 +180,16 @@ fun SignUpScreen(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-                                    authViewModel.signUp(email, password)
-                                    email = ""
-                                    password = ""
+                                    if(confirmPassword==password) {
+                                        authViewModel.signUp(
+                                            email = email,
+                                            password = password,
+                                            confirmPassword = confirmPassword,
+                                            userProfile = userProfile,
+                                            appDatabase = appDatabase// Pass appDatabase here
+                                        )
+                                        navHostController.navigate(Screen.UserProfileScreen.route)
+                                    }
                                 }),
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it },
@@ -196,7 +215,13 @@ fun SignUpScreen(
                         Button(
                             onClick = {
                                 if(confirmPassword==password){
-                                authViewModel.signUp(email, password)
+                                    authViewModel.signUp(
+                                        email = email,
+                                        password = password,
+                                        confirmPassword = confirmPassword,
+                                        userProfile = userProfile,
+                                        appDatabase = appDatabase// Pass appDatabase here
+                                    )
                                 navHostController.navigate(Screen.UserProfileScreen.route)
 
                                 }

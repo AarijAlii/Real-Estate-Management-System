@@ -8,6 +8,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 import kotlinx.coroutines.launch
@@ -52,32 +55,62 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun login(email: String, password: String) {
+    fun signIn(
+        email: String,
+        password: String,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Get the logged-in user's email
+                _authState.value=AuthState.Success
+                val currentUserEmail = auth.currentUser?.email
+                if (currentUserEmail != null) {
+                    onSuccess(currentUserEmail) // Pass the email to the onSuccess callback
+                } else {
+                    onError("Unable to retrieve user email.")
+                }
+            } else {
+                onError(task.exception?.message ?: "Sign in failed.")
+            }
+        }
+
+    }
+
+    fun signUp(
+        email: String,
+        password: String,
+        confirmPassword: String,
+        userProfile: UserProfile,
+        appDatabase: AppDatabase,
+    ) {
         if (email.isEmpty() || password.isEmpty()) {
             _authState.value = AuthState.Error("Please fill all fields")
             return
         }
 
-        _authState.value = AuthState.Loading
-        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                _authState.value = AuthState.Success
-            } else {
-                _authState.value = AuthState.Error(task.exception?.message ?: "Login failed")
-            }
-        }
-    }
-
-    fun signUp(email: String, password: String) {
-        if (email.isEmpty() || password.isEmpty()) {
-            _authState.value = AuthState.Error("Please fill all fields")
+        if (password != confirmPassword) {
+            _authState.value = AuthState.Error("Passwords do not match")
             return
         }
 
         _authState.value = AuthState.Loading
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                _authState.value = AuthState.Success
+                val currentUserEmail = auth.currentUser?.email
+                if (currentUserEmail != null) {
+                    val userProfileViewModel = UserProfileViewModel(appDatabase )
+                    userProfileViewModel.insertUserProfile(
+                        userProfile = userProfile,
+                        onSuccess = {
+                            _authState.value = AuthState.Success
+                        },
+                        onError = { error ->
+                            _authState.value = AuthState.Error("Error inserting user profile: $error")
+                        }
+                    )
+                }
             } else {
                 _authState.value = AuthState.Error(task.exception?.message ?: "SignUp failed")
             }

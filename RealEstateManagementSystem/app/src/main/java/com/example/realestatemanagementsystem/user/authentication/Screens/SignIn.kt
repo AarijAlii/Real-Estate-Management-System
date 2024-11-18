@@ -58,13 +58,14 @@ fun LoginScreen(
     authViewModel: AuthViewModel,
     navHostController: NavHostController
 ) {
-    //val result by authViewModel.authState.observeAsState()
+
     val focusManager= LocalFocusManager.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val authState = authViewModel.authState.observeAsState()
+    var authState=authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Success) {
             navHostController.navigate(route = Screen.HomeScreen.route)
@@ -133,7 +134,18 @@ fun LoginScreen(
                                 imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(
                                 onDone  = {
-                                    authViewModel.login(email, password)
+                                    authViewModel.signIn(
+                                        email = email,
+                                        password = password,
+                                        onSuccess = { userEmail ->
+                                            // Navigate to the Profile screen after successful sign-in
+                                            navHostController.navigate("home_screen/${userEmail}")
+                                        },
+                                        onError = { error ->
+                                            // Use error message directly
+                                            errorMessage = error
+                                        }
+                                    )
                                 }),
 //            colors = TextFieldDefaults.textFieldColors(
 //                focusedBorderColor = Color.Red
@@ -163,17 +175,18 @@ fun LoginScreen(
                             })
         Button(
             onClick = {
-                authViewModel.login(email, password)
-//                when (result) {
-//                    is Result.Success->{
-//                        onNavigateToSuccess()
-//                    }
-//                    is Result.Error ->{
-//                        Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show()
-//                    }
-//                    else -> {
-//                    }
-//                }
+                authViewModel.signIn(
+                    email = email,
+                    password = password,
+                    onSuccess = { userEmail ->
+                        // Navigate to the Profile screen after successful sign-in
+                        navHostController.navigate("home_screen/${userEmail}")
+                    },
+                    onError = { error ->
+                        // Use error message directly
+                        errorMessage = error
+                    }
+                )
             },
             modifier = Modifier
                 .fillMaxWidth()

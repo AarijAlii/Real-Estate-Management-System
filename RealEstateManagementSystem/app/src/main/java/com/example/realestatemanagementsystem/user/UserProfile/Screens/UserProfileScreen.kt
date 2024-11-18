@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.ui.focus.FocusDirection
@@ -23,20 +24,42 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 
 @Composable
 fun UserProfileScreen(
-    viewModel: UserProfileViewModel
+    email: String,
+    userProfileDao: UserProfileDao,
+    profileViewModel: UserProfileViewModel
 ) {
     // State variables for the user input
     val focusManager= LocalFocusManager.current
-    var firstName by remember { mutableStateOf("") }
-    var lastName by remember { mutableStateOf("") }
-    var contact by remember { mutableStateOf("") }
-    var city by remember { mutableStateOf("") }
-    var region by remember { mutableStateOf("") }
-    var postalCode by remember { mutableStateOf("") }
+    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf("") }
+    LaunchedEffect(email) {
+        try {
+            // Fetch the user profile from the database in a coroutine
+            val profile = userProfileDao.getUserByEmail(email)
+            userProfile = profile
+            isLoading = false
+        } catch (e: Exception) {
+            errorMessage = "Failed to load profile: ${e.message}"
+            isLoading = false
+        }
+    }
+    if (isLoading) {
+        CircularProgressIndicator()
+    } else {
+        if (userProfile != null) {
+            var firstName by remember { mutableStateOf(userProfile!!.firstName) }
+            var lastName by remember { mutableStateOf(userProfile!!.lastName) }
+            var contact by remember { mutableStateOf(userProfile!!.contact ?: "") }
+            var city by remember { mutableStateOf(userProfile!!.city ?: "") }
+            var region by remember { mutableStateOf(userProfile!!.region ?: "") }
+            var postalCode by remember { mutableStateOf(userProfile!!.postalCode ?: "") }
+            val overallRating = userProfile!!.rating ?: "No ratings yet"
     Column(verticalArrangement = Arrangement.Center,modifier = Modifier
 
         .padding(16.dp)) {
@@ -77,7 +100,14 @@ fun UserProfileScreen(
                         focusManager.moveFocus(FocusDirection.Down)
                     })
             )
+            TextField(
+                value = userProfile!!.email,
+                onValueChange = {  },
+                enabled = false,
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth(),
 
+            )
             TextField(
                 value = contact,
                 onValueChange = { contact = it },
@@ -145,18 +175,19 @@ fun UserProfileScreen(
             Button(
                 onClick = {
                     // Create a UserProfile instance
-                    val userProfile = UserProfile(
+                    profileViewModel.updateUserrProfile(
+                        email = email,
                         firstName = firstName,
                         lastName = lastName,
                         contact = contact,
                         city = city,
                         region = region,
-                        postalCode = postalCode,
-                        rating = 0 // Set a default value for rating or adjust as needed
+                        postalCode = postalCode
+
                     )
 
                     // Save the user profile using the ViewModel
-                    viewModel.saveProfile(userProfile)
+
                 },
                 colors = ButtonColors(
                     contentColor = Color.White,
@@ -169,6 +200,20 @@ fun UserProfileScreen(
             ) {
                 Text("Save")
             }
+
+        }
+
+    }
+        } else {
+            Text("User profile not found.")
+        }
+
+        if (errorMessage.isNotEmpty()) {
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
     }
 }
