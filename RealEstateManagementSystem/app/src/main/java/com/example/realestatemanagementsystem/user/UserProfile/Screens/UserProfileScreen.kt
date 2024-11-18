@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -32,7 +33,8 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewMo
 fun UserProfileScreen(
     email: String,
     userProfileDao: UserProfileDao,
-    profileViewModel: UserProfileViewModel
+    profileViewModel: UserProfileViewModel,
+    navHostController: NavHostController
 ) {
     // State variables for the user input
     val focusManager= LocalFocusManager.current

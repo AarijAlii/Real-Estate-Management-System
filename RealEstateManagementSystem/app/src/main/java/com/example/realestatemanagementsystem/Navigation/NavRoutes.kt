@@ -6,6 +6,6 @@ sealed class Screen(val route:String){
     data object HomeScreen: Screen("home_screen")
     data object BuyScreen: Screen("buy_screen")
     data object SellScreen: Screen("sell_screen")
-    data object UserProfileScreen :Screen("user_profile_screen")
+    data object UserProfileScreen :Screen("profile_screen/{email}")
     data object CreateListingScreen :Screen("create_listing_screen")
 }

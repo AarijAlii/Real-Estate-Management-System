@@ -25,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -65,8 +66,9 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val authState=authViewModel.authState.observeAsState()
+    val authState=authViewModel.authState.collectAsState()
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Success) {
             navHostController.navigate(route = Screen.HomeScreen.route)
@@ -135,7 +137,7 @@ fun LoginScreen(
                                 imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(
                                 onDone  = {
-                                    authViewModel.login(email, password)
+
                                 }),
 //            colors = TextFieldDefaults.textFieldColors(
 //                focusedBorderColor = Color.Red
@@ -165,17 +167,18 @@ fun LoginScreen(
                             })
         Button(
             onClick = {
-                authViewModel.login(email, password)
-//                when (result) {
-//                    is Result.Success->{
-//                        onNavigateToSuccess()
-//                    }
-//                    is Result.Error ->{
-//                        Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show()
-//                    }
-//                    else -> {
-//                    }
-//                }
+                authViewModel.signIn(
+                    email = email,
+                    password = password,
+                    onSuccess = { userEmail ->
+                        // Navigate to the Profile screen after successful sign-in
+                        navHostController.navigate("profile_screen/${userEmail}")
+                    },
+                    onError = { error ->
+                        // Use error message directly
+                        errorMessage = error
+                    }
+                )
             },
             modifier = Modifier
                 .fillMaxWidth()

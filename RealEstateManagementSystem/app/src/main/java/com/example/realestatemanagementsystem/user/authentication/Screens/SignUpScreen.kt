@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -46,13 +47,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 
 @Composable
 fun SignUpScreen(
-    authViewModel: AuthViewModel = viewModel(),
-    navHostController: NavHostController
+    authViewModel: AuthViewModel,
+    navHostController: NavHostController,
+    appDatabase: AppDatabase
 ) {
     val focusManager= LocalFocusManager.current
     var email by remember { mutableStateOf("") }
@@ -60,12 +64,22 @@ fun SignUpScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var contactInfo by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val authState = authViewModel.authState.observeAsState()
+    val authState = authViewModel.authState.collectAsState()
+    val userProfile = UserProfile(
+        email = email,
+        firstName = firstName,
+        lastName = lastName,
+        contact = contactInfo
+    )
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Success -> {
-               navHostController.navigate(route= Screen.HomeScreen.route)
+               navHostController.navigate("profile_screen/${email}")
             }
 
             is AuthState.Error -> {
@@ -168,9 +182,7 @@ fun SignUpScreen(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-                                    authViewModel.signUp(email, password)
-                                    email = ""
-                                    password = ""
+
                                 }),
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it },
@@ -195,17 +207,13 @@ fun SignUpScreen(
                         )
                         Button(
                             onClick = {
-                                if(confirmPassword==password&&email.isNotEmpty()&&password.isNotEmpty()){
-                                authViewModel.signUp(email, password)
-                                navHostController.navigate(Screen.UserProfileScreen.route)
-
-                                }
-                                else{
-                                    Toast.makeText(context, "Password does not match or fields are empty", Toast.LENGTH_LONG).show()
-                                    password=""
-                                    confirmPassword=""
-
-                                }
+                                authViewModel.signUp(
+                                    email = email,
+                                    password = password,
+                                    confirmPassword = confirmPassword,
+                                    userProfile = userProfile,
+                                    appDatabase = appDatabase// Pass appDatabase here
+                                )
                                 //              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
                             },
                             modifier = Modifier
