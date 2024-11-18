@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,19 +54,29 @@ import androidx.navigation.compose.rememberNavController
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.Navigation.getNavigationItems
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
-import com.example.realestatemanagementsystem.util.PropertyCards
+
 import kotlinx.coroutines.launch
-import com.example.realestatemanagementsystem.util.PropertyCards
+
 import com.google.android.play.integrity.internal.al
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(authViewModel: AuthViewModel ,navHostController: NavHostController)
+fun HomeScreen(authViewModel: AuthViewModel,
+               navHostController: NavHostController,
+               email: String,
+               userProfileDao: UserProfileDao,
+               profileViewModel: UserProfileViewModel
+)
 {
     val authState = authViewModel.authState.observeAsState()
-
+    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf("") }
 
 
     LaunchedEffect(authState.value) {
@@ -73,100 +84,149 @@ fun HomeScreen(authViewModel: AuthViewModel ,navHostController: NavHostControlle
             navHostController.navigate(Screen.LoginScreen.route)
         }
     }
-
-
-        val currentRoute = navHostController.currentBackStackEntry?.destination?.route
-        val items= getNavigationItems()
-        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-        val scope= rememberCoroutineScope()
-        var selectedIndex by remember {
-            mutableStateOf(0)
+    LaunchedEffect(email) {
+        try {
+            // Fetch the user profile from the database in a coroutine
+            val profile = userProfileDao.getUserByEmail(email)
+            userProfile = profile
+            isLoading = false
+        } catch (e: Exception) {
+            errorMessage = "Failed to load profile: ${e.message}"
+            isLoading = false
         }
-        ModalNavigationDrawer(drawerContent = {
-        Spacer(modifier = Modifier.height(16.dp))
-            ModalDrawerSheet {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Profile Picture
-                    Image(
-                        painter = painterResource(id = R.drawable.house_file), // Replace with your profile picture resource
-                        contentDescription = null,
+    }
+    if (isLoading) {
+        CircularProgressIndicator()
+    } else {
+        if (userProfile != null) {
+            var firstName by remember { mutableStateOf(userProfile!!.firstName) }
+            var lastName by remember { mutableStateOf(userProfile!!.lastName) }
+
+
+            val currentRoute = navHostController.currentBackStackEntry?.destination?.route
+            val items = getNavigationItems()
+            val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+            val scope = rememberCoroutineScope()
+            var selectedIndex by remember {
+                mutableStateOf(0)
+            }
+            ModalNavigationDrawer(drawerContent = {
+                Spacer(modifier = Modifier.height(16.dp))
+                ModalDrawerSheet {
+                    Column(
                         modifier = Modifier
-                            .size(64.dp)
-                            .clip(CircleShape)
-                            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                            .clickable {
-                                navHostController.navigate(route = Screen.UserProfileScreen.route) //make an update prof screen for updating profile
-                            }
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    // Profile Name
-                    Text(
-                        text = "John Doe", // Replace with dynamic user name
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    // Profile Email or Subtitle
-                    Text(
-                        text = "john.doe@example.com", // Replace with dynamic email
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Divider()}
-                items.forEachIndexed{
-                        index, navigationItem ->
-                    NavigationDrawerItem(label = {
-                        Row(){
-                            Icon(painter = painterResource(navigationItem.icon), contentDescription = null,modifier= Modifier
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                                .size(18.dp))
-                            Text(text = navigationItem.title)}
-                    }, selected = currentRoute == navigationItem.route || (currentRoute == null && index == 0)
-                        , onClick = { if(index!=selectedIndex){
-                            selectedIndex=index
-
-                            scope.launch { drawerState.close() }
-                            navHostController.navigate(navigationItem.route)
-
-                        }
-                    },modifier=Modifier.padding(2.dp))
-                }
-
-
-
-                    Row(modifier=Modifier.padding(horizontal = 27.dp, vertical = 8.dp).clickable {  authViewModel.signOut()
-                        // Navigate to login screen
-                        navHostController.navigate(Screen.LoginScreen.route)
-
-                                                                                                    },
-                        verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Start) {
-                    Icon(painter = painterResource(R.drawable.baseline_logout_24), contentDescription = "Logout", modifier = Modifier.size(22.dp))
-                    Text(text = "  Logout", fontSize = 14.sp)
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Profile Picture
+                        Image(
+                            painter = painterResource(id = R.drawable.house_file), // Replace with your profile picture resource
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clip(CircleShape)
+                                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                .clickable {
+                                    navHostController.navigate("user_profile_screen/${email}") //make an update prof screen for updating profile
+                                }
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        // Profile Name
+                        Text(
+                            text = "${firstName} ${lastName}", // Replace with dynamic user name
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        // Profile Email or Subtitle
+                        Text(
+                            text = "${email}", // Replace with dynamic email
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Divider()
                     }
 
+
+                    items.forEachIndexed { index, navigationItem ->
+                        NavigationDrawerItem(
+                            label = {
+                                Row() {
+                                    Icon(
+                                        painter = painterResource(navigationItem.icon),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .padding(horizontal = 8.dp, vertical = 2.dp)
+                                            .size(18.dp)
+                                    )
+                                    Text(text = navigationItem.title)
+                                }
+                            },
+                            selected = currentRoute == navigationItem.route || (currentRoute == null && index == 0),
+                            onClick = {
+                                if (index != selectedIndex) {
+                                    selectedIndex = index
+
+                                    scope.launch { drawerState.close() }
+                                    navHostController.navigate(navigationItem.route)
+
+                                }
+                            },
+                            modifier = Modifier.padding(2.dp)
+                        )
+                    }
+
+
+
+                    Row(
+                        modifier = Modifier.padding(horizontal = 27.dp, vertical = 8.dp).clickable {
+                            authViewModel.signOut()
+                            // Navigate to login screen
+                            navHostController.navigate(Screen.LoginScreen.route)
+
+                        },
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_logout_24),
+                            contentDescription = "Logout",
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Text(text = "  Logout", fontSize = 14.sp)
+                    }
+
+                }
+            }, drawerState = drawerState) {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(title = { Text("PropertyHub") },
+                            navigationIcon = {
+                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Menu,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+
+                        )
+                    }
+
+                ) { innerPadding ->
+                    BuyScreen(modifier = Modifier, navHostController, innerPadding = innerPadding)
+                }
             }
-        }, drawerState = drawerState) {
-            Scaffold(
-                topBar = {
-                    TopAppBar(title ={ Text( "PropertyHub") },
-                        navigationIcon = {
-                            IconButton(onClick = {scope.launch { drawerState.open() }}) {
-                                Icon(imageVector = Icons.Default.Menu, contentDescription = null)
-                            }}
-
-                    )
-                         }
-
-                ){innerPadding->
-                    BuyScreen(modifier=Modifier,navHostController,innerPadding=innerPadding)
+        } else {
+                Text("User profile not found.")
             }
-        }}
-@Preview (showBackground = true)
-@Composable
-private fun PreviewHome()    {
+        if (errorMessage.isNotEmpty()) {
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
 
-}
+        }
+    }

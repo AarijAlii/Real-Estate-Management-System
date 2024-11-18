@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     //SignUpScreen(authViewModel,navController)
 //                    HomeScreen(navController)
-                   NavigationGraph(navController,authViewModel)
+                   NavigationGraph(navController)
                 }
             }
         }

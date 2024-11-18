@@ -25,7 +25,7 @@ import com.example.realestatemanagementsystem.user.authentication.Screens.SignUp
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+
 ) {
     NavHost(
         navController = navController,
@@ -45,10 +45,22 @@ fun NavigationGraph(
             )
         }
         composable(Screen.HomeScreen.route) {
-            HomeScreen(
-                authViewModel= authViewModel,
-                navHostController=navController
-            )
+                backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
+
+            if (email != null) {
+                HomeScreen(
+                    authViewModel = AuthViewModel(),
+                    navHostController = navController,
+                    email = email,
+                    userProfileDao = appDatabase.userProfileDao(),
+                    profileViewModel = userProfileViewModel
+                )
+            }
         }
         composable(Screen.BuyScreen.route){
             BuyScreen(

@@ -144,6 +144,8 @@ fun LoginScreen(
                                         onError = { error ->
                                             // Use error message directly
                                             errorMessage = error
+                                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                            password=""
                                         }
                                     )
                                 }),
@@ -185,6 +187,8 @@ fun LoginScreen(
                     onError = { error ->
                         // Use error message directly
                         errorMessage = error
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                        password=""
                     }
                 )
             },

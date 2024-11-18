@@ -180,7 +180,7 @@ fun SignUpScreen(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-                                    if(confirmPassword==password) {
+
                                         authViewModel.signUp(
                                             email = email,
                                             password = password,
@@ -188,8 +188,8 @@ fun SignUpScreen(
                                             userProfile = userProfile,
                                             appDatabase = appDatabase// Pass appDatabase here
                                         )
-                                        navHostController.navigate(Screen.UserProfileScreen.route)
-                                    }
+                                        navHostController.navigate("user_profile_screen/${email}")
+
                                 }),
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it },
@@ -222,7 +222,7 @@ fun SignUpScreen(
                                         userProfile = userProfile,
                                         appDatabase = appDatabase// Pass appDatabase here
                                     )
-                                navHostController.navigate(Screen.UserProfileScreen.route)
+                                navHostController.navigate("user_profile_screen/${email}")
 
                                 }
                                 //              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
