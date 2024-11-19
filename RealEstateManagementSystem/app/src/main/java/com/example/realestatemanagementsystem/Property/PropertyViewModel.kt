@@ -20,6 +20,8 @@ class PropertyViewModel(private val propertyDao: PropertyDao) : ViewModel() {
     private val _errorMessage = MutableStateFlow<String>("")
     val errorMessage: StateFlow<String> = _errorMessage
 
+    private val _property = MutableStateFlow<Property?>(null)
+    val property: StateFlow<Property?> = _property
 
     fun loadSoldListings(email: String) {
         viewModelScope.launch {
@@ -32,7 +34,16 @@ class PropertyViewModel(private val propertyDao: PropertyDao) : ViewModel() {
         }
     }
 
-
+    fun getPropertyByID(propertyID:Int) {
+        viewModelScope.launch {
+            try {
+                val property = propertyDao.getPropertyById(propertyID)
+            }
+            catch (e:Exception){
+                _errorMessage.value = "Error fetching property: ${e.message}"
+            }
+        }
+    }
     fun loadCurrentListings(email: String) {
         viewModelScope.launch {
             try {

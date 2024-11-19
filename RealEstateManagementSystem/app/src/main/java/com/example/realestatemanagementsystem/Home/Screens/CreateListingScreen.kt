@@ -76,22 +76,6 @@ Column(modifier=Modifier.weight(2f).verticalScroll(scrollState).imePadding()) {
     Spacer(modifier = Modifier.height(16.dp))
 
     // Property Name
-    TextField(
-        value = propertyName,
-        onValueChange = { propertyName = it },
-        label = { Text("Property Name") },
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Next
-        ),
-        keyboardActions = KeyboardActions(
-            onNext = {
-                focusManager.moveFocus(FocusDirection.Down)
-            }
-        ),
-        modifier = Modifier.fillMaxWidth()
-    )
-
-    Spacer(modifier = Modifier.height(8.dp))
 
     TextField(
         value = propertyNumber,

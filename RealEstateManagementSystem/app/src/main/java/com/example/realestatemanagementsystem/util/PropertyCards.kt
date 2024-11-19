@@ -40,10 +40,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.realestatemanagementsystem.Property.PropertyDao
 import com.example.realestatemanagementsystem.R
 
 @Composable
-fun PropertyCards(modifier: Modifier = Modifier,area:String,city:String,state:String,bedrooms:String,bathrooms:String,price:String) {
+fun PropertyCards(modifier: Modifier = Modifier,area:String,city:String,state:String,bedrooms:String,bathrooms:String,price:String,propertyId:String, navHostController:NavHostController,propertyDao: PropertyDao) {
     Card(
         modifier = Modifier
             .fillMaxWidth()  // Ensure the card fills the screen width
@@ -118,7 +120,11 @@ fun PropertyCards(modifier: Modifier = Modifier,area:String,city:String,state:St
                 )
                 Spacer(modifier=Modifier.weight(1f))
 
-                IconButton(modifier = Modifier.padding(8.dp).size(22.dp), onClick = { }) {
+                IconButton(modifier = Modifier.padding(8.dp).size(22.dp), onClick = {
+
+                    navHostController.navigate("update_listing_screen/$propertyId")}
+                )
+                    {
                     Icon(painter = painterResource(R.drawable.baseline_edit_24), contentDescription = "edit")
                 }
                 IconButton(modifier = Modifier.padding(8.dp).size(22.dp), onClick = { }) {

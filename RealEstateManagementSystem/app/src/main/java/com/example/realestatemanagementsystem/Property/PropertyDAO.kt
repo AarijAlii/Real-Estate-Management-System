@@ -25,7 +25,8 @@ interface PropertyDao {
 
     @Query("UPDATE property SET isSold = 1 WHERE propertyId = :propertyId")
     suspend fun markPropertyAsSold(propertyId: Int)
-
+    @Query("SELECT * FROM property WHERE propertyId = :propertyId")
+    suspend fun getPropertyById(propertyId: Int): Property?
 
     @Query("""
         INSERT INTO property (

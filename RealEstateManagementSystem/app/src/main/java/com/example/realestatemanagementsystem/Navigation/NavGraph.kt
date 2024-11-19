@@ -1,16 +1,12 @@
 package com.example.realestatemanagementsystem.Navigation
 
-import android.app.Application
 import android.util.Log
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 
 import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
@@ -80,7 +76,7 @@ fun NavigationGraph(
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = userFactory)
             val propertyFactory = PropertyViewModelFactory(appDatabase.propertyDao())
             val propertyViewModel: PropertyViewModel = viewModel(factory = propertyFactory)
-
+            val propertyDao=appDatabase.propertyDao()
             if (email != null) {
                SellScreen(
                     email = email,
@@ -88,7 +84,8 @@ fun NavigationGraph(
                     profileViewModel = userProfileViewModel,
                     navHostController = navController,
                    authViewModel = AuthViewModel(),
-                   propertyViewModel = propertyViewModel
+                   propertyViewModel = propertyViewModel,
+                   propertyDao = propertyDao
                 )
             }
         }
@@ -127,13 +124,15 @@ fun NavigationGraph(
         }
         composable(Screen.UpdateListingScreen.route){
                 backStackEntry ->
-            val email = backStackEntry.arguments?.getString("email")
+            val propertyID = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current
             val appDatabase = AppDatabase.getDatabase(context)
             val factory = PropertyViewModelFactory(appDatabase.propertyDao())
             val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
-            if (email != null) {
-                UpdateListingScreen(email = email, navController = navController, propertyViewModel = propertyViewModel)
+            val propertyDao = appDatabase.propertyDao()
+            if (propertyID != null) {
+
+                UpdateListingScreen(propertyid = propertyID, navController = navController, propertyViewModel = propertyViewModel, propertyDao = propertyDao)
             }
         }
         composable(Screen.CreateListingScreen.route){
