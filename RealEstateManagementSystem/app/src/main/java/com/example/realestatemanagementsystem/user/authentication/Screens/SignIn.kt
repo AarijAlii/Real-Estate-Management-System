@@ -1,6 +1,7 @@
 package com.example.realestatemanagementsystem.user.authentication.Screens
 
 
+import android.util.Log
 import androidx.compose.material3.OutlinedTextField
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -25,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -49,6 +51,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 
@@ -56,7 +59,8 @@ import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.A
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    appDatabase: AppDatabase
 ) {
 
     val focusManager= LocalFocusManager.current
@@ -65,10 +69,11 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     val context = LocalContext.current
-    var authState=authViewModel.authState.observeAsState()
+    val authState=authViewModel.authState.collectAsState()
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Success) {
-            navHostController.navigate(route = Screen.HomeScreen.route)
+            email=authViewModel.getCurrentUserEmail().toString()
+            navHostController.navigate("Home_Screen/$email")
 
             } else if (authState.value is AuthState.Error) {
             Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show()
@@ -148,6 +153,7 @@ fun LoginScreen(
                                             password=""
                                         }
                                     )
+
                                 }),
 //            colors = TextFieldDefaults.textFieldColors(
 //                focusedBorderColor = Color.Red

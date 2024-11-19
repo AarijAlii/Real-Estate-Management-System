@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.example.realestatemanagementsystem.R
 
 @Composable
-fun PropertyCards(modifier: Modifier = Modifier) {
+fun PropertyCards(modifier: Modifier = Modifier,area:String,city:String,state:String,bedrooms:String,bathrooms:String,price:String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()  // Ensure the card fills the screen width
@@ -73,14 +73,14 @@ fun PropertyCards(modifier: Modifier = Modifier) {
                     fontSize = 12.sp
                 )
                 Text(
-                    text = "1.05 Crore",
+                    text = price,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.weight(1f)) // Pushes the other elements to the right
                 Text(
                     text = buildAnnotatedString {
-                        append("250yd") // Regular text
+                        append("${area}yd") // Regular text
                         withStyle(style = SpanStyle(
                             baselineShift = BaselineShift.Superscript, // Make "2" superscript
                             fontSize = 12.sp // Optional, you can change the font size of the superscript
@@ -100,13 +100,13 @@ fun PropertyCards(modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .padding(start = 8.dp, top = 4.dp)
             ) {
-                Text(text = "3 Bedrooms", fontSize = 12.sp, fontWeight = FontWeight.Light)
+                Text(text = "$bedrooms Bedrooms", fontSize = 12.sp, fontWeight = FontWeight.Light)
                 Spacer(modifier = Modifier.width(8.dp))  // Space between text
-                Text(text = "3 Bathrooms", fontSize = 12.sp, fontWeight = FontWeight.Light)
+                Text(text = "$bathrooms Bathrooms", fontSize = 12.sp, fontWeight = FontWeight.Light)
             }
             // Address text
             Text(
-                text = "FB Area Block 9, Karachi",
+                text = "$city, $state",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Light,
                 modifier = Modifier.padding(start = 8.dp, top = 4.dp, bottom = 8.dp)
@@ -117,8 +117,3 @@ fun PropertyCards(modifier: Modifier = Modifier) {
 
 
 
-@Preview(showBackground = true)
-@Composable
-private fun PropertyCardPreview() {
-    PropertyCards()
-}

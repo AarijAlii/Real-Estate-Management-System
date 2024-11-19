@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Navigation.NavigationGraph
 import com.example.realestatemanagementsystem.Navigation.Screen
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
     private val userProfileViewModel: UserProfileViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
             // Assuming you're fetching user profile ID dynamically or hardcoding for demo
             //val userProfile = viewModel.userProfile.collectAsState()
@@ -36,7 +37,8 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     //SignUpScreen(authViewModel,navController)
 //                    HomeScreen(navController)
-                   NavigationGraph(navController)
+                   NavigationGraph(navController, authViewModel)
+//                    CreateListingScreen(navHostController = navController, modifier = Modifier)
                 }
             }
         }

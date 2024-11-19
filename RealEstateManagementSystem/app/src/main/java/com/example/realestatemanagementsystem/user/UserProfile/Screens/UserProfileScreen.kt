@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.ui.focus.FocusDirection
@@ -23,6 +24,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -31,10 +34,12 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewMo
 fun UserProfileScreen(
     email: String,
     userProfileDao: UserProfileDao,
-    profileViewModel: UserProfileViewModel
+    profileViewModel: UserProfileViewModel,
+    navHostController: NavHostController
 ) {
     // State variables for the user input
     val focusManager= LocalFocusManager.current
+
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf("") }
@@ -53,157 +58,147 @@ fun UserProfileScreen(
         CircularProgressIndicator()
     } else {
         if (userProfile != null) {
-            var firstName by remember { mutableStateOf(userProfile!!.firstName) }
-            var lastName by remember { mutableStateOf(userProfile!!.lastName) }
-            var contact by remember { mutableStateOf(userProfile!!.contact ?: "") }
-            var city by remember { mutableStateOf(userProfile!!.city ?: "") }
-            var region by remember { mutableStateOf(userProfile!!.region ?: "") }
-            var postalCode by remember { mutableStateOf(userProfile!!.postalCode ?: "") }
-            val overallRating = userProfile!!.rating ?: "No ratings yet"
-    Column(verticalArrangement = Arrangement.Center,modifier = Modifier
+            var firstName by remember { mutableStateOf(userProfile?.firstName?:"") }
+            var lastName by remember { mutableStateOf(userProfile?.lastName?:"") }
+            var contact by remember { mutableStateOf(userProfile?.contact ?: "") }
+            var city by remember { mutableStateOf(userProfile?.city ?: "") }
+            var region by remember { mutableStateOf(userProfile?.region ?: "") }
+            var postalCode by remember { mutableStateOf(userProfile?.postalCode ?: "") }
+            val overallRating = userProfile?.rating ?: "No ratings yet"
+            Column(verticalArrangement = Arrangement.Center,modifier = Modifier
 
-        .padding(16.dp)) {
+                .padding(16.dp)) {
 
-        Text("Create Profile", fontSize = 34.sp, fontWeight = FontWeight.Bold,modifier=Modifier.padding(vertical = 16.dp))
+                Text("Create Profile", fontSize = 34.sp, fontWeight = FontWeight.Bold,modifier=Modifier.padding(vertical = 16.dp))
 
-        Column(
+                Column(
 
-            verticalArrangement = spacedBy(16.dp)
-        ) {
-            TextField(
-                value = firstName,
-                onValueChange = { firstName = it },
-                label = { Text("First Name") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    })
-
-            )
-
-            TextField(
-                value = lastName,
-                onValueChange = { lastName = it },
-                label = { Text("Last Name") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    })
-            )
-            TextField(
-                value = userProfile!!.email,
-                onValueChange = {  },
-                enabled = false,
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth(),
-
-            )
-            TextField(
-                value = contact,
-                onValueChange = { contact = it },
-                label = { Text("Contact") },
-
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    })
-            )
-
-            TextField(
-                value = city,
-                onValueChange = { city = it },
-                label = { Text("City") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    })
-            )
-
-            TextField(
-                value = region,
-                onValueChange = { region = it },
-                label = { Text("Region") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    })
-            )
-
-            TextField(
-                value = postalCode,
-                onValueChange = { postalCode = it },
-                label = { Text("Postal Code") },
-
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                    })
-
-
-            )
-
-            Button(
-                onClick = {
-                    // Create a UserProfile instance
-                    profileViewModel.updateUserrProfile(
-                        email = email,
-                        firstName = firstName,
-                        lastName = lastName,
-                        contact = contact,
-                        city = city,
-                        region = region,
-                        postalCode = postalCode
+                    verticalArrangement = spacedBy(16.dp)
+                ) {
+                    TextField(
+                        value = firstName,
+                        onValueChange = { firstName = it },
+                        label = { Text("First Name") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            })
 
                     )
 
-                    // Save the user profile using the ViewModel
+                    TextField(
+                        value = lastName,
+                        onValueChange = { lastName = it },
+                        label = { Text("Last Name") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            })
+                    )
 
-                },
-                colors = ButtonColors(
-                    contentColor = Color.White,
-                    disabledContainerColor = Color.Gray,
-                    containerColor = Color.Red,
-                    disabledContentColor = Color.White,
-                ) ,
-                modifier = Modifier.fillMaxWidth()
+                    TextField(
+                        value = contact,
+                        onValueChange = { contact = it },
+                        label = { Text("Contact") },
 
-            ) {
-                Text("Save")
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Phone,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            })
+                    )
+
+                    TextField(
+                        value = city,
+                        onValueChange = { city = it },
+                        label = { Text("City") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            })
+                    )
+
+                    TextField(
+                        value = region,
+                        onValueChange = { region = it },
+                        label = { Text("Region") },
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            })
+                    )
+
+                    TextField(
+                        value = postalCode,
+                        onValueChange = { postalCode = it },
+                        label = { Text("Postal Code") },
+
+                        modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            })
+
+
+                    )
+
+                    Button(
+                        onClick = {
+                            // Create a UserProfile instance
+                            profileViewModel.updateUserrProfile(
+                                email = email,
+                                firstName = firstName,
+                                lastName = lastName,
+                                contact = contact,
+                                city = city,
+                                region = region,
+                                postalCode = postalCode
+                            )
+                            navHostController.navigate("home_screen/$email")// Save the user profile using the ViewModel
+
+                        },
+                        colors = ButtonColors(
+                            contentColor = Color.White,
+                            disabledContainerColor = Color.Gray,
+                            containerColor = Color.Red,
+                            disabledContentColor = Color.White,
+                        ) ,
+                        modifier = Modifier.fillMaxWidth()
+
+                    ) {
+                        Text("Save")
+                    }
+                }
             }
 
-        }
-
-    }
         } else {
             Text("User profile not found.")
         }

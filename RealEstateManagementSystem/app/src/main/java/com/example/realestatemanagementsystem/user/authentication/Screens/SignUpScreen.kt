@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -55,7 +56,7 @@ import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.A
 fun SignUpScreen(
     authViewModel: AuthViewModel,
     navHostController: NavHostController,
-    appDatabase: AppDatabase,
+    appDatabase: AppDatabase
 ) {
     val focusManager= LocalFocusManager.current
     var email by remember { mutableStateOf("") }
@@ -66,8 +67,9 @@ fun SignUpScreen(
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var contactInfo by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val authState = authViewModel.authState.observeAsState()
+    val authState = authViewModel.authState.collectAsState()
     val userProfile = UserProfile(
         email = email,
         firstName = firstName,
@@ -77,7 +79,7 @@ fun SignUpScreen(
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Success -> {
-               navHostController.navigate(route= Screen.HomeScreen.route)
+               navHostController.navigate("profile_screen/${email}")
             }
 
             is AuthState.Error -> {
@@ -180,16 +182,14 @@ fun SignUpScreen(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-
-                                        authViewModel.signUp(
-                                            email = email,
-                                            password = password,
-                                            confirmPassword = confirmPassword,
-                                            userProfile = userProfile,
-                                            appDatabase = appDatabase// Pass appDatabase here
-                                        )
-                                        navHostController.navigate("user_profile_screen/${email}")
-
+                                    authViewModel.signUp(
+                                        email = email,
+                                        password = password,
+                                        confirmPassword = confirmPassword,
+                                        userProfile = userProfile,
+                                        appDatabase = appDatabase// Pass appDatabase here
+                                    )
+                                    navHostController.navigate("profile_screen/${email}")
                                 }),
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it },
@@ -214,18 +214,14 @@ fun SignUpScreen(
                         )
                         Button(
                             onClick = {
-                                if(confirmPassword==password){
-                                    authViewModel.signUp(
-                                        email = email,
-                                        password = password,
-                                        confirmPassword = confirmPassword,
-                                        userProfile = userProfile,
-                                        appDatabase = appDatabase// Pass appDatabase here
-                                    )
-                                navHostController.navigate("user_profile_screen/${email}")
-
-                                }
-                                //              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
+                                authViewModel.signUp(
+                                    email = email,
+                                    password = password,
+                                    confirmPassword = confirmPassword,
+                                    userProfile = userProfile,
+                                    appDatabase = appDatabase// Pass appDatabase here
+                                )
+                                navHostController.navigate("profile_screen/${email}")//              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

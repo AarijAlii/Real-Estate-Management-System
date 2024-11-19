@@ -1,58 +1,121 @@
 package com.example.realestatemanagementsystem.user.authentication.FirebaseCode
 
-import android.app.Application
-import android.widget.Toast
-import androidx.activity.result.launch
-import androidx.core.content.edit
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 import kotlinx.coroutines.launch
 
-class AuthViewModel : ViewModel() {
-    //private val userRepository: UserRepository
+
+class AuthViewModel() : ViewModel() {
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Failed)
+    val authState: StateFlow<AuthState> = _authState
+    //val userEmail = mutableStateOf<String?>(null)
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    private val _authState = MutableLiveData<AuthState>()
-    val authState: LiveData<AuthState>  = _authState
+    //private val userRepository: UserRepository
 
-    init{
+    init {
         checkAuthStatus()
     }
-//    init {
-//        userRepository = UserRepository(
-//            FirebaseAuth.getInstance(),
-//            Injection.instance()
-//        )
-//    }
-//    private val _authResult = MutableLiveData<Result<Boolean>>()
-//    val authResult: LiveData<Result<Boolean>> get() = _authResult
 
-//    fun signUp(email: String, password: String) {
-//        viewModelScope.launch {
-//            _authResult.value = userRepository.signUp(email, password)
-//        }
-//    }
-
-//    fun login(email: String, password: String) {
-//        viewModelScope.launch {
-//            _authResult.value = userRepository.login(email, password)
-//        }
-//    }
-
-    private fun checkAuthStatus(){
-        if (auth.currentUser == null){
+    private fun checkAuthStatus() {
+        if (auth.currentUser == null) {
             _authState.value = AuthState.Failed
-        }else {
-
+        } else {
             _authState.value = AuthState.Success
         }
+    }
+
+
+//    fun login(email: String, password: String) {
+//        if (email.isEmpty() || password.isEmpty()) {
+//            _authState.value = AuthState.Error("Please fill all fields")
+//            return
+//        }
+//
+//        _authState.value = AuthState.Loading
+//        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+//            if (task.isSuccessful) {
+//                _authState.value = AuthState.Success
+//            } else {
+//                _authState.value = AuthState.Error(task.exception?.message ?: "Login failed")
+//            }
+//        }
+//    }
+
+//    fun signIn(
+//        email: String,
+//        password: String,
+//        onSuccess: (UserProfile) -> Unit, // Return UserProfile on success
+//        onError: (String) -> Unit,
+//        appDatabase: AppDatabase // Pass the appDatabase here
+//    ) {
+//        if (email.isEmpty() || password.isEmpty()) {
+//            onError("Please fill all fields")
+//            return
+//        }
+//
+//        _authState.value = AuthState.Loading
+//        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+//            if (task.isSuccessful) {
+//                // Get the logged-in user's email
+//                val currentUserEmail = auth.currentUser?.email
+//                if (currentUserEmail != null) {
+//                    // Fetch the user profile from the local database using UserProfileViewModel
+//                    val userProfileViewModel = UserProfileViewModel(appDatabase)
+//                    userProfileViewModel.getUserByEmail(
+//                        email = currentUserEmail,
+//                        onSuccess = { userProfile ->
+//                            onSuccess(userProfile) // Pass the user profile to the callback
+//                        },
+//                        onError = { error ->
+//                            onError(error) // Pass the error to the callback
+//                        }
+//                    )
+//                } else {
+//                    onError("Unable to retrieve user email.")
+//                }
+//            } else {
+//                onError(task.exception?.message ?: "Sign-In failed")
+//            }
+//        }
+//    }
+
+
+//    fun signUp(email: String, password: String) {
+//        if (email.isEmpty() || password.isEmpty()) {
+//            _authState.value = AuthState.Error("Please fill all fields")
+//            return
+//        }
+//
+//        _authState.value = AuthState.Loading
+//        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+//            if (task.isSuccessful) {
+//                _authState.value = AuthState.Success
+//            } else {
+//                _authState.value = AuthState.Error(task.exception?.message ?: "SignUp failed")
+//            }
+//        }
+//    }
+
+    fun signOut() {
+        auth.signOut()
+        _authState.value = AuthState.Failed
+    }
+
+
+    fun getCurrentUserEmail(): String? {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        return currentUser?.email
     }
 
     fun signIn(
@@ -64,9 +127,10 @@ class AuthViewModel : ViewModel() {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 // Get the logged-in user's email
-                _authState.value=AuthState.Success
+
                 val currentUserEmail = auth.currentUser?.email
-                if (currentUserEmail != null) {
+
+                    if (currentUserEmail != null) {
                     onSuccess(currentUserEmail) // Pass the email to the onSuccess callback
                 } else {
                     onError("Unable to retrieve user email.")
@@ -75,8 +139,8 @@ class AuthViewModel : ViewModel() {
                 onError(task.exception?.message ?: "Sign in failed.")
             }
         }
-
     }
+
 
     fun signUp(
         email: String,
@@ -103,7 +167,6 @@ class AuthViewModel : ViewModel() {
                     val userProfileViewModel = UserProfileViewModel(appDatabase )
                     userProfileViewModel.insertUserProfile(
                         userProfile = userProfile,
-
                         onSuccess = {
                             _authState.value = AuthState.Success
                         },
@@ -117,18 +180,4 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
-
-    fun signOut() {
-        viewModelScope.launch {
-            // Sign out from Firebase or your authentication service
-            FirebaseAuth.getInstance().signOut()
-
-            // Clear authentication state (e.g., using DataStore)
-
-
-            // Update authState to reflect the logout
-            _authState.value = AuthState.Failed
-        }
-    }
-
 }
