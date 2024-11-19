@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.Dispatchers
+
 
 class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
     private val _userProfile = MutableLiveData<UserProfile?>()

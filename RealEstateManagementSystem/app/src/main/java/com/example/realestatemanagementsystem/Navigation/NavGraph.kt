@@ -11,7 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.example.realestatemanagementsystem.Home.Screens.BuyScreen
+
 import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
@@ -68,13 +68,7 @@ fun NavigationGraph(
                 )
             }
         }
-        composable(Screen.BuyScreen.route){
-            BuyScreen(
-                modifier=Modifier,
-                navHostController = navController,
-                innerPadding = PaddingValues()
-            )
-        }
+
         composable(Screen.SellScreen.route){
                 backStackEntry ->
             val email = backStackEntry.arguments?.getString("email")

@@ -212,7 +212,7 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
                     }
 
                 ){innerPadding->
-
+                    Column(modifier = Modifier.padding( innerPadding)){}
                 }
             }
         } else {
@@ -230,9 +230,4 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
 
 
         }
-@Preview (showBackground = true)
-@Composable
-private fun PreviewHome()    {
 
-        }
-    }
