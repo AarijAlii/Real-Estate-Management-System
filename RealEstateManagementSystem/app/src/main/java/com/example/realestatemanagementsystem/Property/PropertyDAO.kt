@@ -3,7 +3,7 @@ package com.example.realestatemanagementsystem.Property
 
 
 import androidx.room.*
-import com.example.realestatemanagementsystem.property.Property
+
 
 @Dao
 interface PropertyDao {

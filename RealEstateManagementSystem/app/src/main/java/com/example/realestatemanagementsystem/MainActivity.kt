@@ -11,6 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Navigation.NavigationGraph
 import com.example.realestatemanagementsystem.Navigation.Screen
@@ -37,6 +38,7 @@ class MainActivity : ComponentActivity() {
                     //SignUpScreen(authViewModel,navController)
 //                    HomeScreen(navController)
                    NavigationGraph(navController, authViewModel)
+//                    CreateListingScreen(navHostController = navController, modifier = Modifier)
                 }
             }
         }

@@ -6,9 +6,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import android.content.Context
+import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyDao
-import com.example.realestatemanagementsystem.property.Property
-
 
 @Database(entities = [UserProfile::class, Property::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {

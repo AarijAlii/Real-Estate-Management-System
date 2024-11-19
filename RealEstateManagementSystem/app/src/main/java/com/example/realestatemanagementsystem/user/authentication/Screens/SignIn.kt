@@ -174,7 +174,7 @@ fun LoginScreen(
                     password = password,
                     onSuccess = { userEmail ->
                         // Navigate to the Profile screen after successful sign-in
-                        Log.d("LoginScreen", "User email: $userEmail")
+
                         navHostController.navigate("home_screen/${userEmail}")
                     },
                     onError = { error ->

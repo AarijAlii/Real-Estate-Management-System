@@ -182,7 +182,7 @@ fun UserProfileScreen(
                                 region = region,
                                 postalCode = postalCode
                             )
-                            navHostController.navigate(Screen.HomeScreen.route)// Save the user profile using the ViewModel
+                            navHostController.navigate("home_screen/$email")// Save the user profile using the ViewModel
 
                         },
                         colors = ButtonColors(

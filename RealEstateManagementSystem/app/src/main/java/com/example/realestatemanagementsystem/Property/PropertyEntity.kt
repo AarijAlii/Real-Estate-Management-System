@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.property
+package com.example.realestatemanagementsystem.Property
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -143,6 +143,7 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
                                 .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                                 .clickable {
                                     //make an update prof screen for updating profile
+                                    navHostController.navigate("profile_screen/${email}")
                                 }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -176,7 +177,10 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
                                 selectedIndex=index
 
                                 scope.launch { drawerState.close() }
-                                navHostController.navigate(navigationItem.route)
+
+                                val finalRoute = navigationItem.route.replace("{email}", email)
+
+                                navHostController.navigate(finalRoute)
 
                             }
                             },modifier=Modifier.padding(2.dp))
@@ -208,7 +212,7 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
                     }
 
                 ){innerPadding->
-                    BuyScreen(modifier=Modifier,navHostController,innerPadding=innerPadding)
+                   
                 }
             }
         } else {

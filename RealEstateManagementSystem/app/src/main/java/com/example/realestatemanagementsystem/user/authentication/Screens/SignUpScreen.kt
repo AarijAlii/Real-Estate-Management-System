@@ -189,7 +189,7 @@ fun SignUpScreen(
                                         userProfile = userProfile,
                                         appDatabase = appDatabase// Pass appDatabase here
                                     )
-                                    navHostController.navigate("home_screen/${email}")
+                                    navHostController.navigate("profile_screen/${email}")
                                 }),
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it },
@@ -221,7 +221,7 @@ fun SignUpScreen(
                                     userProfile = userProfile,
                                     appDatabase = appDatabase// Pass appDatabase here
                                 )
-                                navHostController.navigate("home_screen/${email}")//              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
+                                navHostController.navigate("profile_screen/${email}")//              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
