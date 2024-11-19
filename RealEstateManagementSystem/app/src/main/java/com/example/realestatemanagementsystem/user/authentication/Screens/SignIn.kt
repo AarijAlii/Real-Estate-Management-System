@@ -62,7 +62,7 @@ fun LoginScreen(
     navHostController: NavHostController,
     appDatabase: AppDatabase
 ) {
-    //val result by authViewModel.authState.observeAsState()
+
     val focusManager= LocalFocusManager.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -139,6 +139,20 @@ fun LoginScreen(
                                 imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(
                                 onDone  = {
+                                    authViewModel.signIn(
+                                        email = email,
+                                        password = password,
+                                        onSuccess = { userEmail ->
+                                            // Navigate to the Profile screen after successful sign-in
+                                            navHostController.navigate("home_screen/${userEmail}")
+                                        },
+                                        onError = { error ->
+                                            // Use error message directly
+                                            errorMessage = error
+                                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                            password=""
+                                        }
+                                    )
 
                                 }),
 //            colors = TextFieldDefaults.textFieldColors(
@@ -174,12 +188,13 @@ fun LoginScreen(
                     password = password,
                     onSuccess = { userEmail ->
                         // Navigate to the Profile screen after successful sign-in
-
                         navHostController.navigate("home_screen/${userEmail}")
                     },
                     onError = { error ->
                         // Use error message directly
                         errorMessage = error
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                        password=""
                     }
                 )
             },
