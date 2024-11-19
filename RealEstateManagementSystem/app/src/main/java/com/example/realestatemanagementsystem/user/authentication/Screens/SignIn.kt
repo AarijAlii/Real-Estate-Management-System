@@ -72,8 +72,8 @@ fun LoginScreen(
     val authState=authViewModel.authState.collectAsState()
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Success) {
-
-            navHostController.navigate(Screen.HomeScreen.route)
+            email=authViewModel.getCurrentUserEmail().toString()
+            navHostController.navigate("Home_Screen/$email")
 
             } else if (authState.value is AuthState.Error) {
             Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show()

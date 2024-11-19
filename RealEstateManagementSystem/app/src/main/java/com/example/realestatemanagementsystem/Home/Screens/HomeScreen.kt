@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -88,6 +90,22 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
             navHostController.navigate(Screen.LoginScreen.route)
         }
     }
+    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    // Load the user profile when the screen is shown
+    LaunchedEffect(email) {
+        try {
+            // Fetch the user profile from the database in a coroutine
+            val profile = userProfileDao.getUserByEmail(email)
+            userProfile = profile
+            isLoading = false
+        } catch (e: Exception) {
+            errorMessage = "Failed to load profile: ${e.message}"
+            isLoading = false
+        }
+    }
 
 
         val currentRoute = navHostController.currentBackStackEntry?.destination?.route
@@ -97,6 +115,13 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
         var selectedIndex by remember {
             mutableStateOf(0)
         }
+
+    if (isLoading) {
+        CircularProgressIndicator()
+    } else {
+        if (userProfile != null) {
+            var firstName by remember { mutableStateOf(userProfile?.firstName?:"") }
+            var lastName by remember { mutableStateOf(userProfile?.lastName?:"") }
 
 
             ModalNavigationDrawer(drawerContent = {
@@ -123,12 +148,12 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
                         Spacer(modifier = Modifier.height(8.dp))
                         // Profile Name
                         Text(
-                            text = "Ben Dover", // Replace with dynamic user name
+                            text = "$firstName $lastName", // Replace with dynamic user name
                             style = MaterialTheme.typography.titleMedium
                         )
                         // Profile Email or Subtitle
                         Text(
-                            text = "bendover@gmail.com", // Replace with dynamic email
+                            text = email, // Replace with dynamic email
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -186,6 +211,19 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
                     BuyScreen(modifier=Modifier,navHostController,innerPadding=innerPadding)
                 }
             }
+        } else {
+            Text("User profile not found.")
+        }
+
+        if (errorMessage.isNotEmpty()) {
+            Text(
+                text = errorMessage,
+                color = Color.Red,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+    }
+
 
         }
 @Preview (showBackground = true)

@@ -114,6 +114,10 @@ class AuthViewModel() : ViewModel() {
     }
 
 
+    fun getCurrentUserEmail(): String? {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        return currentUser?.email
+    }
 
     fun signIn(
         email: String,
