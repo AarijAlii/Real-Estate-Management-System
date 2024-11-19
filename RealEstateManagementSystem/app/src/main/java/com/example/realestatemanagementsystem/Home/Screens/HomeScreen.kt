@@ -212,7 +212,7 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
                     }
 
                 ){innerPadding->
-                   
+
                 }
             }
         } else {
