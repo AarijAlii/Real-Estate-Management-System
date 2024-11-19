@@ -9,6 +9,7 @@ import androidx.compose.foundation.content.MediaType.Companion.Text
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,12 +19,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -52,10 +56,10 @@ fun PropertyCards(modifier: Modifier = Modifier,area:String,city:String,state:St
                 painter = painterResource(R.drawable.house_file),
                 contentDescription = "PropertyImage",
                 modifier = Modifier
-                    .size(400.dp,200.dp)  // Make image take up the full width of the card
+                    .size(400.dp, 200.dp)  // Make image take up the full width of the card
                     .clip(RoundedCornerShape(16.dp))
                     .graphicsLayer {
-                        scaleX=1.5f
+                        scaleX = 1.5f
                     }// Rounded corners for the image
                     // Ensure no padding that could center the image
             )
@@ -105,12 +109,22 @@ fun PropertyCards(modifier: Modifier = Modifier,area:String,city:String,state:St
                 Text(text = "$bathrooms Bathrooms", fontSize = 12.sp, fontWeight = FontWeight.Light)
             }
             // Address text
-            Text(
-                text = "$city, $state",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Light,
-                modifier = Modifier.padding(start = 8.dp, top = 4.dp, bottom = 8.dp)
-            )
+            Row(horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "$city, $state",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Light,
+                    modifier = Modifier.padding(start = 8.dp, top = 4.dp, bottom = 8.dp)
+                )
+                Spacer(modifier=Modifier.weight(1f))
+
+                IconButton(modifier = Modifier.padding(8.dp).size(22.dp), onClick = { }) {
+                    Icon(painter = painterResource(R.drawable.baseline_edit_24), contentDescription = "edit")
+                }
+                IconButton(modifier = Modifier.padding(8.dp).size(22.dp), onClick = { }) {
+                    Icon(painter = painterResource(R.drawable.baseline_delete_24), contentDescription = "delete",tint= Color.Red)
+                }
+            }
         }
     }
 }

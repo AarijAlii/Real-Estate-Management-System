@@ -143,7 +143,7 @@ fun HomeScreen(email:String, authViewModel: AuthViewModel, navHostController: Na
                                 .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                                 .clickable {
                                     //make an update prof screen for updating profile
-                                    navHostController.navigate("profile_screen/${email}")
+                                    navHostController.navigate("update_profile_screen/${email}")
                                 }
                         )
                         Spacer(modifier = Modifier.height(8.dp))

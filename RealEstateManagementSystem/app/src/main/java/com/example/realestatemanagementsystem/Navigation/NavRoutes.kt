@@ -8,5 +8,8 @@ sealed class Screen(val route:String){
     data object SellScreen : Screen("sell_screen/{email}")
     data object UserProfileScreen :Screen("profile_screen/{email}")
     data object CreateListingScreen :Screen("create_listing_screen/{email}")
+    data object UserProfileUpdateScreen:Screen("update_profile_screen/{email}")
+    data object UpdateListingScreen:Screen("update_listing_screen/{email}")
+
 
 }

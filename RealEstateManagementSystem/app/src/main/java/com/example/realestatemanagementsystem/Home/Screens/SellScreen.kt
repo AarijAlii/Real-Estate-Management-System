@@ -7,8 +7,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-
-
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -68,33 +69,38 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SellScreen(email: String,
-               userProfileDao: UserProfileDao,
-               propertyViewModel: PropertyViewModel,
-               navHostController: NavHostController,
-                authViewModel: AuthViewModel,
-               profileViewModel: UserProfileViewModel) {
-
+fun SellScreen(
+    email: String,
+    userProfileDao: UserProfileDao,
+    propertyViewModel: PropertyViewModel,
+    navHostController: NavHostController,
+    authViewModel: AuthViewModel,
+    profileViewModel: UserProfileViewModel
+) {
     val currentRoute = navHostController.currentBackStackEntry?.destination?.route
-    val items= getNavigationItems()
+    val items = getNavigationItems()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope= rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
     val authState = authViewModel.authState.collectAsState()
-    var selectedIndex by remember {
-        mutableStateOf(1)
-    }
+    var selectedIndex by remember { mutableStateOf(1) }
     val unsoldProperties by propertyViewModel.unsoldProperties.collectAsState(initial = emptyList())
+    val soldProperties by propertyViewModel.soldProperties.collectAsState(initial = emptyList())
     val propertyErrorMessage by propertyViewModel.errorMessage.collectAsState()
 
-    // Load the unsold properties when the screen is displayed
+    // Toggle state to show sold or unsold properties
+    var showSold by remember { mutableStateOf(false) }
+
+    // Load the unsold and sold properties when the screen is displayed
     LaunchedEffect(email) {
         propertyViewModel.loadCurrentListings(email)
+        propertyViewModel.loadSoldListings(email) // Add this method in your ViewModel to load sold properties
     }
     LaunchedEffect(authState.value) {
-        if (authState.value is AuthState.Failed ) {
+        if (authState.value is AuthState.Failed) {
             navHostController.navigate(Screen.LoginScreen.route)
         }
     }
+
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf("") }
@@ -102,7 +108,6 @@ fun SellScreen(email: String,
     // Load the user profile when the screen is shown
     LaunchedEffect(email) {
         try {
-            // Fetch the user profile from the database in a coroutine
             val profile = userProfileDao.getUserByEmail(email)
             userProfile = profile
             isLoading = false
@@ -112,8 +117,6 @@ fun SellScreen(email: String,
         }
     }
 
-
-
     if (propertyErrorMessage.isNotEmpty()) {
         Text(text = propertyErrorMessage, color = Color.Red, modifier = Modifier.padding(bottom = 8.dp))
     }
@@ -121,126 +124,141 @@ fun SellScreen(email: String,
         CircularProgressIndicator()
     } else {
         if (userProfile != null) {
-            var firstName by remember { mutableStateOf(userProfile?.firstName?:"") }
-            var lastName by remember { mutableStateOf(userProfile?.lastName?:"") }
+            val firstName by remember { mutableStateOf(userProfile?.firstName ?: "") }
+            val lastName by remember { mutableStateOf(userProfile?.lastName ?: "") }
 
-            ModalNavigationDrawer(drawerContent = {
-                Spacer(modifier = Modifier.height(16.dp))
-                ModalDrawerSheet {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        // Profile Picture
-                        Image(
-                            painter = painterResource(id = R.drawable.house_file), // Replace with your profile picture resource
-                            contentDescription = null,
+            ModalNavigationDrawer(
+                drawerContent = {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ModalDrawerSheet {
+                        Column(
                             modifier = Modifier
-                                .size(64.dp)
-                                .clip(CircleShape)
-                                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.house_file),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(CircleShape)
+                                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                    .clickable {
+                                        navHostController.navigate("update_profile_screen/${email}")
+                                    }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "$firstName $lastName",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = email,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Divider()
+                        }
+                        items.forEachIndexed { index, navigationItem ->
+                            NavigationDrawerItem(
+                                label = {
+                                    Row {
+                                        Icon(
+                                            painter = painterResource(navigationItem.icon),
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                                .size(18.dp)
+                                        )
+                                        Text(text = navigationItem.title)
+                                    }
+                                },
+                                selected = currentRoute == navigationItem.route || (currentRoute == null && index == 0),
+                                onClick = {
+                                    if (index != selectedIndex) {
+                                        selectedIndex = index
+                                        scope.launch { drawerState.close() }
+                                        val finalRoute = navigationItem.route.replace("{email}", email)
+                                        navHostController.navigate(finalRoute)
+                                    }
+                                },
+                                modifier = Modifier.padding(2.dp)
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 27.dp, vertical = 8.dp)
                                 .clickable {
-                                    navHostController.navigate(route = Screen.UserProfileScreen.route) //make an update prof screen for updating profile
-                                }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        // Profile Name
-                        Text(
-                            text = "$firstName $lastName", // Replace with dynamic user name
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        // Profile Email or Subtitle
-                        Text(
-                            text = email, // Replace with dynamic email
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Divider()
+                                    authViewModel.signOut()
+                                    navHostController.navigate(Screen.LoginScreen.route)
+                                },
+                            verticalAlignment = Alignment.Bottom,
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_logout_24),
+                                contentDescription = "Logout",
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Text(text = "  Logout", fontSize = 14.sp)
+                        }
                     }
-                    items.forEachIndexed{
-                            index, navigationItem ->
-                        NavigationDrawerItem(label = {
-                            Row(){
-                                Icon(painter = painterResource(navigationItem.icon), contentDescription = null,modifier= Modifier
-                                    .padding(horizontal = 8.dp, vertical = 2.dp)
-                                    .size(18.dp))
-                                Text(text = navigationItem.title)}
-
-                        }, selected = currentRoute == navigationItem.route || (currentRoute == null && index == 0)
-
-                            , onClick = { if(index!=selectedIndex){
-                                selectedIndex=index
-
-                                scope.launch { drawerState.close() }
-                                navHostController.navigate(navigationItem.route)
-
-                            }
-                            },modifier=Modifier.padding(2.dp))
-                    }
-
-
-
-                    Row(modifier= Modifier
-                        .padding(horizontal = 27.dp, vertical = 8.dp)
-                        .clickable {
-                            authViewModel.signOut()
-                            // Navigate to login screen
-                            navHostController.navigate(Screen.LoginScreen.route)
-
-                        },
-                        verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.Start) {
-                        Icon(painter = painterResource(R.drawable.baseline_logout_24), contentDescription = "Logout", modifier = Modifier.size(22.dp))
-                        Text(text = "  Logout", fontSize = 14.sp)
-                    }
-
-                }
-            }, drawerState = drawerState) {
+                },
+                drawerState = drawerState
+            ) {
                 Scaffold(
                     topBar = {
-                        TopAppBar(title ={ Text( "PropertyHub") },
+                        TopAppBar(
+                            title = { Text("PropertyHub") },
                             navigationIcon = {
-                                IconButton(onClick = {scope.launch { drawerState.open() }}) {
+                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                     Icon(imageVector = Icons.Default.Menu, contentDescription = null)
                                 }
                             }
-
                         )
                     }
+                ) { innerPadding ->
+                    Column(modifier = Modifier.padding(innerPadding)) {
+                        // Toggle Button
+                        ToggleSoldUnsoldButton(
+                            showSold = showSold,
+                            onToggle = { showSold = it }
+                        )
 
-                ){innerPadding->
-                    Column(modifier = Modifier.padding( innerPadding)) {
+                        // LazyColumn to show properties
                         LazyColumn(modifier = Modifier.weight(1f)) {
-                            items(unsoldProperties) { property ->
-                                PropertyCards(modifier = Modifier,
-                                    property.area.toString(),property.city,property.state,
+                            val propertiesToShow = if (showSold) soldProperties else unsoldProperties
+                            items(propertiesToShow) { property ->
+                                PropertyCards(
+                                    modifier = Modifier,
+                                    property.area.toString(),
+                                    property.city,
+                                    property.state,
                                     property.rooms.toString(),
                                     property.bedrooms.toString(),
                                     property.price.toString()
                                 )
-                             }}
-
-                                        Button(modifier=Modifier.fillMaxWidth().padding(16.dp),
-                            colors =  ButtonColors(
-                                contentColor = Color.White,
-                                disabledContainerColor = Color.Gray,
-                                containerColor = Color.Red,
-                                disabledContentColor = Color.White,
-                            ),onClick = {
-                                        navHostController.navigate("create_listing_screen/$email")
-                            }) {
+                            }
+                        }
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Red
+                            ),
+                            onClick = {
+                                navHostController.navigate("create_listing_screen/$email")
+                            }
+                        ) {
                             Text(text = "Create Listing")
                         }
-
                     }
-
-
-
                 }
             }
-
         } else {
             Text("User profile not found.")
         }
@@ -254,5 +272,22 @@ fun SellScreen(email: String,
         }
     }
 }
+
+
+
+@Composable
+fun ToggleSoldUnsoldButton(showSold: Boolean, onToggle: (Boolean) -> Unit) {
+    IconToggleButton(
+        checked = showSold,
+        onCheckedChange = { onToggle(it) },
+        modifier = Modifier
+            .padding(16.dp)
+            .size(48.dp)
+    ) {
+        val text=if(showSold) "Sold" else "Unsold"
+        Text(text, fontSize = 12.sp)
+    }
+}
+
 
 

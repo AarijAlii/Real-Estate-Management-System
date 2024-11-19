@@ -16,10 +16,12 @@ import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Home.Screens.SellScreen
+import com.example.realestatemanagementsystem.Home.Screens.UpdateListingScreen
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.Property.PropertyViewModelFactory
 import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
+import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserViewModelFactory
 import com.example.realestatemanagementsystem.user.authentication.Screens.LoginScreen
@@ -90,6 +92,23 @@ fun NavigationGraph(
                 )
             }
         }
+        composable(Screen.UserProfileUpdateScreen.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
+
+            if (email != null) {
+                UserProfileUpdateScreen(
+                    email = email,
+                    userProfileDao = appDatabase.userProfileDao(),
+                    profileViewModel = userProfileViewModel,
+                    navHostController = navController
+                )
+            }
+        }
+
         composable(Screen.UserProfileScreen.route) { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current
@@ -104,6 +123,17 @@ fun NavigationGraph(
                     profileViewModel = userProfileViewModel,
                     navHostController = navController
                 )
+            }
+        }
+        composable(Screen.UpdateListingScreen.route){
+                backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
+            if (email != null) {
+                UpdateListingScreen(email = email, navController = navController, propertyViewModel = propertyViewModel)
             }
         }
         composable(Screen.CreateListingScreen.route){
