@@ -113,32 +113,152 @@ class PropertyViewModel(private val propertyDao: PropertyDao) : ViewModel() {
     }
 
 
-    fun addProperty(property: Property) {
+//    fun addProperty(property: Property) {
+//        viewModelScope.launch {
+//            try {
+//                propertyDao.addProperty(property)
+//            } catch (e: Exception) {
+//                _errorMessage.value = "Error adding property: ${e.message}"
+//            }
+//        }
+//    }
+//
+//    fun updateProperty(property: Property) {
+//        viewModelScope.launch {
+//            try {
+//                propertyDao.updateProperty(property)
+//            } catch (e: Exception) {
+//                _errorMessage.value = "Error updating property: ${e.message}"
+//            }
+//        }
+//    }
+//
+//    fun deleteProperty(property: Property) {
+//        viewModelScope.launch {
+//            try {
+//                propertyDao.deleteProperty(property)
+//            } catch (e: Exception) {
+//                _errorMessage.value = "Error deleting property: ${e.message}"
+//            }
+//        }
+//    }
+
+
+//BUYSCREEN VIEWMODEL
+
+    private val _filteredProperties = MutableStateFlow<List<Property>>(emptyList())
+    val filteredProperties: StateFlow<List<Property>> = _filteredProperties
+
+    private val _searchResults = MutableStateFlow<List<Property>>(emptyList())
+    val searchResults: StateFlow<List<Property>> = _searchResults
+
+
+    //Display All Porperties
+    fun getAllProperties() {
         viewModelScope.launch {
             try {
-                propertyDao.addProperty(property)
+                propertyDao.getAllProperties().collect { result ->
+                    _properties.value = result
+                }
             } catch (e: Exception) {
-                _errorMessage.value = "Error adding property: ${e.message}"
+                _errorMessage.value = "Error fetching all properties: ${e.message}"
             }
         }
     }
 
-    fun updateProperty(property: Property) {
+    // Filter Properties for BuyScreen
+//    fun filterProperties(
+//        city: String?,
+//        state: String?,
+//        minPrice: Double?,
+//        maxPrice: Double?,
+//        zipCode: String?,
+//        type: String?,
+//        noOfRooms: Int?,
+//        bedrooms: Int?,
+//        garage: Boolean?,
+//        sortOrder: String?
+//    ) {
+//        viewModelScope.launch {
+//            try {
+//                propertyDao.filterProperties(
+//                    city, state, minPrice, maxPrice, zipCode, type, noOfRooms, bedrooms, garage, sortOrder
+//                ).collect { result ->
+//                    _filteredProperties.value = if (sortOrder == "Descending") {
+//                        result.sortedByDescending { it.price }
+//                    } else {
+//                        result.sortedBy { it.price }
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                _errorMessage.value = "Error filtering properties: ${e.message}"
+//                //_filteredProperties.value = emptyList() // Clear on error
+//            }
+//        }
+//    }
+
+    fun filterProperties(
+        city: String?,
+        state: String?,
+        minPrice: Double?,
+        maxPrice: Double?,
+        zipCode: String?,
+        type: String?,
+        noOfRooms: Int?,
+        bedrooms: Int?,
+        garage: Boolean?,
+        sortOrder: String?
+    ) {
         viewModelScope.launch {
             try {
-                propertyDao.updateProperty(property)
+                // Apply filters using the DAO method
+                propertyDao.filterProperties(
+                    city, state, minPrice, maxPrice, zipCode, type, noOfRooms, bedrooms, garage, sortOrder
+                ).collect { result ->
+                    // If no properties match the filter, set an empty list
+                    if (result.isEmpty()) {
+                        _filteredProperties.value = emptyList() // Explicitly clear the filtered properties list
+                    } else {
+                        // Sort the result based on the selected sortOrder
+                        _filteredProperties.value = if (sortOrder == "Descending") {
+                            result.sortedByDescending { it.price }
+                        } else {
+                            result.sortedBy { it.price }
+                        }
+                    }
+                }
             } catch (e: Exception) {
-                _errorMessage.value = "Error updating property: ${e.message}"
+                _errorMessage.value = "Error filtering properties: ${e.message}"
+                _filteredProperties.value = emptyList() // Clear on error
             }
         }
     }
 
-    fun deleteProperty(property: Property) {
+
+
+
+    // Search Property by ID
+    fun searchByPropertyId(propertyId: Int) {
         viewModelScope.launch {
             try {
-                propertyDao.deleteProperty(property)
+                propertyDao.searchByPropertyId(propertyId).collect { property ->
+                    _searchResults.value = if (property != null) listOf(property) else emptyList()
+                }
             } catch (e: Exception) {
-                _errorMessage.value = "Error deleting property: ${e.message}"
+                _errorMessage.value = "Error searching property by ID: ${e.message}"
+            }
+        }
+    }
+
+    // Search Properties by Email
+    fun searchByEmail(userEmail: String) {
+        viewModelScope.launch {
+            try {
+                propertyDao.searchByEmail(userEmail).collect { result ->
+                    _searchResults.value = result
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Error searching properties by email: ${e.message}"
             }
         }
     }
