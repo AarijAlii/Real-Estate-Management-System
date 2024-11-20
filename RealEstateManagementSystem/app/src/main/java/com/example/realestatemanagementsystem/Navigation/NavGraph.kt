@@ -53,7 +53,10 @@ fun NavigationGraph(
             val appDatabase = AppDatabase.getDatabase(context)
             val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
-            val propertyFactory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyFactory = PropertyViewModelFactory(
+                appDatabase.propertyDao(),   // propertyDao
+                appDatabase.imageDao()       // imageDao
+            )
             val propertyViewModel: PropertyViewModel = viewModel(factory = propertyFactory)
             val userProfileDao=appDatabase.userProfileDao()
 
@@ -83,7 +86,10 @@ fun NavigationGraph(
             val appDatabase = AppDatabase.getDatabase(context)
             val userFactory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = userFactory)
-            val propertyFactory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyFactory = PropertyViewModelFactory(
+                appDatabase.propertyDao(),   // propertyDao
+                appDatabase.imageDao()       // imageDao
+            )
             val propertyViewModel: PropertyViewModel = viewModel(factory = propertyFactory)
             val propertyDao=appDatabase.propertyDao()
             if (email != null) {
@@ -138,7 +144,10 @@ fun NavigationGraph(
             val propertyID = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current
             val appDatabase = AppDatabase.getDatabase(context)
-            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val factory = PropertyViewModelFactory(
+                appDatabase.propertyDao(),   // propertyDao
+                appDatabase.imageDao()       // imageDao
+            )
             val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
             val propertyDao = appDatabase.propertyDao()
             if (propertyID != null) {
@@ -151,10 +160,13 @@ fun NavigationGraph(
             val email = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current
             val appDatabase = AppDatabase.getDatabase(context)
-            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val factory = PropertyViewModelFactory(
+                appDatabase.propertyDao(),   // propertyDao
+                appDatabase.imageDao()       // imageDao
+            )
             val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
             if (email != null) {
-                CreateListingScreen(email = email, navController = navController, propertyViewModel = propertyViewModel)
+                CreateListingScreen(email = email, navController = navController, viewModel = propertyViewModel)
             }
         }
     }

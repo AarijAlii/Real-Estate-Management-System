@@ -8,11 +8,14 @@ import androidx.room.RoomDatabase
 import android.content.Context
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyDao
+import com.example.realestatemanagementsystem.image.ImageDao
+import com.example.realestatemanagementsystem.image.ImageEntity
 
-@Database(entities = [UserProfile::class, Property::class], version = 3)
+@Database(entities = [UserProfile::class, Property::class, ImageEntity::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao
+    abstract fun imageDao(): ImageDao
 
     companion object {
         @Volatile
@@ -24,7 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3) // Add the migration here
+                ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4) // Add the migration here
                     .build()
                 INSTANCE = db
                 db
@@ -43,7 +46,7 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
                 firstName TEXT NOT NULL,
                 lastName TEXT NOT NULL,
                 contact TEXT NOT NULL,
-                city TEXT NOT NULL
+                city TEXT NOT NULL,
                 region TEXT NOT NULL,
                 postalCode INT NOT NULL,
                 rating INT NOT NULL
@@ -83,6 +86,22 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
                 `email` TEXT NOT NULL, 
                 `isSold` INTEGER NOT NULL DEFAULT 0,
                 FOREIGN KEY(`email`) REFERENCES `user_profile`(`email`) ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+    }
+}
+
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Ensure property_images table is created
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `property_images` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                `propertyId` INTEGER NOT NULL, 
+                `imageUrl` TEXT NOT NULL,
+                FOREIGN KEY(`propertyId`) REFERENCES `property`(`propertyId`) ON DELETE CASCADE
             )
             """.trimIndent()
         )

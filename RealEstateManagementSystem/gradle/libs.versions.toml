@@ -2,7 +2,9 @@
 agp = "8.7.0"
 androidxActivityCompose = "1.7.2"
 animatedNavigationBar = "1.0.0"
+coilCompose = "2.4.0"
 datastorePreferences = "1.1.1"
+firebaseBom = "33.6.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -21,6 +23,8 @@ runtimeLivedata = "1.5.2"
 firebaseFirestoreKtx = "25.1.0"
 ui = "1.7.3"
 uiToolingPreview = "1.5.0"
+firebaseStorage = "21.0.1"
+firebaseFirestore = "25.1.1"
 
 [libraries]
 androidx-activity-compose-v172 = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
@@ -34,6 +38,9 @@ androidx-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedat
 androidx-ui-tooling-preview-v150 = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
 androidx-ui-v173 = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 animated-navigation-bar = { module = "com.exyte:animated-navigation-bar", version.ref = "animatedNavigationBar" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-storage-ktx = { module = "com.google.firebase:firebase-storage-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -59,6 +66,8 @@ androidx-compose-ui = { module = "androidx.compose.ui:ui", version = "1.7.2" }
 androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version = "1.7.2" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version = "1.7.2" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 
 
 [plugins]

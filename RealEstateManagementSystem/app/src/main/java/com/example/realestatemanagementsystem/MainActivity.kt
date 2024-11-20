@@ -14,11 +14,14 @@ import com.example.realestatemanagementsystem.Navigation.NavigationGraph
 import com.example.realestatemanagementsystem.ui.theme.RealEstateManagementSystemTheme
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
+import com.google.firebase.FirebaseApp
+
 
 class MainActivity : ComponentActivity() {
     private val userProfileViewModel: UserProfileViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //FirebaseApp.initializeApp(context)
         setContent {
             val navController = rememberNavController()
             val authViewModel: AuthViewModel = viewModel()

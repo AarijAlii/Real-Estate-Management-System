@@ -326,23 +326,18 @@ fun FiltersExample(viewModel: PropertyViewModel,innerPadding:PaddingValues) {
     var isDropdownExpanded by remember { mutableStateOf(false) }
     val sortOptions = listOf("Price: Low to High", "Price: High to Low")
 
-
-
-            // "Filters" button to toggle filter visibility
-            Button(
-                onClick = { showFilters = !showFilters },
+    // "Filters" button to toggle filter visibility
+    Button(
+        onClick = { showFilters = !showFilters },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent, // Makes the button's background transparent
                     contentColor = Color.Black
                 )
             ) {
                 Text("Filters")
-            }
+    }
 
-            // Sort By Dropdown
-
-
-
+        // Sort By Dropdown
         // Filter section that toggles visibility based on showFilters state
         AnimatedVisibility(visible = showFilters) {
             Column(

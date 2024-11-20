@@ -3,20 +3,28 @@ package com.example.realestatemanagementsystem.Property
 
 
 import androidx.room.*
+import com.example.realestatemanagementsystem.image.ImageEntity
 import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface PropertyDao {
-//
-//    @Insert
-//    suspend fun addProperty(property: Property)
-//
-//    @Update
-//    suspend fun updateProperty(property: Property)
-//
-//    @Delete
-//    suspend fun deleteProperty(property: Property)
+
+
+    @Insert
+    suspend fun insertProperty(property: Property): Long
+
+    // Update property
+    @Update
+    suspend fun updateProperty(property: Property)
+
+    // Delete property
+    @Delete
+    suspend fun deleteProperty(property: Property)
+
+    // Get properties by user email
+    @Query("SELECT * FROM property WHERE email = :email")
+    suspend fun getPropertiesByUser(email: String): List<Property>
 
     @Query("SELECT * FROM property WHERE email = :email AND isSold = 0")
     suspend fun getCurrentListings(email: String): List<Property>
@@ -112,5 +120,10 @@ interface PropertyDao {
 
     @Query("SELECT * FROM property WHERE email LIKE :userEmail")
     fun searchByEmail(userEmail: String): Flow<List<Property>>
-}
 
+
+    @Insert
+    suspend fun insertImages(images: List<ImageEntity>)
+
+
+}
