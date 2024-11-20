@@ -93,8 +93,7 @@ interface PropertyDao {
             (:noOfRooms IS NULL OR rooms = :noOfRooms) AND
             (:bedrooms IS NULL OR bedrooms = :bedrooms) AND
             (:garage IS NULL OR garage = :garage)
-        ORDER BY CASE WHEN :sortOrder = 'asc' THEN price END ASC,
-                 CASE WHEN :sortOrder = 'desc' THEN price END DESC"""
+       """
     )
     fun filterProperties(
         city: String?,
@@ -106,8 +105,12 @@ interface PropertyDao {
         noOfRooms: Int?,
         bedrooms: Int?,
         garage: Boolean?,
-        sortOrder: String?
-    ): Flow<List<Property>>
 
+    ): Flow<List<Property>>
+    @Query("SELECT * FROM property WHERE propertyId = :propertyId")
+    fun searchByPropertyId(propertyId: Int): Flow<Property?>
+
+    @Query("SELECT * FROM property WHERE email LIKE :userEmail")
+    fun searchByEmail(userEmail: String): Flow<List<Property>>
 }
 

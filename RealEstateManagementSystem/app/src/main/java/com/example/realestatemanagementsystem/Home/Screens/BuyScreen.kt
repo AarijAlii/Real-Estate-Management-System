@@ -1,12 +1,15 @@
 package com.example.realestatemanagementsystem.Home.Screens
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
@@ -34,6 +38,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -76,6 +81,7 @@ fun HomeScreen(
     profileViewModel: UserProfileViewModel
 ) {
     // Other states and logic remain the same...
+    var showFilters by remember { mutableStateOf(false) }
     val currentRoute = navHostController.currentBackStackEntry?.destination?.route
     val scope = rememberCoroutineScope()
     val items = getNavigationItems()
@@ -91,6 +97,12 @@ fun HomeScreen(
     var isDropdownExpanded by remember { mutableStateOf(false) }
     var selectedSortOption by remember { mutableStateOf("None") }
     val sortOptions = listOf("Price: Low to High", "Price: High to Low")
+    var searchText = remember { mutableStateOf("") }
+    var cityFilter = remember { mutableStateOf("") }
+    var stateFilter = remember { mutableStateOf("") }
+    var minPrice = remember { mutableStateOf("") }
+    var maxPrice = remember { mutableStateOf("") }
+
 
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Failed) {
@@ -227,43 +239,48 @@ fun HomeScreen(
                 ) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(8.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Button(onClick = { /* Open Filters */ },colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent, // Makes the button's background transparent
-                                contentColor = Color.Black)) {
-                                Text("Filters")
-                            }
 
+                            Column {
+                                FiltersExample(viewModel, innerPadding)
+                            }
                             // Sort By Dropdown
                             Box {
-                                Button(onClick = { isDropdownExpanded = true },colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent, // Makes the button's background transparent
-                                    contentColor = Color.Black)) {
+                                Button(
+                                    onClick = { isDropdownExpanded = true },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.Transparent, // Makes the button's background transparent
+                                        contentColor = Color.Black
+                                    )
+                                ) {
                                     Text("Sort By: $selectedSortOption")
                                 }
+                            }}
+                        DropdownMenu(
+                            expanded = isDropdownExpanded,
+                            onDismissRequest = { isDropdownExpanded = false }
+                        ) {
+                            sortOptions.forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text(option) },
+                                    onClick = {
+                                        selectedSortOption = option
+                                        isDropdownExpanded = false
 
-                                DropdownMenu(
-                                    expanded = isDropdownExpanded,
-                                    onDismissRequest = { isDropdownExpanded = false }
-                                ) {
-                                    sortOptions.forEach { option ->
-                                        DropdownMenuItem(
-                                            text = { Text(option) },
-                                            onClick = {
-                                                selectedSortOption = option
-                                                isDropdownExpanded = false
-
-                                                // Update sorting logic
-                                                viewModel.sortProperties(option)
-                                            }
-                                        )
+                                        // Update sorting logic
+                                        viewModel.sortProperties(option)
                                     }
-                                }
+                                )
+
                             }
-                        }
+
+                            }
+
 
                         // Property list (sorted dynamically)
                         LazyColumn {
@@ -294,4 +311,132 @@ fun HomeScreen(
             )
         }
     }
+}
+@Composable
+fun FiltersExample(viewModel: PropertyViewModel,innerPadding:PaddingValues) {
+    // States to control filter visibility and values
+    var showFilters by remember { mutableStateOf(false) }
+    val searchText = remember { mutableStateOf("") }
+    val cityFilter = remember { mutableStateOf("") }
+    val stateFilter = remember { mutableStateOf("") }
+    val minPrice = remember { mutableStateOf("") }
+    val maxPrice = remember { mutableStateOf("") }
+
+    var selectedSortOption by remember { mutableStateOf("None") }
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+    val sortOptions = listOf("Price: Low to High", "Price: High to Low")
+
+
+
+            // "Filters" button to toggle filter visibility
+            Button(
+                onClick = { showFilters = !showFilters },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent, // Makes the button's background transparent
+                    contentColor = Color.Black
+                )
+            ) {
+                Text("Filters")
+            }
+
+            // Sort By Dropdown
+
+
+
+        // Filter section that toggles visibility based on showFilters state
+        AnimatedVisibility(visible = showFilters) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+                    .animateContentSize() // This will animate size changes smoothly
+            ) {
+                // Search TextField
+                TextField(
+                    value = searchText.value,
+                    onValueChange = { searchText.value = it },
+                    label = { Text("Search Property ID or User Email") },
+                    modifier = Modifier,
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // City and State filters in a row
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    TextField(
+                        value = cityFilter.value,
+                        onValueChange = { cityFilter.value = it },
+                        label = { Text("City") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 4.dp)
+                    )
+
+                    TextField(
+                        value = stateFilter.value,
+                        onValueChange = { stateFilter.value = it },
+                        label = { Text("State") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Min and Max price filters in a row
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    TextField(
+                        value = minPrice.value,
+                        onValueChange = { minPrice.value = it },
+                        label = { Text("Min Price") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 4.dp)
+                    )
+
+                    TextField(
+                        value = maxPrice.value,
+                        onValueChange = { maxPrice.value = it },
+                        label = { Text("Max Price") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 4.dp)
+                    )
+
+                }
+                Button(onClick = {
+                    if (searchText.value.isNotEmpty()) {
+                        if (searchText.value.toIntOrNull() != null) {
+                            viewModel.searchByPropertyId(searchText.value.toInt())
+                        } else {
+                            viewModel.searchByEmail(searchText.value)
+                        }
+                    } else {
+                        viewModel.filterProperties(
+                            city = cityFilter.value.takeIf { it.isNotEmpty() },
+                            state = stateFilter.value.takeIf { it.isNotEmpty() },
+                            minPrice = minPrice.value.toDoubleOrNull(),
+                            maxPrice = maxPrice.value.toDoubleOrNull(),
+                            zipCode = null,
+                            type = null,
+                            noOfRooms = null,
+                            bedrooms = null,
+                            garage = null,
+
+                        )
+                    }
+                    showFilters=false
+                },colors = ButtonColors(
+                    contentColor = Color.White,
+                    disabledContainerColor = Color.Gray,
+                    containerColor = Color.Red,
+                    disabledContentColor = Color.White,
+                )
+                ) {
+                    Text("Done")
+                }
+            }
+        }
+
 }
