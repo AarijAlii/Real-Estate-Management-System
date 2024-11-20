@@ -121,11 +121,13 @@ fun NavigationGraph(
             val appDatabase = AppDatabase.getDatabase(context)
             val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
-
+            if (email != null) {
+                userProfileViewModel.getUserProfile(email)
+            }
             if (email != null) {
                 UserProfileScreen(
                     email = email,
-                    userProfileDao = appDatabase.userProfileDao(),
+
                     profileViewModel = userProfileViewModel,
                     navHostController = navController
                 )

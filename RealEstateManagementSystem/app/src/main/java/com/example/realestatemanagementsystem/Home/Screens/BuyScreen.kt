@@ -90,13 +90,19 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var isDropdownExpanded by remember { mutableStateOf(false) }
     var selectedSortOption by remember { mutableStateOf("None") }
-    val sortOptions = listOf("Price: Low to High", "Price: High to Low", "Newest First", "Oldest First")
+    val sortOptions = listOf("Price: Low to High", "Price: High to Low")
 
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Failed) {
             navHostController.navigate(Screen.LoginScreen.route)
         }
     }
+//    @Composable
+//    fun sortProperties(option:String){
+//        LaunchedEffect(option) {
+//            viewModel.sortProperties(option)
+//        }
+//    }
     LaunchedEffect(viewModel){
         try{
             viewModel.getAllBuyingProperties()

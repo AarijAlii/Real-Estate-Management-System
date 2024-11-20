@@ -1,7 +1,6 @@
 package com.example.realestatemanagementsystem.user.UserProfile.Screens
 
-import android.app.Application
-import androidx.activity.viewModels
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
+
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -29,34 +28,24 @@ import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
+import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
+import kotlinx.coroutines.delay
 
 @Composable
 fun UserProfileScreen(
-    email: String,
-    userProfileDao: UserProfileDao,
+    email:String,
     profileViewModel: UserProfileViewModel,
     navHostController: NavHostController
 ) {
     // State variables for the user input
     val focusManager= LocalFocusManager.current
 
-    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+   val userProfile by profileViewModel.userProfile.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf("") }
-    LaunchedEffect(email) {
-        try {
-            // Fetch the user profile from the database in a coroutine
-            val profile = userProfileDao.getUserByEmail(email)
-            userProfile = profile
-            isLoading = false
-        } catch (e: Exception) {
-            errorMessage = "Failed to load profile: ${e.message}"
-            isLoading = false
-        }
-    }
-    if (isLoading) {
-        CircularProgressIndicator()
-    } else {
+
+
+
         if (userProfile != null) {
             var firstName by remember { mutableStateOf(userProfile?.firstName?:"") }
             var lastName by remember { mutableStateOf(userProfile?.lastName?:"") }
@@ -211,5 +200,5 @@ fun UserProfileScreen(
             )
         }
     }
-}
+
 

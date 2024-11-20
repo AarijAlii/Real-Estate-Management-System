@@ -145,7 +145,7 @@ fun BuyPropertyCards(modifier: Modifier = Modifier,property: Property, navHostCo
                 Button(onClick = {
                     viewModel.markAsSold(propertyId = property.propertyId.toInt())
                     onBuy()
-                    
+
                 },
                     colors = ButtonColors(
                     contentColor = Color.White,

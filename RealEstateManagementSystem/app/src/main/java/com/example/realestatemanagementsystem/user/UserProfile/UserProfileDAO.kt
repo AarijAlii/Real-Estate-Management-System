@@ -1,5 +1,6 @@
 package com.example.realestatemanagementsystem.user.UserProfile
 
+import android.util.Log
 import androidx.room.*
 import androidx.room.Dao
 import androidx.room.Query
@@ -12,7 +13,7 @@ interface UserProfileDao {
 //    @Query("DELETE FROM user_profile WHERE id = :id")
 //    suspend fun clearProfile(id: Int)
 
-    @Query("SELECT * FROM user_profile WHERE email = :email")
+    @Query("SELECT * FROM user_profile WHERE email = :email LIMIT 1")
     suspend fun getUserByEmail(email: String): UserProfile?
     //:email LIMIT 1"
 

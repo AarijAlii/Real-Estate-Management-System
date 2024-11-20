@@ -51,6 +51,7 @@ import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun SignUpScreen(
@@ -227,6 +228,7 @@ fun SignUpScreen(
                                     userProfile = userProfile,
                                     appDatabase = appDatabase// Pass appDatabase here
                                 )
+
                                 navHostController.navigate("profile_screen/${email}")}
                                       else {
                                             errorMessage = "Passwords do not match"

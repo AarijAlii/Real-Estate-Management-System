@@ -31,6 +31,12 @@ interface PropertyDao {
     @Query("SELECT * FROM property WHERE propertyId = :propertyId")
     suspend fun getPropertyById(propertyId: Int): Property?
 
+    @Query("SELECT * FROM property Where isSold=0 ORDER BY price ASC")
+   suspend fun getPropertiesByPriceAsc(): List<Property>
+
+    @Query("SELECT * FROM property Where isSold=0 ORDER BY price DESC")
+    suspend fun getPropertiesByPriceDesc(): List<Property>
+
     @Query("""
         INSERT INTO property (
             city, state, propertyNumber, rooms, bedrooms, garage, area, type, price, zipCode, email, isSold

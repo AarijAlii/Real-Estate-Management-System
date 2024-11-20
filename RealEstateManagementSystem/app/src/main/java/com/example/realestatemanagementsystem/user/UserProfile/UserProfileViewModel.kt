@@ -1,5 +1,6 @@
 package com.example.realestatemanagementsystem.user.UserProfile
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -12,8 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 
 class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
-    private val _userProfile = MutableLiveData<UserProfile?>()
-    val userProfile: LiveData<UserProfile?> get() = _userProfile
+    private val _userProfile = MutableStateFlow<UserProfile?>(
+        null
+    )
+    val userProfile: StateFlow<UserProfile?> get() = _userProfile
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
@@ -54,6 +57,17 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
         }
     }
 
+    fun getUserProfile(email: String) {
+        viewModelScope.launch {
+            try {
+                val userProfile = userProfileDao.getUserByEmail(email)
+                _userProfile.value = userProfile
+                Log.d("UserProfileViewModel", "User Profile: ${userProfile.toString()}")
+            } catch (e: Exception) {
+                _errorMessage.value = "Error fetching user profile: ${e.message}"
+            }
+        }
+    }
     // Function to insert user profile data into the local database
     fun insertUserProfile(userProfile: UserProfile, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {

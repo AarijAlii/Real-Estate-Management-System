@@ -76,15 +76,19 @@ class PropertyViewModel(private val propertyDao: PropertyDao) : ViewModel() {
 
     fun sortProperties(option: String) {
         viewModelScope.launch {
-            when (option) {
-                "Price: Low to High" -> _filteredProperties.value.sortedBy { it.price }
-                "Price: High to Low" -> _filteredProperties.value.sortedByDescending { it.price }
-
-                else -> properties.value
+            try {
+                val sortedProperties = when (option) {
+                    "Price: Low to High" -> propertyDao.getPropertiesByPriceAsc()
+                    "Price: High to Low" -> propertyDao.getPropertiesByPriceDesc()
+                    else -> propertyDao.getAllBuyingProperties() // Default: unsorted or original list
+                }
+                _unsoldProperties.value = sortedProperties
+            } catch (e: Exception) {
+                _errorMessage.value = "Error sorting properties: ${e.message}"
             }
-
         }
     }
+
 
     fun adddProperty(property: Property) {
         viewModelScope.launch {
