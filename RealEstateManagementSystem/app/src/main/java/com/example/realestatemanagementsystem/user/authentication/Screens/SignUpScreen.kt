@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -46,24 +47,39 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 
 @Composable
 fun SignUpScreen(
-    authViewModel: AuthViewModel = viewModel(),
-    navHostController: NavHostController
+    authViewModel: AuthViewModel,
+    navHostController: NavHostController,
+    appDatabase: AppDatabase
 ) {
     val focusManager= LocalFocusManager.current
     var email by remember { mutableStateOf("") }
+    var confirmPassword by remember{ mutableStateOf("")}
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var confirmPasswordVisible by remember { mutableStateOf(false) }
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var contactInfo by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val authState = authViewModel.authState.observeAsState()
+    val authState = authViewModel.authState.collectAsState()
+    val userProfile = UserProfile(
+        email = email,
+        firstName = firstName,
+        lastName = lastName,
+        contact = contactInfo
+    )
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Success -> {
-               navHostController.navigate(route= Screen.HomeScreen.route)
+               navHostController.navigate("profile_screen/${email}")
             }
 
             is AuthState.Error -> {
@@ -166,23 +182,56 @@ fun SignUpScreen(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-                                    authViewModel.signUp(email, password)
-                                    email = ""
-                                    password = ""
+                                    if(password==confirmPassword){
+                                        authViewModel.signUp(
+                                            email = email,
+                                            password = password,
+                                            confirmPassword = confirmPassword,
+                                            userProfile = userProfile,
+                                            appDatabase = appDatabase// Pass appDatabase here
+                                        )
+                                        navHostController.navigate("profile_screen/${email}")}
+                                    else {
+                                        errorMessage = "Passwords do not match"
+                                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                    }
                                 }),
-                            value = password,
-                            onValueChange = { password = it },
+                            value = confirmPassword,
+                            onValueChange = { confirmPassword = it },
                             label = { Text("Confirm Password") },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
-                            visualTransformation = PasswordVisualTransformation()
+                            visualTransformation = PasswordVisualTransformation(),
+                            trailingIcon = {
+                                val image = if (confirmPasswordVisible)
+                                    painterResource(id = R.drawable.baseline_visibility_24)
+                                else
+                                    painterResource(id = R.drawable.baseline_visibility_off_24)
+
+                                // IconButton to toggle password visibility
+                                IconButton(onClick = {
+                                    confirmPasswordVisible = !confirmPasswordVisible
+                                }) {
+                                    Icon(painter=image, contentDescription = "show pass")
+                                }
+                            }
                         )
                         Button(
                             onClick = {
-                                authViewModel.signUp(email, password)
-                                navHostController.navigate(Screen.UserProfileScreen.route)
-                                //              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
+                                if(password==confirmPassword){
+                                authViewModel.signUp(
+                                    email = email,
+                                    password = password,
+                                    confirmPassword = confirmPassword,
+                                    userProfile = userProfile,
+                                    appDatabase = appDatabase// Pass appDatabase here
+                                )
+                                navHostController.navigate("profile_screen/${email}")}
+                                      else {
+                                            errorMessage = "Passwords do not match"
+                                           Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

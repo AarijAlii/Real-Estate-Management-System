@@ -1,17 +1,25 @@
 package com.example.realestatemanagementsystem.Navigation
 
-import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.realestatemanagementsystem.Home.Screens.BuyScreen
+
+import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Home.Screens.SellScreen
+import com.example.realestatemanagementsystem.Home.Screens.UpdateListingScreen
+import com.example.realestatemanagementsystem.Property.PropertyViewModel
+import com.example.realestatemanagementsystem.Property.PropertyViewModelFactory
+import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
+import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
+import com.example.realestatemanagementsystem.user.UserProfile.UserViewModelFactory
 import com.example.realestatemanagementsystem.user.authentication.Screens.LoginScreen
 import com.example.realestatemanagementsystem.user.authentication.Screens.SignUpScreen
 
@@ -22,42 +30,121 @@ fun NavigationGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.SignupScreen.route
+        startDestination = Screen.LoginScreen.route
     ) {
         composable(Screen.SignupScreen.route) {
             SignUpScreen(
-                authViewModel,
-                navHostController=navController
+                authViewModel = viewModel(),
+                navHostController =  navController,
+                appDatabase = AppDatabase.getDatabase(LocalContext.current) // Pass the appDatabase here
             )
         }
         composable(Screen.LoginScreen.route) {
             LoginScreen(
-                authViewModel,
-              navHostController = navController
+                authViewModel = viewModel(),
+                navHostController = navController,
+                appDatabase = AppDatabase.getDatabase(LocalContext.current)
             )
         }
         composable(Screen.HomeScreen.route) {
-            HomeScreen(
-//                authViewModel,
-                navHostController=navController
-            )
+                backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
+
+            if (email != null) {
+                Log.d("HomeScreen", "Email received: $email")
+                HomeScreen(
+
+                    email = email,
+                    authViewModel = AuthViewModel(),
+                    navHostController = navController,
+                    userProfileDao = appDatabase.userProfileDao(),
+                    profileViewModel = userProfileViewModel
+                )
+            }
         }
-        composable(Screen.BuyScreen.route){
-            BuyScreen(
-                modifier=Modifier,
-                navHostController = navController
-            )
-        }
+
         composable(Screen.SellScreen.route){
-            SellScreen(
-                modifier=Modifier,
-                navHostController = navController
-            )
+                backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val userFactory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val userProfileViewModel: UserProfileViewModel = viewModel(factory = userFactory)
+            val propertyFactory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyViewModel: PropertyViewModel = viewModel(factory = propertyFactory)
+            val propertyDao=appDatabase.propertyDao()
+            if (email != null) {
+               SellScreen(
+                    email = email,
+                    userProfileDao = appDatabase.userProfileDao(),
+                    profileViewModel = userProfileViewModel,
+                    navHostController = navController,
+                   authViewModel = AuthViewModel(),
+                   propertyViewModel = propertyViewModel,
+                   propertyDao = propertyDao
+                )
+            }
         }
-        composable(Screen.UserProfileScreen.route){
-            UserProfileScreen(
-                UserProfileViewModel(application = Application())
-            )
+        composable(Screen.UserProfileUpdateScreen.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
+
+            if (email != null) {
+                UserProfileUpdateScreen(
+                    email = email,
+                    userProfileDao = appDatabase.userProfileDao(),
+                    profileViewModel = userProfileViewModel,
+                    navHostController = navController
+                )
+            }
+        }
+
+        composable(Screen.UserProfileScreen.route) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
+
+            if (email != null) {
+                UserProfileScreen(
+                    email = email,
+                    userProfileDao = appDatabase.userProfileDao(),
+                    profileViewModel = userProfileViewModel,
+                    navHostController = navController
+                )
+            }
+        }
+        composable(Screen.UpdateListingScreen.route){
+                backStackEntry ->
+            val propertyID = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
+            val propertyDao = appDatabase.propertyDao()
+            if (propertyID != null) {
+
+                UpdateListingScreen(propertyid = propertyID, navController = navController, propertyViewModel = propertyViewModel, propertyDao = propertyDao)
+            }
+        }
+        composable(Screen.CreateListingScreen.route){
+                backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
+            if (email != null) {
+                CreateListingScreen(email = email, navController = navController, propertyViewModel = propertyViewModel)
+            }
         }
     }
 }

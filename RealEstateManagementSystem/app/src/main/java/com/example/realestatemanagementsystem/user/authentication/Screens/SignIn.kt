@@ -1,6 +1,7 @@
 package com.example.realestatemanagementsystem.user.authentication.Screens
 
 
+import android.util.Log
 import androidx.compose.material3.OutlinedTextField
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -25,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -45,9 +47,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 
@@ -55,30 +59,25 @@ import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.A
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    appDatabase: AppDatabase
 ) {
-    //val result by authViewModel.authState.observeAsState()
+
     val focusManager= LocalFocusManager.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     val context = LocalContext.current
-    val authState = authViewModel.authState.observeAsState()
+    val authState=authViewModel.authState.collectAsState()
     LaunchedEffect(authState.value) {
-        when (authState.value) {
-            is AuthState.Success -> {
-                navHostController.navigate(route= Screen.HomeScreen.route)
-            }
+        if (authState.value is AuthState.Success) {
+            email=authViewModel.getCurrentUserEmail().toString()
+            navHostController.navigate("Home_Screen/$email")
 
-            is AuthState.Error -> {
-                Toast.makeText(
-                    context,
-                    (authState.value as AuthState.Error).message,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            } else if (authState.value is AuthState.Error) {
+            Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show()
 
-            else -> Unit
         }
     }
 
@@ -140,7 +139,21 @@ fun LoginScreen(
                                 imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(
                                 onDone  = {
-                                    authViewModel.login(email, password)
+                                    authViewModel.signIn(
+                                        email = email,
+                                        password = password,
+                                        onSuccess = { userEmail ->
+                                            // Navigate to the Profile screen after successful sign-in
+                                            navHostController.navigate("home_screen/${userEmail}")
+                                        },
+                                        onError = { error ->
+                                            // Use error message directly
+                                            errorMessage = error
+                                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                            password=""
+                                        }
+                                    )
+
                                 }),
 //            colors = TextFieldDefaults.textFieldColors(
 //                focusedBorderColor = Color.Red
@@ -170,17 +183,20 @@ fun LoginScreen(
                             })
         Button(
             onClick = {
-                authViewModel.login(email, password)
-//                when (result) {
-//                    is Result.Success->{
-//                        onNavigateToSuccess()
-//                    }
-//                    is Result.Error ->{
-//                        Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show()
-//                    }
-//                    else -> {
-//                    }
-//                }
+                authViewModel.signIn(
+                    email = email,
+                    password = password,
+                    onSuccess = { userEmail ->
+                        // Navigate to the Profile screen after successful sign-in
+                        navHostController.navigate("home_screen/${userEmail}")
+                    },
+                    onError = { error ->
+                        // Use error message directly
+                        errorMessage = error
+                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                        password=""
+                    }
+                )
             },
             modifier = Modifier
                 .fillMaxWidth()
