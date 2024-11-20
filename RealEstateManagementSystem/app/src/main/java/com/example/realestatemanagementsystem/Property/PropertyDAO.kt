@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.Property
+package com.example.realestatemanagementsystem.property
 
 
 
@@ -89,7 +89,7 @@ interface PropertyDao {
             (:state IS NULL OR state LIKE :state) AND
             (:minPrice IS NULL OR price >= :minPrice) AND
             (:maxPrice IS NULL OR price <= :maxPrice) AND
-            (:zipCode IS NULL OR zipcode LIKE :zipCode) AND
+            (:zipCode IS NULL OR zipCode LIKE :zipCode) AND
             (:type IS NULL OR type LIKE :type) AND
             (:noOfRooms IS NULL OR rooms = :noOfRooms) AND
             (:bedrooms IS NULL OR bedrooms = :bedrooms) AND
