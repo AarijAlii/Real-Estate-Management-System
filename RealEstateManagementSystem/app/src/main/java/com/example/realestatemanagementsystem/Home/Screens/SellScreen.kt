@@ -85,8 +85,8 @@ fun SellScreen(
     val scope = rememberCoroutineScope()
     val authState = authViewModel.authState.collectAsState()
     var selectedIndex by remember { mutableStateOf(1) }
-    val unsoldProperties by propertyViewModel.unsoldProperties.collectAsState(initial = emptyList())
-    val soldProperties by propertyViewModel.soldProperties.collectAsState(initial = emptyList())
+    val unsoldProperties by propertyViewModel.unsoldProperties.collectAsState()
+    val soldProperties by propertyViewModel.soldProperties.collectAsState()
     val propertyErrorMessage by propertyViewModel.errorMessage.collectAsState()
 
     // Toggle state to show sold or unsold properties
@@ -122,6 +122,16 @@ fun SellScreen(
     if (propertyErrorMessage.isNotEmpty()) {
         Text(text = propertyErrorMessage, color = Color.Red, modifier = Modifier.padding(bottom = 8.dp))
     }
+    fun refreshProperties() {
+        scope.launch {
+            if (showSold) {
+                propertyViewModel.loadSoldListings(email)
+            } else {
+                propertyViewModel.loadCurrentListings(email)
+            }
+        }
+    }
+
     if (isLoading) {
         CircularProgressIndicator()
     } else {
@@ -232,8 +242,8 @@ fun SellScreen(
 
                         // LazyColumn to show properties
                         LazyColumn(modifier = Modifier.weight(1f)) {
-                            val propertiesToShow = if (showSold) soldProperties else unsoldProperties
-                            items(propertiesToShow) { property ->
+
+                            items( if (showSold) soldProperties else unsoldProperties) { property ->
                                 PropertyCards(
                                     modifier = Modifier,
                                     property.area.toString(),
@@ -244,7 +254,8 @@ fun SellScreen(
                                     property.price.toString(),
                                     property.propertyId.toString(),
                                     navHostController = navHostController,
-                                    propertyDao
+                                    propertyDao,
+                                    onDeleted = ::refreshProperties
                                 )
                             }
                         }
@@ -293,6 +304,7 @@ fun ToggleSoldUnsoldButton(showSold: Boolean, onToggle: (Boolean) -> Unit) {
         Text(text, fontSize = 12.sp)
     }
 }
+
 
 
 

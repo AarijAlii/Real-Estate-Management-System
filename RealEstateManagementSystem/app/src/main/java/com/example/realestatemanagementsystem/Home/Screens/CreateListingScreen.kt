@@ -61,8 +61,8 @@ fun CreateListingScreen(email: String,
 
 
     // Check if form is valid
-    LaunchedEffect(city, state, propertyNumber,propertyName, rooms, bedrooms, garage, area, type, price, zipcode) {
-        isFormValid = city.isNotBlank() && state.isNotBlank() && propertyNumber.isNotBlank() && propertyName.isNotBlank() && rooms.isNotBlank() && bedrooms.isNotBlank()
+    LaunchedEffect( propertyNumber.isNotEmpty() && rooms.isNotEmpty() && bedrooms.isNotEmpty() && garage.isNotEmpty() && area.isNotEmpty() && type.isNotEmpty() && price.isNotEmpty() && zipcode.isNotEmpty() && city.isNotEmpty() && state.isNotEmpty()) {
+        isFormValid=  propertyNumber.isNotEmpty() && rooms.isNotEmpty() && bedrooms.isNotEmpty() && garage.isNotEmpty() && area.isNotEmpty() && type.isNotEmpty() && price.isNotEmpty() && zipcode.isNotEmpty() && city.isNotEmpty() && state.isNotEmpty()
     }
 
     Column(modifier = Modifier
@@ -281,7 +281,7 @@ Column(modifier=Modifier.weight(2f).verticalScroll(scrollState).imePadding()) {
                         email = email
                     )
                     propertyViewModel.adddProperty(newProperty)
-                    navController.navigate("home_screen/$email"){
+                    navController.navigate("sell_screen/$email"){
                         popUpTo("create_listing_screen/$email"){
                             inclusive=true
                     }}

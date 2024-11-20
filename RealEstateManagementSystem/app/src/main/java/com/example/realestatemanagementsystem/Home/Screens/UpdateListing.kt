@@ -279,7 +279,9 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
 
             // Submit button
-            isFormValid = city.isNotBlank() && state.isNotBlank() && propertyNumber.isNotBlank() && rooms.isNotBlank() && bedrooms.isNotBlank()
+            LaunchedEffect( propertyNumber.isNotEmpty() && rooms.isNotEmpty() && bedrooms.isNotEmpty() && garage.isNotEmpty() && area.isNotEmpty() && type.isNotEmpty() && price.isNotEmpty() && zipcode.isNotEmpty() && city.isNotEmpty() && state.isNotEmpty()) {
+                isFormValid=  propertyNumber.isNotEmpty() && rooms.isNotEmpty() && bedrooms.isNotEmpty() && garage.isNotEmpty() && area.isNotEmpty() && type.isNotEmpty() && price.isNotEmpty() && zipcode.isNotEmpty() && city.isNotEmpty() && state.isNotEmpty()
+            }
             Button(modifier=Modifier.fillMaxWidth().padding(16.dp),
                 colors =  ButtonColors(
                     contentColor = Color.White,

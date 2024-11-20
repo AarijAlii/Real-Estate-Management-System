@@ -182,14 +182,19 @@ fun SignUpScreen(
                             ),
                             keyboardActions = KeyboardActions(
                                 onDone = {
-                                    authViewModel.signUp(
-                                        email = email,
-                                        password = password,
-                                        confirmPassword = confirmPassword,
-                                        userProfile = userProfile,
-                                        appDatabase = appDatabase// Pass appDatabase here
-                                    )
-                                    navHostController.navigate("profile_screen/${email}")
+                                    if(password==confirmPassword){
+                                        authViewModel.signUp(
+                                            email = email,
+                                            password = password,
+                                            confirmPassword = confirmPassword,
+                                            userProfile = userProfile,
+                                            appDatabase = appDatabase// Pass appDatabase here
+                                        )
+                                        navHostController.navigate("profile_screen/${email}")}
+                                    else {
+                                        errorMessage = "Passwords do not match"
+                                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                    }
                                 }),
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it },
@@ -214,6 +219,7 @@ fun SignUpScreen(
                         )
                         Button(
                             onClick = {
+                                if(password==confirmPassword){
                                 authViewModel.signUp(
                                     email = email,
                                     password = password,
@@ -221,7 +227,11 @@ fun SignUpScreen(
                                     userProfile = userProfile,
                                     appDatabase = appDatabase// Pass appDatabase here
                                 )
-                                navHostController.navigate("profile_screen/${email}")//              Toast.makeText(context, "Signed Up Successfully", Toast.LENGTH_LONG).show()
+                                navHostController.navigate("profile_screen/${email}")}
+                                      else {
+                                            errorMessage = "Passwords do not match"
+                                           Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
