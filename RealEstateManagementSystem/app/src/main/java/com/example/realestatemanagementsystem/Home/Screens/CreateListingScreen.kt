@@ -61,9 +61,7 @@ fun CreateListingScreen(email: String,
 
 
     // Check if form is valid
-    LaunchedEffect( propertyNumber.isNotEmpty() && rooms.isNotEmpty() && bedrooms.isNotEmpty() && garage.isNotEmpty() && area.isNotEmpty() && type.isNotEmpty() && price.isNotEmpty() && zipcode.isNotEmpty() && city.isNotEmpty() && state.isNotEmpty()) {
-        isFormValid=  propertyNumber.isNotEmpty() && rooms.isNotEmpty() && bedrooms.isNotEmpty() && garage.isNotEmpty() && area.isNotEmpty() && type.isNotEmpty() && price.isNotEmpty() && zipcode.isNotEmpty() && city.isNotEmpty() && state.isNotEmpty()
-    }
+
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -256,6 +254,18 @@ Column(modifier=Modifier.weight(2f).verticalScroll(scrollState).imePadding()) {
 
 
         // Submit button
+        isFormValid = listOf(
+            propertyNumber,
+            rooms,
+            bedrooms,
+            garage,
+            area,
+            type,
+            price,
+            zipcode,
+            city,
+            state
+        ).all { it.isNotBlank() }
         Button(modifier=Modifier.fillMaxWidth().padding(16.dp),
             colors =  ButtonColors(
                 contentColor = Color.White,

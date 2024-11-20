@@ -1,12 +1,12 @@
 package com.example.realestatemanagementsystem.Home.Screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.IconToggleButton
-import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +23,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -49,9 +52,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.Navigation.getNavigationItems
-import com.example.realestatemanagementsystem.Property.PropertyDao
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
@@ -59,80 +62,69 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
-import com.example.realestatemanagementsystem.util.SellPropertyCards
+import com.example.realestatemanagementsystem.util.BuyPropertyCards
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SellScreen(
+fun HomeScreen(
     email: String,
-    userProfileDao: UserProfileDao,
-    propertyViewModel: PropertyViewModel,
-    navHostController: NavHostController,
     authViewModel: AuthViewModel,
-    profileViewModel: UserProfileViewModel,
-    propertyDao: PropertyDao
+    navHostController: NavHostController,
+    userProfileDao: UserProfileDao,
+    viewModel: PropertyViewModel,
+    profileViewModel: UserProfileViewModel
 ) {
+    // Other states and logic remain the same...
     val currentRoute = navHostController.currentBackStackEntry?.destination?.route
-    val items = getNavigationItems()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val items = getNavigationItems()
     val authState = authViewModel.authState.collectAsState()
-    var selectedIndex by remember { mutableStateOf(1) }
-    val unsoldProperties by propertyViewModel.unsoldProperties.collectAsState()
-    val soldProperties by propertyViewModel.soldProperties.collectAsState()
-    val propertyErrorMessage by propertyViewModel.errorMessage.collectAsState()
+    val allProperties by viewModel.unsoldProperties.collectAsState()
+    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+    var profileErrorMessage by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(true) }
+    val propertyErroMessage by viewModel.errorMessage.collectAsState()
+    // Dropdown state
+    var selectedIndex by remember { mutableStateOf(0) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+    var selectedSortOption by remember { mutableStateOf("None") }
+    val sortOptions = listOf("Price: Low to High", "Price: High to Low", "Newest First", "Oldest First")
 
-    // Toggle state to show sold or unsold properties
-    var showSold by remember { mutableStateOf(false) }
-
-    // Load the unsold and sold properties when the screen is displayed
-    LaunchedEffect(email) {
-        propertyViewModel.loadCurrentListings(email)
-        propertyViewModel.loadSoldListings(email) // Add this method in your ViewModel to load sold properties
-    }
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Failed) {
             navHostController.navigate(Screen.LoginScreen.route)
         }
     }
-
-    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
-    var errorMessage by remember { mutableStateOf("") }
-
-    // Load the user profile when the screen is shown
+    LaunchedEffect(viewModel){
+        try{
+            viewModel.getAllBuyingProperties()
+        }catch (e:Exception){
+            Toast.makeText(getApplicationContext(),propertyErroMessage,Toast.LENGTH_SHORT).show()
+        }
+    }
     LaunchedEffect(email) {
         try {
             val profile = userProfileDao.getUserByEmail(email)
             userProfile = profile
             isLoading = false
         } catch (e: Exception) {
-            errorMessage = "Failed to load profile: ${e.message}"
+            profileErrorMessage = "Failed to load profile: ${e.message}"
             isLoading = false
         }
     }
-
-    if (propertyErrorMessage.isNotEmpty()) {
-        Text(text = propertyErrorMessage, color = Color.Red, modifier = Modifier.padding(bottom = 8.dp))
-    }
-    fun refreshProperties() {
+    fun refreshBuyProperties() {
         scope.launch {
-            if (showSold) {
-                propertyViewModel.loadSoldListings(email)
-            } else {
-                propertyViewModel.loadCurrentListings(email)
-            }
+            viewModel.getAllBuyingProperties()
         }
     }
-
     if (isLoading) {
         CircularProgressIndicator()
     } else {
         if (userProfile != null) {
             val firstName by remember { mutableStateOf(userProfile?.firstName ?: "") }
             val lastName by remember { mutableStateOf(userProfile?.lastName ?: "") }
-
             ModalNavigationDrawer(
                 drawerContent = {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -213,14 +205,14 @@ fun SellScreen(
                         }
                     }
                 },
-                drawerState =  drawerState
+                drawerState = drawerState
             ) {
                 Scaffold(
                     topBar = {
                         TopAppBar(
                             title = { Text("PropertyHub") },
                             navigationIcon = {
-                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                IconButton(onClick = {scope.launch { drawerState.open() } }) {
                                     Icon(imageVector = Icons.Default.Menu, contentDescription = null)
                                 }
                             }
@@ -228,43 +220,58 @@ fun SellScreen(
                     }
                 ) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {
-                        // Toggle Button
-                        ToggleSoldUnsoldButton(
-                            showSold = showSold,
-                            onToggle = { showSold = it }
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(onClick = { /* Open Filters */ },colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Transparent, // Makes the button's background transparent
+                                contentColor = Color.Black)) {
+                                Text("Filters")
+                            }
 
-                        // LazyColumn to show properties
-                        LazyColumn(modifier = Modifier.weight(1f)) {
+                            // Sort By Dropdown
+                            Box {
+                                Button(onClick = { isDropdownExpanded = true },colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Transparent, // Makes the button's background transparent
+                                    contentColor = Color.Black)) {
+                                    Text("Sort By: $selectedSortOption")
+                                }
 
-                            items( if (showSold) soldProperties else unsoldProperties) { property ->
-                                SellPropertyCards(
-                                    modifier = Modifier,
-                                    property.area.toString(),
-                                    property.city,
-                                    property.state,
-                                    property.rooms.toString(),
-                                    property.bedrooms.toString(),
-                                    property.price,
-                                    property.propertyId.toString(),
-                                    navHostController = navHostController,
-                                    propertyDao,
-                                    onDeleted = ::refreshProperties
-                                )
+                                DropdownMenu(
+                                    expanded = isDropdownExpanded,
+                                    onDismissRequest = { isDropdownExpanded = false }
+                                ) {
+                                    sortOptions.forEach { option ->
+                                        DropdownMenuItem(
+                                            text = { Text(option) },
+                                            onClick = {
+                                                selectedSortOption = option
+                                                isDropdownExpanded = false
+
+                                                // Update sorting logic
+                                                viewModel.sortProperties(option)
+                                            }
+                                        )
+                                    }
+                                }
                             }
                         }
-                        Button(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Red
-                            ),
-                            onClick = {
-                                navHostController.navigate("create_listing_screen/$email")
+
+                        // Property list (sorted dynamically)
+                        LazyColumn {
+                            items(allProperties) { property ->
+                                // Display each property (replace with your card implementation)
+                                BuyPropertyCards(
+                                    modifier = Modifier,
+                                    property = property ,
+                                    navHostController = navHostController,
+                                    viewModel=viewModel,
+                                    onBuy=:: refreshBuyProperties
+
+                                )
                             }
-                        ) {
-                            Text(text = "Create Listing")
                         }
                     }
                 }
@@ -273,32 +280,12 @@ fun SellScreen(
             Text("User profile not found.")
         }
 
-        if (errorMessage.isNotEmpty()) {
+        if (profileErrorMessage.isNotEmpty()) {
             Text(
-                text = errorMessage,
+                text = profileErrorMessage,
                 color = Color.Red,
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
     }
 }
-
-
-
-@Composable
-fun ToggleSoldUnsoldButton(showSold: Boolean, onToggle: (Boolean) -> Unit) {
-    IconToggleButton(
-        checked = showSold,
-        onCheckedChange = { onToggle(it) },
-        modifier = Modifier
-            .padding(16.dp)
-            .size(48.dp)
-    ) {
-        val text=if(showSold) "Sold" else "Unsold"
-        Text(text, fontSize = 12.sp)
-    }
-}
-
-
-
-

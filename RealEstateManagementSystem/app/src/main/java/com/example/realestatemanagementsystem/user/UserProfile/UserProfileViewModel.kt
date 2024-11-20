@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.lifecycle.ViewModel
+import com.example.realestatemanagementsystem.Property.Property
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 
 class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
@@ -14,7 +17,8 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
-
+    private val _filteredProperties = MutableStateFlow<List<Property>>(emptyList())
+    val filteredProperties: StateFlow<List<Property>> = _filteredProperties
     private val userProfileDao = appDatabase.userProfileDao()
 
 

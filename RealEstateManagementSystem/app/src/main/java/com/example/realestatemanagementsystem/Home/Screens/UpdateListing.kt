@@ -62,6 +62,7 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
     var property by remember { mutableStateOf<Property?>(null) }
     var errorMessage by remember { mutableStateOf("") }
+
     LaunchedEffect(propertyid) {
         try {
             // Fetch the user profile from the database in a coroutine
@@ -279,9 +280,18 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
 
             // Submit button
-            LaunchedEffect( propertyNumber.isNotEmpty() && rooms.isNotEmpty() && bedrooms.isNotEmpty() && garage.isNotEmpty() && area.isNotEmpty() && type.isNotEmpty() && price.isNotEmpty() && zipcode.isNotEmpty() && city.isNotEmpty() && state.isNotEmpty()) {
-                isFormValid=  propertyNumber.isNotEmpty() && rooms.isNotEmpty() && bedrooms.isNotEmpty() && garage.isNotEmpty() && area.isNotEmpty() && type.isNotEmpty() && price.isNotEmpty() && zipcode.isNotEmpty() && city.isNotEmpty() && state.isNotEmpty()
-            }
+            isFormValid = listOf(
+                propertyNumber,
+                rooms,
+                bedrooms,
+                garage,
+                area,
+                type,
+                price,
+                zipCode,
+                city,
+                state
+            ).all { it.isNotBlank() }
             Button(modifier=Modifier.fillMaxWidth().padding(16.dp),
                 colors =  ButtonColors(
                     contentColor = Color.White,
@@ -318,7 +328,7 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
                     }
 
                 }) {
-                Text(text = "Create Listing")
+                Text(text = "Update Listing")
             }
         }
     }

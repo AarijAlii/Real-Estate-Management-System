@@ -53,15 +53,24 @@ fun NavigationGraph(
             val appDatabase = AppDatabase.getDatabase(context)
             val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
+            val propertyFactory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyViewModel: PropertyViewModel = viewModel(factory = propertyFactory)
+            val userProfileDao=appDatabase.userProfileDao()
 
             if (email != null) {
                 Log.d("HomeScreen", "Email received: $email")
                 HomeScreen(
-
+//                    email: String,
+//                    authViewModel: AuthViewModel,
+//                    navHostController: NavHostController,
+//                    userProfileDao: UserProfileDao,
+//                    viewModel: PropertyViewModel,
+//                    profileViewModel: UserProfileViewModel
                     email = email,
                     authViewModel = AuthViewModel(),
                     navHostController = navController,
-                    userProfileDao = appDatabase.userProfileDao(),
+                    viewModel =propertyViewModel,
+                    userProfileDao=userProfileDao,
                     profileViewModel = userProfileViewModel
                 )
             }

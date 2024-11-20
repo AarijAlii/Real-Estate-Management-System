@@ -3,22 +3,25 @@ package com.example.realestatemanagementsystem.Property
 
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface PropertyDao {
-
-    @Insert
-    suspend fun addProperty(property: Property)
-
-    @Update
-    suspend fun updateProperty(property: Property)
-
-    @Delete
-    suspend fun deleteProperty(property: Property)
+//
+//    @Insert
+//    suspend fun addProperty(property: Property)
+//
+//    @Update
+//    suspend fun updateProperty(property: Property)
+//
+//    @Delete
+//    suspend fun deleteProperty(property: Property)
 
     @Query("SELECT * FROM property WHERE email = :email AND isSold = 0")
     suspend fun getCurrentListings(email: String): List<Property>
+    @Query("SELECT * FROM property where isSold = 0")
+    suspend fun getAllBuyingProperties(): List<Property>
 
     @Query("SELECT * FROM property WHERE email = :email AND isSold = 1")
     suspend fun getSoldListings(email: String): List<Property>
@@ -73,6 +76,32 @@ interface PropertyDao {
 
     @Query("DELETE FROM property WHERE propertyId = :propertyId")
     suspend fun deleteeProperty(propertyId: Int)
+    @Query(
+        """SELECT * FROM property WHERE 
+            (:city IS NULL OR city LIKE :city) AND
+            (:state IS NULL OR state LIKE :state) AND
+            (:minPrice IS NULL OR price >= :minPrice) AND
+            (:maxPrice IS NULL OR price <= :maxPrice) AND
+            (:zipCode IS NULL OR zipcode LIKE :zipCode) AND
+            (:type IS NULL OR type LIKE :type) AND
+            (:noOfRooms IS NULL OR rooms = :noOfRooms) AND
+            (:bedrooms IS NULL OR bedrooms = :bedrooms) AND
+            (:garage IS NULL OR garage = :garage)
+        ORDER BY CASE WHEN :sortOrder = 'asc' THEN price END ASC,
+                 CASE WHEN :sortOrder = 'desc' THEN price END DESC"""
+    )
+    fun filterProperties(
+        city: String?,
+        state: String?,
+        minPrice: Double?,
+        maxPrice: Double?,
+        zipCode: String?,
+        type: String?,
+        noOfRooms: Int?,
+        bedrooms: Int?,
+        garage: Boolean?,
+        sortOrder: String?
+    ): Flow<List<Property>>
 
 }
 

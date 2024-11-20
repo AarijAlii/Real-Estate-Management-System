@@ -1,19 +1,12 @@
 package com.example.realestatemanagementsystem.util
 
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.compose.animation.expandHorizontally
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.content.MediaType
-import androidx.compose.foundation.content.MediaType.Companion.All
-import androidx.compose.foundation.content.MediaType.Companion.Text
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,12 +34,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -58,7 +47,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PropertyCards(modifier: Modifier = Modifier,area:String,city:String,state:String,bedrooms:String,bathrooms:String,price:String,propertyId:String, navHostController:NavHostController,propertyDao: PropertyDao,onDeleted:()->Unit) {
+fun SellPropertyCards(modifier: Modifier = Modifier, area:String, city:String, state:String, bedrooms:String, bathrooms:String, price:Double, propertyId:String, navHostController:NavHostController, propertyDao: PropertyDao, onDeleted:()->Unit) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     Card(
@@ -93,8 +82,23 @@ fun PropertyCards(modifier: Modifier = Modifier,area:String,city:String,state:St
                     fontWeight = FontWeight.Bold,
                     fontSize = 12.sp
                 )
+                val text = when {
+                    price >= 10000000 -> {
+                        val crore = (price / 10000000).toInt() // Get crore part and discard decimals
+                        "$crore Crore" // Format price as Crore
+                    }
+                    price >= 100000 -> {
+                        val lac = (price / 100000).toInt() // Get lac part and discard decimals
+                        "$lac Lacs" // Format price as Lacs
+                    }
+                    else -> {
+                        // For prices below 1 Lac, do not show the "Thousands" part.
+                        price.toInt().toString() // Display the price as a whole number without decimals
+                    }
+                }
+
                 Text(
-                    text = price,
+                    text = text,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
