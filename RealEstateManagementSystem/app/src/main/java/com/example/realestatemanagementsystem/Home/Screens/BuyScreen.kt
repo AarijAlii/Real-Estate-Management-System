@@ -62,6 +62,7 @@ import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.Navigation.getNavigationItems
 import com.example.realestatemanagementsystem.property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -78,7 +79,8 @@ fun HomeScreen(
     navHostController: NavHostController,
     userProfileDao: UserProfileDao,
     viewModel: PropertyViewModel,
-    profileViewModel: UserProfileViewModel
+    profileViewModel: UserProfileViewModel,
+    favoriteViewModel: FavoriteViewModel
 ) {
     // Other states and logic remain the same...
     var showFilters by remember { mutableStateOf(false) }
@@ -102,7 +104,7 @@ fun HomeScreen(
     var stateFilter = remember { mutableStateOf("") }
     var minPrice = remember { mutableStateOf("") }
     var maxPrice = remember { mutableStateOf("") }
-
+    val favorites = favoriteViewModel.favorites.collectAsState(initial = emptyList()).value
 
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Failed) {
@@ -286,12 +288,19 @@ fun HomeScreen(
                         LazyColumn {
                             items(allProperties) { property ->
                                 // Display each property (replace with your card implementation)
+                                val isFavorite = favorites.any { it.propertyId == property.propertyId }
                                 BuyPropertyCards(
                                     modifier = Modifier,
                                     property = property ,
                                     navHostController = navHostController,
                                     viewModel=viewModel,
-                                    onBuy=:: refreshBuyProperties
+                                    onBuy=:: refreshBuyProperties,
+                                    email,
+                                    property.propertyId,
+                                    onFavoriteClicked = { email, propertyId, isFavorite ->
+                                        favoriteViewModel.addOrRemoveFavorite(email, propertyId,isFavorite)
+                                    },
+                                    isFavorite = isFavorite
 
                                 )
                             }

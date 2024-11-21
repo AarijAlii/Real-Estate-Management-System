@@ -11,10 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,7 +48,15 @@ import com.example.realestatemanagementsystem.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BuyPropertyCards(modifier: Modifier = Modifier, property: Property, navHostController:NavHostController, viewModel: PropertyViewModel, onBuy:()->Unit) {
+fun BuyPropertyCards(modifier: Modifier = Modifier,
+                     property: Property,
+                     navHostController:NavHostController,
+                     viewModel: PropertyViewModel,
+                     onBuy:()->Unit,
+                     email: String, // Logged-in user's email
+                     propertyId: Int,
+                     onFavoriteClicked: (String, Int, Boolean) -> Unit,
+                    isFavorite: Boolean){
     var showDeleteDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     Card(
@@ -148,9 +161,27 @@ fun BuyPropertyCards(modifier: Modifier = Modifier, property: Property, navHostC
                     Text(text = "Buy")
 
                 }
+
+                       // var isFavorite = remember { false } // track whether the property is in the favorites list
+                        var favoriteState = remember { mutableStateOf(isFavorite) }
+
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Image(imageVector = Icons.Default.Favorite, contentDescription = "Property Image")
+
+                            // Favorite icon toggle logic
+                            IconButton(onClick = {
+                                favoriteState.value = !favoriteState.value
+                                onFavoriteClicked(email, propertyId, favoriteState.value) // Pass favorite state to ViewModel
+                            }) {
+                                Icon(
+                                    imageVector = if (favoriteState.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                                    contentDescription = "Favorite Icon",
+                                    tint = if (favoriteState.value) Color.Red else Color.Gray
+                                )
+                            }
+                        }
             }
         }
-
     }
 }
 

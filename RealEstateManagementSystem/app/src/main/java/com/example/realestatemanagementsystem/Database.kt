@@ -6,6 +6,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import android.content.Context
+import com.example.realestatemanagementsystem.favorites.Favorite
+import com.example.realestatemanagementsystem.favorites.FavoriteDao
 import com.example.realestatemanagementsystem.property.Property
 import com.example.realestatemanagementsystem.property.PropertyDao
 import com.example.realestatemanagementsystem.image.ImageDao
@@ -13,11 +15,12 @@ import com.example.realestatemanagementsystem.image.ImageEntity
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
-@Database(entities = [UserProfile::class, Property::class, ImageEntity::class], version = 4)
+@Database(entities = [UserProfile::class, Property::class, ImageEntity::class, Favorite::class], version = 5)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao
     abstract fun imageDao(): ImageDao
+    abstract fun favoriteDao(): FavoriteDao
 
 
     companion object {
@@ -114,6 +117,7 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
 
 val MIGRATION_4_5 = object : Migration(4, 5) {
     override fun migrate(db: SupportSQLiteDatabase) {
+        // This is for upgrading from version 4 to 5
         db.execSQL(
             """
             CREATE TABLE IF NOT EXISTS `favorites` (
@@ -128,9 +132,13 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
     }
 }
 
+
 val MIGRATION_5_4 = object : Migration(5, 4) {
     override fun migrate(db: SupportSQLiteDatabase) {
         // Drop the 'favorites' table when downgrading
         db.execSQL("DROP TABLE IF EXISTS `favorites`")
     }
 }
+
+
+

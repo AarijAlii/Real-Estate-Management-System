@@ -15,6 +15,7 @@ import com.example.realestatemanagementsystem.Home.Screens.UpdateListingScreen
 import com.example.realestatemanagementsystem.property.PropertyViewModel
 import com.example.realestatemanagementsystem.property.PropertyViewModelFactory
 import com.example.realestatemanagementsystem.AppDatabase
+import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -48,6 +49,7 @@ fun NavigationGraph(
         composable(Screen.HomeScreen.route) {
                 backStackEntry ->
             val email = backStackEntry.arguments?.getString("email")
+            val favoriteViewModel = viewModel<FavoriteViewModel>()
             val context = LocalContext.current
             val appDatabase = AppDatabase.getDatabase(context)
             val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
@@ -73,7 +75,8 @@ fun NavigationGraph(
                     navHostController = navController,
                     viewModel =propertyViewModel,
                     userProfileDao=userProfileDao,
-                    profileViewModel = userProfileViewModel
+                    profileViewModel = userProfileViewModel,
+                    favoriteViewModel = favoriteViewModel
                 )
             }
         }
