@@ -13,7 +13,7 @@ import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Home.Screens.SellScreen
 import com.example.realestatemanagementsystem.Home.Screens.UpdateListingScreen
 import com.example.realestatemanagementsystem.property.PropertyViewModel
-import com.example.realestatemanagementsystem.Property.PropertyViewModelFactory
+import com.example.realestatemanagementsystem.property.PropertyViewModelFactory
 import com.example.realestatemanagementsystem.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen

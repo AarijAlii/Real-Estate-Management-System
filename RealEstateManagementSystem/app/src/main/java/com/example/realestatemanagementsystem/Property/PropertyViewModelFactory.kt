@@ -1,10 +1,8 @@
-package com.example.realestatemanagementsystem.Property
+package com.example.realestatemanagementsystem.property
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.realestatemanagementsystem.image.ImageDao
-import com.example.realestatemanagementsystem.property.PropertyDao
-import com.example.realestatemanagementsystem.property.PropertyViewModel
 
 //class PropertyViewModelFactory(
 //    private val propertyDao: PropertyDao
