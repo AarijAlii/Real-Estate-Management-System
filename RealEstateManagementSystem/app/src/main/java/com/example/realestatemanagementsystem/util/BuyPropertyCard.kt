@@ -2,16 +2,24 @@ package com.example.realestatemanagementsystem.util
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -19,9 +27,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,23 +50,26 @@ import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyDao
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BuyPropertyCards(modifier: Modifier = Modifier,property: Property, navHostController:NavHostController,viewModel:PropertyViewModel,onBuy:()->Unit) {
-    var showDeleteDialog by remember { mutableStateOf(false) }
+fun BuyPropertyCards(modifier: Modifier = Modifier,property: Property, navHostController:NavHostController,viewModel:PropertyViewModel,onBuy:()->Unit,onclick:  ()->Unit) {
+
     val coroutineScope = rememberCoroutineScope()
     Card(
         modifier = Modifier
             .fillMaxWidth()  // Ensure the card fills the screen width
-            .padding(8.dp)   // Add padding around the card for spacing
+            .padding(8.dp)
+            .clickable { onclick() }// Add padding around the card for spacing
             .shadow(16.dp, RoundedCornerShape(16.dp))  // Shadow and rounded corners
     ) {
         Column(modifier = Modifier) {
@@ -160,10 +173,6 @@ fun BuyPropertyCards(modifier: Modifier = Modifier,property: Property, navHostCo
 
     }
 }
-
-
-
-
 
 
 

@@ -13,10 +13,11 @@ import kotlinx.coroutines.flow.StateFlow
 
 
 class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
-    private val _userProfile = MutableStateFlow<UserProfile?>(
-        null
-    )
+    private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> get() = _userProfile
+
+    private val _sellerUserProfile= MutableStateFlow<UserProfile?>(null)
+    val sellerUserProfile: StateFlow<UserProfile?> get() = _sellerUserProfile
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
@@ -37,24 +38,15 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
 //    val errorMessage: StateFlow<String> = _errorMessage
 
     // Function to get the user profile from the local database by email(PK)
-    fun getUserByEmail(email: String, onSuccess: (UserProfile) -> Unit, onError: (String) -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+    fun getUserProfileByEmail(email: String) {
+        viewModelScope.launch {
             try {
-                // Fetch user profile from the database by email
-                val userProfile = appDatabase.userProfileDao().getUserByEmail(email)
-
-                if (userProfile != null) {
-                    // If user is found, pass the user profile to the success callback
-                    onSuccess(userProfile)
-                } else {
-                    // If no user is found, show an error message
-                    onError("User not found in database")
-                }
+                val userProfile = userProfileDao.getUserByEmail(email)
+                _sellerUserProfile.value = userProfile
             } catch (e: Exception) {
-                // Handle any errors during database operations
-                onError("Failed to retrieve user profile: ${e.message}")
+                _errorMessage.value = "Error fetching user profile: ${e.message}"
             }
-        }
+            }
     }
 
     fun getUserProfile(email: String) {

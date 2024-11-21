@@ -43,6 +43,7 @@ fun UserProfileScreen(
    val userProfile by profileViewModel.userProfile.collectAsState()
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf("") }
+    profileViewModel.getUserProfile(email)
 
 
 

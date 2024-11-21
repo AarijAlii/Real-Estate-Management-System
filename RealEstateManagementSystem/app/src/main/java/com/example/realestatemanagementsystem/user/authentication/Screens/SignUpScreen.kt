@@ -203,7 +203,7 @@ fun SignUpScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(8.dp),
-                            visualTransformation = PasswordVisualTransformation(),
+                            visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             trailingIcon = {
                                 val image = if (confirmPasswordVisible)
                                     painterResource(id = R.drawable.baseline_visibility_24)
@@ -213,6 +213,7 @@ fun SignUpScreen(
                                 // IconButton to toggle password visibility
                                 IconButton(onClick = {
                                     confirmPasswordVisible = !confirmPasswordVisible
+
                                 }) {
                                     Icon(painter=image, contentDescription = "show pass")
                                 }

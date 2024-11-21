@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,7 +21,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -45,6 +49,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,14 +57,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.Navigation.getNavigationItems
+import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
@@ -97,11 +110,8 @@ fun HomeScreen(
     var isDropdownExpanded by remember { mutableStateOf(false) }
     var selectedSortOption by remember { mutableStateOf("None") }
     val sortOptions = listOf("Price: Low to High", "Price: High to Low")
-    var searchText = remember { mutableStateOf("") }
-    var cityFilter = remember { mutableStateOf("") }
-    var stateFilter = remember { mutableStateOf("") }
-    var minPrice = remember { mutableStateOf("") }
-    var maxPrice = remember { mutableStateOf("") }
+    var selectedProperty: Property? =null
+    var showPopup by remember { mutableStateOf(false) }
 
 
     LaunchedEffect(authState.value) {
@@ -237,6 +247,7 @@ fun HomeScreen(
                         )
                     }
                 ) { innerPadding ->
+
                     Column(modifier = Modifier.padding(innerPadding)) {
                         Row(
                             modifier = Modifier
@@ -260,30 +271,33 @@ fun HomeScreen(
                                 ) {
                                     Text("Sort By: $selectedSortOption")
                                 }
-                            }}
-                        DropdownMenu(
-                            expanded = isDropdownExpanded,
-                            onDismissRequest = { isDropdownExpanded = false }
-                        ) {
-                            sortOptions.forEach { option ->
-                                DropdownMenuItem(
-                                    text = { Text(option) },
-                                    onClick = {
-                                        selectedSortOption = option
-                                        isDropdownExpanded = false
+                                DropdownMenu(
+                                    expanded = isDropdownExpanded,
+                                    onDismissRequest = { isDropdownExpanded = false }
+                                ) {
+                                    sortOptions.forEach { option ->
+                                        DropdownMenuItem(
+                                            text = { Text(option) },
+                                            onClick = {
+                                                selectedSortOption = option
+                                                isDropdownExpanded = false
 
-                                        // Update sorting logic
-                                        viewModel.sortProperties(option)
+                                                // Update sorting logic
+                                                viewModel.sortProperties(option)
+                                            }
+                                        )
+
                                     }
-                                )
 
+                                }
                             }
 
-                            }
+                        }
+
 
 
                         // Property list (sorted dynamically)
-                        LazyColumn {
+                        LazyColumn() {
                             items(allProperties) { property ->
                                 // Display each property (replace with your card implementation)
                                 BuyPropertyCards(
@@ -292,10 +306,29 @@ fun HomeScreen(
                                     navHostController = navHostController,
                                     viewModel=viewModel,
                                     onBuy=:: refreshBuyProperties
+                                ){
+                                    showPopup=true
+                                    selectedProperty=property
+                                }
 
+
+                            }
+                        }
+                        if (showPopup && selectedProperty != null) {
+                            Box(
+                                modifier = Modifier
+
+                                    .zIndex(1f) // Ensures popup is on top of other UI elements
+                                    .padding(16.dp)
+                            ) {
+                                PropertyDetailDialog(
+                                    property = selectedProperty!!,
+                                    onDismiss ={ showPopup = false },
+                                    viewModel = profileViewModel // Hide the popup
                                 )
                             }
                         }
+
                     }
                 }
             }
@@ -329,7 +362,7 @@ fun FiltersExample(viewModel: PropertyViewModel,innerPadding:PaddingValues) {
 
 
             // "Filters" button to toggle filter visibility
-            Button(
+    Button(
                 onClick = { showFilters = !showFilters },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent, // Makes the button's background transparent
@@ -440,3 +473,188 @@ fun FiltersExample(viewModel: PropertyViewModel,innerPadding:PaddingValues) {
         }
 
 }
+@Composable
+fun PropertyDetailDialog(
+    property: Property,
+    onDismiss: () -> Unit,
+
+    viewModel: UserProfileViewModel
+) {
+    Dialog(onDismissRequest = { onDismiss() }) {
+        PropertyDetailPopup(
+            property = property,
+            onClose = onDismiss,
+            viewModel=viewModel
+        )
+    }
+}
+@Composable
+fun PropertyDetailPopup(
+    property: Property, // Replace with your data class for property
+    onClose: () -> Unit,
+
+    viewModel: UserProfileViewModel
+) {
+    viewModel.getUserProfileByEmail(property.email)
+    val user by viewModel.sellerUserProfile.collectAsState()
+    Box(
+        modifier = Modifier
+            .shadow(16.dp, RoundedCornerShape(16.dp))
+            .background(Color.White)
+
+    ) {
+        IconButton(
+            onClick = { onClose() },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+                .zIndex(1f)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Close",
+                tint = Color.Black
+            )
+        }
+        // Background layer with image
+        Column {
+            // Unscrollable Image Section
+            Image(
+                painter = painterResource(id = R.drawable.house_file), // Replace with your image loader
+                contentDescription = "Property Image",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp) // Set a fixed height for the image
+                    .clip(MaterialTheme.shapes.medium)
+            )
+
+            // Scrollable Details Section
+            LazyColumn(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                item {
+                    // Property Title
+                    Text(
+                        text ="Property Number: ${property.propertyNumber}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+
+                item {
+                    // Property Description
+                    Text(
+                        text = "Property Type: ${property.type}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                item {
+                    // Property Price
+                    val text = when {
+                        property.price >= 10000000 -> {
+                            val crore = (property.price / 10000000).toInt() // Get crore part and discard decimals
+                            "$crore Crore" // Format price as Crore
+                        }
+                        property.price >= 100000 -> {
+                            val lac = (property.price / 100000).toInt() // Get lac part and discard decimals
+                            "$lac Lacs" // Format price as Lacs
+                        }
+                        else -> {
+                            // For prices below 1 Lac, do not show the "Thousands" part.
+                            property.price.toInt().toString() // Display the price as a whole number without decimals
+                        }
+                    }
+                    Text(
+                        text = "Price: $text",
+                        style = MaterialTheme.typography.bodyLarge,
+
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
+
+                item{
+                    Text(
+                        text = buildAnnotatedString {
+                            append("${property.area}yd") // Regular text
+                            withStyle(style = SpanStyle(
+                                baselineShift = BaselineShift.Superscript, // Make "2" superscript
+                                fontSize = 12.sp // Optional, you can change the font size of the superscript
+                            )
+                            ) {
+                                append("2")
+                            }},
+
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                item{
+                    Text(
+                        text = "Bedrooms: ${property.bedrooms}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                item{
+                    Text(
+                        text = "Bathrooms: ${property.rooms}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                item{
+                    Text(
+                        text = "Garage: ${property.garage}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                item{
+                    Text(
+                        text = "City: ${property.city}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                item {
+                    Text(
+                        text= "State: ${property.state}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                item{
+                    Text(
+                        text = "Zip Code: ${property.zipCode}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+                item{
+                    Text(
+                        text= "Seller email: ${property.email}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(top = 8.dp,bottom = 8.dp)
+                    )
+                }
+                item{
+                    Text(
+                        text = "Seller Contact: ${user?.contact}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 8.dp))
+                }
+                // Add more details here...
+            }
+        }
+
+        // Close Button
+
+    }
+}
+
+
+
+
