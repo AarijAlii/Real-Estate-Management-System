@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.user.UserProfile
+package com.example.realestatemanagementsystem.Database
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -8,6 +8,8 @@ import androidx.room.RoomDatabase
 import android.content.Context
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyDao
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
 @Database(entities = [UserProfile::class, Property::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
@@ -73,7 +75,7 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
                 `city` TEXT NOT NULL, 
                 `state` TEXT NOT NULL, 
                 `propertyNumber` TEXT NOT NULL, 
-                `rooms` INTEGER NOT NULL, 
+                `rooms` 0261INTEGER NOT NULL, 
                 `bedrooms` INTEGER NOT NULL, 
                 `garage` INTEGER NOT NULL, 
                 `area` REAL NOT NULL, 

@@ -15,7 +15,7 @@ import com.example.realestatemanagementsystem.Home.Screens.SellScreen
 import com.example.realestatemanagementsystem.Home.Screens.UpdateListingScreen
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.Property.PropertyViewModelFactory
-import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
+import com.example.realestatemanagementsystem.Database.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel

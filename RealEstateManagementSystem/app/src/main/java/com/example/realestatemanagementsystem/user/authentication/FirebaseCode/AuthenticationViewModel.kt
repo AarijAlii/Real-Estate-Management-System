@@ -1,18 +1,13 @@
 package com.example.realestatemanagementsystem.user.authentication.FirebaseCode
 
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
+import com.example.realestatemanagementsystem.Database.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-
-import kotlinx.coroutines.launch
 
 
 class AuthViewModel() : ViewModel() {
