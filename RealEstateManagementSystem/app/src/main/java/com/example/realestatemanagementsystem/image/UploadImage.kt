@@ -1,22 +1,13 @@
-package com.example.realestatemanagementsystem
+package com.example.realestatemanagementsystem.image
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
-import androidx.core.content.ContentResolverCompat
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.Call
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.util.*
-//
+import okhttp3.*
+
 //object ImageUploader {
 //
 //    // Function to upload image to Imgur
@@ -66,65 +57,6 @@ import java.util.*
 //        return null
 //    }
 //}
-
-//suspend fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, callback: (String?) -> Unit) {
-//    try {
-//        val file = uri.path?.let { File(it) }  // Get the file from URI
-//        val requestFile = file?.asRequestBody("image/*".toMediaTypeOrNull())  // Create request body for file
-//        val body = requestFile?.let { MultipartBody.Part.createFormData("image", file?.name, it) }
-//
-//        // Create Retrofit instance and call the API
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl("https://api.imgur.com/")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//
-//        val service = retrofit.create(ImgurApiService::class.java)
-//        val response = body?.let { service.uploadImage("Client-ID $clientId", it) }
-//
-//        // Check the response
-//        if (response != null) {
-//            if (response.isSuccessful) {
-//                val imageUrl = response.body()?.data?.link
-//                Log.d("ImgurUpload", "Image uploaded successfully: $imageUrl")
-//                callback(imageUrl)  // Return the image URL if upload is successful
-//            } else {
-//                Log.e("ImgurUpload", "Failed to upload: ${response.message()}")
-//                callback(null)  // If upload fails, return null
-//            }
-//        }
-//    } catch (e: Exception) {
-//        Log.e("ImgurUpload", "Error during upload: ${e.message}")
-//        callback(null)  // In case of error, return null
-//    }
-//}
-
-//fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, callback: (String?) -> Unit) {
-//    try {
-//        val file = File(uri.path)  // Get the file from URI
-//        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())  // Create request body for file
-//        val body = MultipartBody.Part.createFormData("image", file.name, requestFile)
-//
-//        // Make Retrofit API call
-//        val response = RetrofitClient.imgurService.uploadImage("Client-ID $clientId", body)
-//
-//        // Handle the response
-//        if (response.isSuccessful) {
-//            val imageUrl = response.body()?.data?.link
-//            Log.d("ImgurUpload", "Image uploaded successfully: $imageUrl")
-//            callback(imageUrl)  // Return the image URL if upload is successful
-//        } else {
-//            Log.e("ImgurUpload", "Failed to upload: ${response.message()}")
-//            callback(null)  // If upload fails, return null
-//        }
-//    } catch (e: Exception) {
-//        Log.e("ImgurUpload", "Error during upload: ${e.message}")
-//        callback(null)  // In case of error, return null
-//    }
-//}
-
-import okhttp3.*
-
 
 suspend fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, callback: (String?) -> Unit) {
 
@@ -181,4 +113,4 @@ suspend fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, cal
                 }
             }
         })
-    }
+}

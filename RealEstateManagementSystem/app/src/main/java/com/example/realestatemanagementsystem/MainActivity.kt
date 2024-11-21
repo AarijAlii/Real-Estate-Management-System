@@ -3,7 +3,6 @@ package com.example.realestatemanagementsystem
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -13,15 +12,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.realestatemanagementsystem.Navigation.NavigationGraph
 import com.example.realestatemanagementsystem.ui.theme.RealEstateManagementSystemTheme
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
-import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
-import com.google.firebase.FirebaseApp
-
 
 class MainActivity : ComponentActivity() {
-    private val userProfileViewModel: UserProfileViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //FirebaseApp.initializeApp(context)
         setContent {
             val navController = rememberNavController()
             val authViewModel: AuthViewModel = viewModel()
@@ -33,5 +27,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-

@@ -1,11 +1,8 @@
 package com.example.realestatemanagementsystem.Property
 
-
-
 import androidx.room.*
 import com.example.realestatemanagementsystem.image.ImageEntity
 import kotlinx.coroutines.flow.Flow
-
 
 @Dao
 interface PropertyDao {
@@ -124,6 +121,4 @@ interface PropertyDao {
 
     @Insert
     suspend fun insertImages(images: List<ImageEntity>)
-
-
 }

@@ -2,6 +2,7 @@ package com.example.realestatemanagementsystem.user.UserProfile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.realestatemanagementsystem.AppDatabase
 
 class UserViewModelFactory(
     private val appDatabase: AppDatabase

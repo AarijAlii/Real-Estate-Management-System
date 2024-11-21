@@ -10,14 +10,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.example.realestatemanagementsystem.uploadImageToImgur
+import com.example.realestatemanagementsystem.image.uploadImageToImgur
 
 
 class PropertyViewModel(private val propertyDao: PropertyDao,private val imageDao: ImageDao) : ViewModel() {
 
  //       private val _errorMessage = MutableLiveData<String>()
     //    val errorMessage: MutableLiveData<String> get() = _errorMessage
- suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
+        suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
 
             val imageUrls = mutableListOf<String>()
 
@@ -38,25 +38,8 @@ class PropertyViewModel(private val propertyDao: PropertyDao,private val imageDa
             }
         }
 
-//    private fun insertPropertyWithImages(property: Property, imageUrls: List<String>) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            try {
-//                // Insert property and get its ID
-//                val propertyId = propertyDao.insertProperty(property)
-//
-//                // Prepare the images to insert
-//                val images =
-//                    imageUrls.map { ImageEntity(propertyId = propertyId.toInt(), imageUrl = it) }
-//
-//                // Insert the images into the database
-//                imageDao.insertImages(images)
-//            } catch (e: Exception) {
-//                _errorMessage.value = "Error adding property: ${e.message}"
-//            }
-//        }
-//    }
 
-    private fun insertPropertyWithImages(
+        private fun insertPropertyWithImages(
         property: Property,
         imageUrls: List<String>
     ) {
@@ -82,12 +65,6 @@ class PropertyViewModel(private val propertyDao: PropertyDao,private val imageDa
             }
         }
     }
-
-
-
-
-
-
 
 //        // LiveData to observe uploaded image URLs
 //        private val _uploadedImageUrls = MutableLiveData<List<String>>()
@@ -134,10 +111,6 @@ class PropertyViewModel(private val propertyDao: PropertyDao,private val imageDa
 //                throw Exception("Image upload failed")
 //            }
 //        }
-
-
-
-
 
 
 

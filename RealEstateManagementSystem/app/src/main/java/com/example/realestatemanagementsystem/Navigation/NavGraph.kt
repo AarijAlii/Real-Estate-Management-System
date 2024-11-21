@@ -7,7 +7,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-
 import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
@@ -15,7 +14,7 @@ import com.example.realestatemanagementsystem.Home.Screens.SellScreen
 import com.example.realestatemanagementsystem.Home.Screens.UpdateListingScreen
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.Property.PropertyViewModelFactory
-import com.example.realestatemanagementsystem.user.UserProfile.AppDatabase
+import com.example.realestatemanagementsystem.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel

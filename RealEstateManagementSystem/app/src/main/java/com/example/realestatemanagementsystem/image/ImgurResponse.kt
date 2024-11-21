@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem
+package com.example.realestatemanagementsystem.image
 
 data class ImgurResponse(
     val data: ImgurData,

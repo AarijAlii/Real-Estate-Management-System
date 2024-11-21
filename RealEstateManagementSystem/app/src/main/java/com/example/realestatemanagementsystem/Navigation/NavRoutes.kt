@@ -11,5 +11,4 @@ sealed class Screen(val route:String){
     data object UserProfileUpdateScreen:Screen("update_profile_screen/{email}")
     data object UpdateListingScreen:Screen("update_listing_screen/{email}")
 
-
 }

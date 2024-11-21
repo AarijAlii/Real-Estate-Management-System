@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.user.UserProfile
+package com.example.realestatemanagementsystem
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -10,12 +10,16 @@ import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyDao
 import com.example.realestatemanagementsystem.image.ImageDao
 import com.example.realestatemanagementsystem.image.ImageEntity
+import com.example.realestatemanagementsystem.property.favorites.Favorite
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
-@Database(entities = [UserProfile::class, Property::class, ImageEntity::class], version = 4)
+@Database(entities = [UserProfile::class, Property::class, ImageEntity::class, Favorite::class], version = 5)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao
     abstract fun imageDao(): ImageDao
+    abstract fun favoriteDao(): FavoriteDao
 
     companion object {
         @Volatile
@@ -27,7 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4) // Add the migration here
+                ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,MIGRATION_4_5) // Add the migration here
                     .build()
                 INSTANCE = db
                 db
@@ -108,27 +112,18 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
     }
 }
 
-//val MIGRATION_4_5 = object : Migration(4, 5) {
-//    override fun migrate(database: SupportSQLiteDatabase) {
-//        // Create the new schema by copying data from the old table to the new one.
-//        database.execSQL("""
-//            CREATE TABLE IF NOT EXISTS image_new (
-//                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-//                propertyId INTEGER NOT NULL,
-//                imageUrl TEXT NOT NULL
-//            )
-//        """)
-//
-//        // Copy the data from the old table to the new one.
-//        database.execSQL("""
-//            INSERT INTO image_new (id, propertyId, imageUrl)
-//            SELECT id, propertyId, imageUrl FROM image
-//        """)
-//
-//        // Remove the old table.
-//        database.execSQL("DROP TABLE property_images")
-//
-//        // Rename the new table to the original table name.
-//        database.execSQL("ALTER TABLE image_new RENAME TO property_images")
-//    }
-//}
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `favorites` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                `email` TEXT NOT NULL, 
+                `propertyId` INTEGER NOT NULL, 
+                FOREIGN KEY(`email`) REFERENCES `user_profile`(`email`) ON DELETE CASCADE,
+                FOREIGN KEY(`propertyId`) REFERENCES `property`(`propertyId`) ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+    }
+}
