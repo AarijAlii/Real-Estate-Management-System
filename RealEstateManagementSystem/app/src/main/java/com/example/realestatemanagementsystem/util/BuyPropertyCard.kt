@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -152,23 +153,34 @@ fun BuyPropertyCards(modifier: Modifier = Modifier,property: Property, navHostCo
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Light,
                     modifier = Modifier.padding(start = 8.dp, top = 4.dp, bottom = 8.dp)
-                )
-                Spacer(modifier=Modifier.weight(1f))
+                )}
 
-                Button(onClick = {
-                    viewModel.markAsSold(propertyId = property.propertyId.toInt())
-                    onBuy()
+            Row (verticalAlignment = Alignment.CenterVertically){
 
-                },
+
+                Button(
+                    onClick = {
+                        viewModel.markAsSold(propertyId = property.propertyId.toInt())
+                        onBuy()
+
+                    },
                     colors = ButtonColors(
-                    contentColor = Color.White,
-                    disabledContainerColor = Color.Gray,
-                    containerColor = Color.Red,
-                    disabledContentColor = Color.White)){
+                        contentColor = Color.White,
+                        disabledContainerColor = Color.Gray,
+                        containerColor = Color.Red,
+                        disabledContentColor = Color.White
+                    ),
+                    modifier = Modifier.weight(1f).padding(8.dp)
+                ) {
                     Text(text = "Buy")
 
                 }
+                IconButton(onClick = {}) {
+
+                    Icon(Icons.Default.Favorite, contentDescription = "Close", tint = Color.Red)
+                }
             }
+
         }
 
     }

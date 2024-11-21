@@ -1,4 +1,6 @@
 [versions]
+accompanistPager = "<latest_version>"
+accompanistPagerIndicators = "<latest_version>"
 agp = "8.7.0"
 androidxActivityCompose = "1.7.2"
 animatedNavigationBar = "1.0.0"
@@ -23,6 +25,8 @@ ui = "1.7.3"
 uiToolingPreview = "1.5.0"
 
 [libraries]
+accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPagerIndicators" }
+accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 androidx-activity-compose-v172 = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }

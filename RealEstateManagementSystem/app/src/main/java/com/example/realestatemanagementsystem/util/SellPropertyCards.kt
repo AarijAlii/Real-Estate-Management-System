@@ -42,12 +42,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.example.realestatemanagementsystem.Property.PropertyDao
+import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SellPropertyCards(modifier: Modifier = Modifier, area:String, city:String, state:String, bedrooms:String, bathrooms:String, price:Double, propertyId:String, navHostController:NavHostController, propertyDao: PropertyDao, onDeleted:()->Unit) {
+fun SellPropertyCards(modifier: Modifier = Modifier, area:String, city:String, state:String, bedrooms:String, bathrooms:String, price:Double, propertyId:String, navHostController:NavHostController,propertyViewModel: PropertyViewModel, onDeleted:()->Unit) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     Card(
@@ -166,7 +167,7 @@ fun SellPropertyCards(modifier: Modifier = Modifier, area:String, city:String, s
                     Button(onClick = {
 
                         coroutineScope.launch {
-                        deleteProperty(propertyId = propertyId, propertyDao = propertyDao)
+                        deleteProperty(propertyId = propertyId, propertyViewModel = propertyViewModel)
                         onDeleted()
                         }
                         showDeleteDialog = false
@@ -185,10 +186,10 @@ fun SellPropertyCards(modifier: Modifier = Modifier, area:String, city:String, s
 }
 
 
-suspend fun deleteProperty(modifier: Modifier = Modifier, propertyId: String, propertyDao: PropertyDao) {
+suspend fun deleteProperty(modifier: Modifier = Modifier, propertyId: String, propertyViewModel: PropertyViewModel) {
 
         try{
-            propertyDao.deleteeProperty(propertyId.toInt())
+            propertyViewModel.deleteeProperty(propertyId = propertyId.toInt())
         }catch (e:Exception){
             val errorMessage = e.message.toString()
             Toast.makeText(getApplicationContext(), errorMessage, Toast.LENGTH_SHORT).show()

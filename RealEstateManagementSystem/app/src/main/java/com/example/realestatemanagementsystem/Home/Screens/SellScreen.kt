@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.Row
@@ -71,7 +72,8 @@ fun SellScreen(
     navHostController: NavHostController,
     authViewModel: AuthViewModel,
     profileViewModel: UserProfileViewModel,
-    propertyDao: PropertyDao
+
+    innerPadding: PaddingValues
 ) {
     val currentRoute = navHostController.currentBackStackEntry?.destination?.route
     val items = getNavigationItems()
@@ -133,100 +135,7 @@ fun SellScreen(
             val firstName by remember { mutableStateOf(userProfile?.firstName ?: "") }
             val lastName by remember { mutableStateOf(userProfile?.lastName ?: "") }
 
-            ModalNavigationDrawer(
-                drawerContent = {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ModalDrawerSheet {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.house_file),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .clip(CircleShape)
-                                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                                    .clickable {
-                                        navHostController.navigate("update_profile_screen/${email}")
-                                    }
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "$firstName $lastName",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = email,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Divider()
-                        }
-                        items.forEachIndexed { index, navigationItem ->
-                            NavigationDrawerItem(
-                                label = {
-                                    Row {
-                                        Icon(
-                                            painter = painterResource(navigationItem.icon),
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .padding(horizontal = 8.dp, vertical = 2.dp)
-                                                .size(18.dp)
-                                        )
-                                        Text(text = navigationItem.title)
-                                    }
-                                },
-                                selected = currentRoute == navigationItem.route || (currentRoute == null && index == 0),
-                                onClick = {
-                                    if (index != selectedIndex) {
-                                        selectedIndex = index
-                                        scope.launch { drawerState.close() }
-                                        val finalRoute = navigationItem.route.replace("{email}", email)
-                                        navHostController.navigate(finalRoute)
-                                    }
-                                },
-                                modifier = Modifier.padding(2.dp)
-                            )
-                        }
 
-                        Row(
-                            modifier = Modifier
-                                .padding(horizontal = 27.dp, vertical = 8.dp)
-                                .clickable {
-                                    authViewModel.signOut()
-                                    navHostController.navigate(Screen.LoginScreen.route)
-                                },
-                            verticalAlignment = Alignment.Bottom,
-                            horizontalArrangement = Arrangement.Start
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.baseline_logout_24),
-                                contentDescription = "Logout",
-                                modifier = Modifier.size(22.dp)
-                            )
-                            Text(text = "  Logout", fontSize = 14.sp)
-                        }
-                    }
-                },
-                drawerState =  drawerState
-            ) {
-                Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            title = { Text("PropertyHub") },
-                            navigationIcon = {
-                                IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                    Icon(imageVector = Icons.Default.Menu, contentDescription = null)
-                                }
-                            }
-                        )
-                    }
-                ) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {
                         // Toggle Button
                         ToggleSoldUnsoldButton(
@@ -248,7 +157,7 @@ fun SellScreen(
                                     property.price,
                                     property.propertyId.toString(),
                                     navHostController = navHostController,
-                                    propertyDao,
+                                   propertyViewModel = propertyViewModel,
                                     onDeleted = ::refreshProperties
                                 )
                             }
@@ -267,8 +176,8 @@ fun SellScreen(
                             Text(text = "Create Listing")
                         }
                     }
-                }
-            }
+
+
         } else {
             Text("User profile not found.")
         }

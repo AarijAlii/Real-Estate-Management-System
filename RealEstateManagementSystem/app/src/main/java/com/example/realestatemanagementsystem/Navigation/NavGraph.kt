@@ -76,28 +76,7 @@ fun NavigationGraph(
             }
         }
 
-        composable(Screen.SellScreen.route){
-                backStackEntry ->
-            val email = backStackEntry.arguments?.getString("email")
-            val context = LocalContext.current
-            val appDatabase = AppDatabase.getDatabase(context)
-            val userFactory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
-            val userProfileViewModel: UserProfileViewModel = viewModel(factory = userFactory)
-            val propertyFactory = PropertyViewModelFactory(appDatabase.propertyDao())
-            val propertyViewModel: PropertyViewModel = viewModel(factory = propertyFactory)
-            val propertyDao=appDatabase.propertyDao()
-            if (email != null) {
-               SellScreen(
-                    email = email,
-                    userProfileDao = appDatabase.userProfileDao(),
-                    profileViewModel = userProfileViewModel,
-                    navHostController = navController,
-                   authViewModel = AuthViewModel(),
-                   propertyViewModel = propertyViewModel,
-                   propertyDao = propertyDao
-                )
-            }
-        }
+
         composable(Screen.UserProfileUpdateScreen.route) { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current

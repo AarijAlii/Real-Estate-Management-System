@@ -68,6 +68,8 @@ dependencies {
     //Datastore
     implementation (libs.androidx.datastore.preferences)
 
+    //tab pager
+
 
     implementation (libs.androidx.activity.compose.v172)
     implementation (libs.androidx.ui.v173)
