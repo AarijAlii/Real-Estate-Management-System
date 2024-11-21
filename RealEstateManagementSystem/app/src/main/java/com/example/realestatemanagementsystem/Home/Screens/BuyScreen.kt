@@ -162,7 +162,7 @@ fun BuyScreen(modifier: Modifier = Modifier, viewModel: PropertyViewModel, navHo
                         contentColor = Color.Black
                     )
                 ) {
-                   Text(text = "Sort  By: ", option = selectedSortOption)
+                   Text(text = "Sort  By: $selectedSortOption")
                 }
                 DropdownMenu(
                     expanded = isDropdownExpanded,
