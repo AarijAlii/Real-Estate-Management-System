@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.example.realestatemanagementsystem.Property.PropertyDao
+import com.example.realestatemanagementsystem.property.PropertyDao
 import com.example.realestatemanagementsystem.R
 import kotlinx.coroutines.launch
 

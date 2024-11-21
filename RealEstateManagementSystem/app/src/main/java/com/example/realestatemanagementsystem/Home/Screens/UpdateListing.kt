@@ -31,15 +31,15 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.realestatemanagementsystem.Property.Property
-import com.example.realestatemanagementsystem.Property.PropertyDao
-import com.example.realestatemanagementsystem.Property.PropertyViewModel
+import com.example.realestatemanagementsystem.property.Property
+import com.example.realestatemanagementsystem.property.PropertyDao
+import com.example.realestatemanagementsystem.property.PropertyViewModel
 
 @Composable
  fun UpdateListingScreen(propertyid: String,
-                                navController: NavHostController,
-                                propertyViewModel: PropertyViewModel,
-                                propertyDao: PropertyDao
+                         navController: NavHostController,
+                         propertyViewModel: PropertyViewModel,
+                         propertyDao: PropertyDao
 
 ) {
 

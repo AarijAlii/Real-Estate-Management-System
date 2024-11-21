@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.lifecycle.ViewModel
 import com.example.realestatemanagementsystem.AppDatabase
-import com.example.realestatemanagementsystem.Property.Property
+import com.example.realestatemanagementsystem.property.Property
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

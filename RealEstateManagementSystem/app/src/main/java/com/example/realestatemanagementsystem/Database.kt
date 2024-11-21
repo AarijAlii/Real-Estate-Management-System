@@ -6,20 +6,19 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import android.content.Context
-import com.example.realestatemanagementsystem.Property.Property
-import com.example.realestatemanagementsystem.Property.PropertyDao
+import com.example.realestatemanagementsystem.property.Property
+import com.example.realestatemanagementsystem.property.PropertyDao
 import com.example.realestatemanagementsystem.image.ImageDao
 import com.example.realestatemanagementsystem.image.ImageEntity
-import com.example.realestatemanagementsystem.property.favorites.Favorite
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
-@Database(entities = [UserProfile::class, Property::class, ImageEntity::class, Favorite::class], version = 5)
+@Database(entities = [UserProfile::class, Property::class, ImageEntity::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao
     abstract fun imageDao(): ImageDao
-    abstract fun favoriteDao(): FavoriteDao
+
 
     companion object {
         @Volatile
@@ -31,7 +30,8 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "app_database"
-                ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,MIGRATION_4_5) // Add the migration here
+                ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,MIGRATION_4_5,
+                    MIGRATION_5_4) // Add the migration here
                     .build()
                 INSTANCE = db
                 db
@@ -125,5 +125,12 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
             )
             """.trimIndent()
         )
+    }
+}
+
+val MIGRATION_5_4 = object : Migration(5, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Drop the 'favorites' table when downgrading
+        db.execSQL("DROP TABLE IF EXISTS `favorites`")
     }
 }

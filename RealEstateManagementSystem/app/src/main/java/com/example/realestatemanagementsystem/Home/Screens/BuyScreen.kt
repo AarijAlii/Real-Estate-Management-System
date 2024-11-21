@@ -60,7 +60,7 @@ import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.Navigation.getNavigationItems
-import com.example.realestatemanagementsystem.Property.PropertyViewModel
+import com.example.realestatemanagementsystem.property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
@@ -313,7 +313,7 @@ fun HomeScreen(
     }
 }
 @Composable
-fun FiltersExample(viewModel: PropertyViewModel,innerPadding:PaddingValues) {
+fun FiltersExample(viewModel: PropertyViewModel, innerPadding:PaddingValues) {
     // States to control filter visibility and values
     var showFilters by remember { mutableStateOf(false) }
     val searchText = remember { mutableStateOf("") }

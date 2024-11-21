@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.Property
+package com.example.realestatemanagementsystem.property
 
 import android.content.Context
 import android.net.Uri
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import com.example.realestatemanagementsystem.image.uploadImageToImgur
 
 
-class PropertyViewModel(private val propertyDao: PropertyDao,private val imageDao: ImageDao) : ViewModel() {
+class PropertyViewModel(private val propertyDao: PropertyDao, private val imageDao: ImageDao) : ViewModel() {
 
  //       private val _errorMessage = MutableLiveData<String>()
     //    val errorMessage: MutableLiveData<String> get() = _errorMessage
@@ -40,8 +40,8 @@ class PropertyViewModel(private val propertyDao: PropertyDao,private val imageDa
 
 
         private fun insertPropertyWithImages(
-        property: Property,
-        imageUrls: List<String>
+            property: Property,
+            imageUrls: List<String>
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             try {

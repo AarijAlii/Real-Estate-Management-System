@@ -3,7 +3,7 @@ package com.example.realestatemanagementsystem.property.favorites
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.example.realestatemanagementsystem.Property.Property
+import com.example.realestatemanagementsystem.property.Property
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 
 @Entity(tableName = "favorites",

@@ -3,7 +3,7 @@ package com.example.realestatemanagementsystem.image
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.example.realestatemanagementsystem.Property.Property
+import com.example.realestatemanagementsystem.property.Property
 
 @Entity(tableName = "property_images",
         foreignKeys = [

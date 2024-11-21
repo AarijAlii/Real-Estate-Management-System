@@ -12,7 +12,7 @@ import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.A
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Home.Screens.SellScreen
 import com.example.realestatemanagementsystem.Home.Screens.UpdateListingScreen
-import com.example.realestatemanagementsystem.Property.PropertyViewModel
+import com.example.realestatemanagementsystem.property.PropertyViewModel
 import com.example.realestatemanagementsystem.Property.PropertyViewModelFactory
 import com.example.realestatemanagementsystem.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen

@@ -1,6 +1,5 @@
 package com.example.realestatemanagementsystem.util
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,13 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,16 +37,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import com.example.realestatemanagementsystem.Property.Property
-import com.example.realestatemanagementsystem.Property.PropertyDao
-import com.example.realestatemanagementsystem.Property.PropertyViewModel
+import com.example.realestatemanagementsystem.property.Property
+import com.example.realestatemanagementsystem.property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BuyPropertyCards(modifier: Modifier = Modifier,property: Property, navHostController:NavHostController,viewModel:PropertyViewModel,onBuy:()->Unit) {
+fun BuyPropertyCards(modifier: Modifier = Modifier, property: Property, navHostController:NavHostController, viewModel: PropertyViewModel, onBuy:()->Unit) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     Card(

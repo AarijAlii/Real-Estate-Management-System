@@ -1,7 +1,8 @@
-package com.example.realestatemanagementsystem.Property
+package com.example.realestatemanagementsystem.property
 
 import androidx.room.*
 import com.example.realestatemanagementsystem.image.ImageEntity
+import com.example.realestatemanagementsystem.property.Property
 import kotlinx.coroutines.flow.Flow
 
 @Dao
