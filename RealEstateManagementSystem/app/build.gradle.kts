@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.androidx.espresso.core)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.firestore)
+    implementation(libs.androidx.foundation.android)
     ksp(libs.androidx.room.compiler)
     //navbar
     implementation(libs.animated.navigation.bar)

@@ -67,38 +67,37 @@ import java.util.*
 //    }
 //}
 
-suspend fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, callback: (String?) -> Unit) {
-    try {
-        val file = uri.path?.let { File(it) }  // Get the file from URI
-        val requestFile =
-            file?.asRequestBody("image/*".toMediaTypeOrNull())  // Create request body for file
-        val body = requestFile?.let { MultipartBody.Part.createFormData("image", file?.name, it) }
-
-        // Create Retrofit instance and call the API
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.imgur.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(ImgurApiService::class.java)
-        val response = body?.let { service.uploadImage("Client-ID $clientId", it) }
-
-        // Check the response
-        if (response != null) {
-            if (response.isSuccessful) {
-                val imageUrl = response.body()?.data?.link
-                Log.d("ImgurUpload", "Image uploaded successfully: $imageUrl")
-                callback(imageUrl)  // Return the image URL if upload is successful
-            } else {
-                Log.e("ImgurUpload", "Failed to upload: ${response.message()}")
-                callback(null)  // If upload fails, return null
-            }
-        }
-    } catch (e: Exception) {
-        Log.e("ImgurUpload", "Error during upload: ${e.message}")
-        callback(null)  // In case of error, return null
-    }
-}
+//suspend fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, callback: (String?) -> Unit) {
+//    try {
+//        val file = uri.path?.let { File(it) }  // Get the file from URI
+//        val requestFile = file?.asRequestBody("image/*".toMediaTypeOrNull())  // Create request body for file
+//        val body = requestFile?.let { MultipartBody.Part.createFormData("image", file?.name, it) }
+//
+//        // Create Retrofit instance and call the API
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://api.imgur.com/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        val service = retrofit.create(ImgurApiService::class.java)
+//        val response = body?.let { service.uploadImage("Client-ID $clientId", it) }
+//
+//        // Check the response
+//        if (response != null) {
+//            if (response.isSuccessful) {
+//                val imageUrl = response.body()?.data?.link
+//                Log.d("ImgurUpload", "Image uploaded successfully: $imageUrl")
+//                callback(imageUrl)  // Return the image URL if upload is successful
+//            } else {
+//                Log.e("ImgurUpload", "Failed to upload: ${response.message()}")
+//                callback(null)  // If upload fails, return null
+//            }
+//        }
+//    } catch (e: Exception) {
+//        Log.e("ImgurUpload", "Error during upload: ${e.message}")
+//        callback(null)  // In case of error, return null
+//    }
+//}
 
 //fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, callback: (String?) -> Unit) {
 //    try {
@@ -124,3 +123,62 @@ suspend fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, cal
 //    }
 //}
 
+import okhttp3.*
+
+
+suspend fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, callback: (String?) -> Unit) {
+
+    val url = "https://api.imgur.com/3/image"
+    val authorizationHeader = "68edc80df54e62f"
+    val bearerToken = "42204b0e8ca8596e704a03a93d6718e7009096f5"
+    val filePath =
+        context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() }
+    // Replace with the actual file path
+    val title = "abc"
+    val mediaType = "image"
+
+    // Create the file
+    val tempFile = File.createTempFile("temp", null, context.cacheDir)
+    context.contentResolver.openInputStream(uri)?.use { inputStream ->
+        tempFile.outputStream().use { outputStream ->
+            inputStream.copyTo(outputStream)
+        }
+    }
+
+        // Create multipart body
+        val requestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+
+            .addFormDataPart("image", tempFile.name, tempFile.asRequestBody())
+            .addFormDataPart("title", title)
+            .addFormDataPart("type", mediaType)
+            .build()
+
+        // Build the request
+        val request = Request.Builder()
+            .url(url)
+            .header("Authorization", authorizationHeader)
+            .header("Bearer", bearerToken)
+            .post(requestBody)
+            .build()
+
+        // Create OkHttpClient
+        val client = OkHttpClient()
+
+        // Make the request
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: okhttp3.Call, e: IOException) {
+                println("Request failed: ${e.message}")
+            }
+
+            override fun onResponse(call: okhttp3.Call, response: Response) {
+                response.use {
+                    if (it.isSuccessful) {
+                        println("Response: ${it.body?.string()}")
+                    } else {
+                        println("Request failed with code: ${it.code} and message: ${it.message}")
+                    }
+                }
+            }
+        })
+    }

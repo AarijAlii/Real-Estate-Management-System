@@ -65,7 +65,7 @@ interface PropertyDao {
         zipCode: String,
         email: String,
         isSold: Boolean = false
-    )
+    ): Long
 
     @Query("""
         UPDATE property 

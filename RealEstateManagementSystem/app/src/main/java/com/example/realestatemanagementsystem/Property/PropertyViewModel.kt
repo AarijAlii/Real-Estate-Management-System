@@ -38,15 +38,42 @@ class PropertyViewModel(private val propertyDao: PropertyDao,private val imageDa
             }
         }
 
-    private fun insertPropertyWithImages(property: Property, imageUrls: List<String>) {
+//    private fun insertPropertyWithImages(property: Property, imageUrls: List<String>) {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            try {
+//                // Insert property and get its ID
+//                val propertyId = propertyDao.insertProperty(property)
+//
+//                // Prepare the images to insert
+//                val images =
+//                    imageUrls.map { ImageEntity(propertyId = propertyId.toInt(), imageUrl = it) }
+//
+//                // Insert the images into the database
+//                imageDao.insertImages(images)
+//            } catch (e: Exception) {
+//                _errorMessage.value = "Error adding property: ${e.message}"
+//            }
+//        }
+//    }
+
+    private fun insertPropertyWithImages(
+        property: Property,
+        imageUrls: List<String>
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Insert property and get its ID
-                val propertyId = propertyDao.insertProperty(property)
+                // Insert the property using the custom adddProperty query
+                val propertyId = propertyDao.adddProperty(
+                    property.city, property.state, property.propertyNumber,
+                    property.rooms, property.bedrooms, property.garage,
+                    property.area, property.type, property.price,
+                    property.zipCode, property.email, property.isSold
+                )
 
                 // Prepare the images to insert
-                val images =
-                    imageUrls.map { ImageEntity(propertyId = propertyId.toInt(), imageUrl = it) }
+                val images = imageUrls.map { imageUrl ->
+                    ImageEntity(propertyId = propertyId, imageUrl = imageUrl)  // No need to call toInt() here
+                }
 
                 // Insert the images into the database
                 imageDao.insertImages(images)
@@ -55,6 +82,8 @@ class PropertyViewModel(private val propertyDao: PropertyDao,private val imageDa
             }
         }
     }
+
+
 
 
 

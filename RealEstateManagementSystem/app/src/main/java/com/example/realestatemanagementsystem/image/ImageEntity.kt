@@ -17,6 +17,6 @@ import com.example.realestatemanagementsystem.Property.Property
     )
 data class ImageEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val propertyId: Int, // Foreign key to Property
+    val propertyId: Long, // Foreign key to Property
     val imageUrl: String // URL of the image stored in Firebase
 )

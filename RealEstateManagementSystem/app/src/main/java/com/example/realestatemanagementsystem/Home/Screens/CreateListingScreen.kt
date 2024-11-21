@@ -54,11 +54,11 @@ import androidx.navigation.NavHostController
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.rememberImagePainter
 import kotlinx.coroutines.launch
-
 
 
 @Composable
@@ -422,4 +422,3 @@ fun CreateListingScreen(
 //        }
 //    }
 //}
-

@@ -107,3 +107,28 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
         )
     }
 }
+
+//val MIGRATION_4_5 = object : Migration(4, 5) {
+//    override fun migrate(database: SupportSQLiteDatabase) {
+//        // Create the new schema by copying data from the old table to the new one.
+//        database.execSQL("""
+//            CREATE TABLE IF NOT EXISTS image_new (
+//                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+//                propertyId INTEGER NOT NULL,
+//                imageUrl TEXT NOT NULL
+//            )
+//        """)
+//
+//        // Copy the data from the old table to the new one.
+//        database.execSQL("""
+//            INSERT INTO image_new (id, propertyId, imageUrl)
+//            SELECT id, propertyId, imageUrl FROM image
+//        """)
+//
+//        // Remove the old table.
+//        database.execSQL("DROP TABLE property_images")
+//
+//        // Rename the new table to the original table name.
+//        database.execSQL("ALTER TABLE image_new RENAME TO property_images")
+//    }
+//}

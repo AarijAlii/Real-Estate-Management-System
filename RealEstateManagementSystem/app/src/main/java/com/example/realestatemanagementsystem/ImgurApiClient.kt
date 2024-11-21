@@ -6,7 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "https://api.imgur.com/"  // Imgur API base URL
+    private const val BASE_URL = "https://api.imgur.com/3/image"  // Imgur API base URL
 
     // Create Retrofit instance
     private val retrofit: Retrofit by lazy {
