@@ -48,16 +48,7 @@ interface ContractorDao {
         ON contractor.email = user_profile.email
     """)
     suspend fun getAllContractorDetails(): List<ContractorWithUserProfile>
+
+    @Query("UPDATE contractor SET overallRating = :newRating WHERE contractorId = :contractorId")
+    suspend fun updateOverallRating(contractorId: Int, newRating: Float)
 }
-
-// Join query to fetch contractor along with user profile details
-//    @Transaction
-//    @Query("""
-//        SELECT contractor.*, userProfile.*
-//        FROM contractor
-//        INNER JOIN userProfile ON contractor.email = userProfile.email
-//        WHERE contractor.email = :email
-//    """)
-//    suspend fun getContractorWithUserProfile(email: String): ContractorWithUserProfile
-//}
-

@@ -1,32 +1,36 @@
 package com.example.realestatemanagementsystem.review
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.realestatemanagementsystem.contractor.ContractorDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ReviewViewModel(private val reviewDao: ReviewDao) : ViewModel() {
+class ReviewViewModel(
+    private val reviewDao: ReviewDao,
+    private val contractorDao: ContractorDao
+) : ViewModel() {
 
-    // Insert Review
-    fun insertReview(
-        contractorId: Int,
-        propertyId: Int,
-        email: String,
-        rating: Int,
-        comment: String
-    ) {
-        viewModelScope.launch(Dispatchers.IO) {
-            reviewDao.insertReview(contractorId, propertyId, email, rating, comment)
+    fun submitReview(contractorId: Int, userEmail: String, rating: Float, comment: String) {
+        viewModelScope.launch {
+            try {
+                // Insert the review
+                reviewDao.insertReview(
+                    contractorId = contractorId,
+                    userEmail = userEmail,
+                    rating = rating,
+                    comment = comment
+                )
+
+                // Recalculate the average rating
+                val averageRating = reviewDao.calculateAverageRating(contractorId)
+
+                // Update the contractor's overall rating
+                contractorDao.updateOverallRating(contractorId, averageRating)
+            } catch (e: Exception) {
+                Log.e("ReviewViewModel", "Error submitting review", e)
+            }
         }
     }
-
-    // Fetch Reviews for Contractor
-    suspend fun getReviewsForContractor(contractorId: Int) = reviewDao.getReviewsForContractor(contractorId)
-
-    // Delete Review
-//    fun deleteReview(reviewId: Int) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            reviewDao.deleteReview(reviewId)
-//        }
-//    }
 }

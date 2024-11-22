@@ -20,6 +20,7 @@ import com.example.realestatemanagementsystem.contractor.ContractorViewModel
 import com.example.realestatemanagementsystem.contractor.ContractorViewModelFactory
 import com.example.realestatemanagementsystem.contractor.ContractorListScreen
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
+import com.example.realestatemanagementsystem.review.ReviewFormScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -202,5 +203,19 @@ fun NavigationGraph(
                 contractorViewModel = contractorViewModel
             )
         }
+
+//        composable(Screen.ReviewFormScreen.route) {
+//                backStackEntry ->
+//            val email = backStackEntry.arguments?.getString("email")
+//            val context = LocalContext.current
+//            val appDatabase = AppDatabase.getDatabase(context)
+//            val factory = ContractorViewModelFactory(appDatabase.contractorDao())  // Pass AppDatabase here
+//            val contractorViewModel: ContractorViewModel = viewModel(factory = factory)
+//            ReviewFormScreen(
+//                email = email,
+//                contractorViewModel = contractorViewModel
+//            )
+//        }
+
     }
 }

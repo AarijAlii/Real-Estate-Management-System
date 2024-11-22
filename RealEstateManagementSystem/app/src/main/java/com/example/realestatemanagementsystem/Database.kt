@@ -21,7 +21,7 @@ import com.example.realestatemanagementsystem.review.ReviewDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
-@Database(entities = [UserProfile::class, Property::class, ImageEntity::class, Favorite::class, Contractor::class, PreviousWorks::class, Review::class], version = 8)
+@Database(entities = [UserProfile::class, Property::class, ImageEntity::class, Favorite::class, Contractor::class, PreviousWorks::class, Review::class], version = 9)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao
@@ -44,7 +44,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,MIGRATION_4_5,
-                    MIGRATION_5_4,MIGRATION_5_6, MIGRATION_6_7,MIGRATION_7_8) // Add the migration here
+                    MIGRATION_5_4,MIGRATION_5_6, MIGRATION_6_7,MIGRATION_7_8, MIGRATION_8_9) // Add the migration here
                     .build()
                 INSTANCE = db
                 db
@@ -231,4 +231,33 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
     }
 }
 
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Step 1: Create a new table with the updated schema (without the imageUrl column)
+        db.execSQL(
+            """
+            CREATE TABLE review_new (
+                `reviewId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `contractorId` INTEGER NOT NULL,
+                `email` TEXT NOT NULL,
+                `rating` INTEGER NOT NULL,
+                `comment` TEXT NOT NULL,
+                FOREIGN KEY(`contractorId`) REFERENCES `contractor`(`contractorId`) ON DELETE CASCADE,
+                FOREIGN KEY(`email`) REFERENCES `user_profile`(`email`) ON DELETE CASCADE
+            )
+            """
+        )
+
+        db.execSQL(
+            """
+            INSERT INTO review_new (reviewId,contractorId, email,rating,comment)
+            SELECT reviewId, contractorId, email, rating,comment
+            FROM review
+        """.trimIndent()
+        )
+
+        db.execSQL("DROP TABLE review")
+        db.execSQL("ALTER TABLE review_new RENAME TO review")
+    }
+}
 

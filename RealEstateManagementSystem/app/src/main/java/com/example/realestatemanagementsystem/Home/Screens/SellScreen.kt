@@ -295,8 +295,12 @@ fun SellScreen(
         ) {
             Text(text = "CONTRACTOR LIST")
         }
-    }
 
+//        Button(
+//            onClick = { navHostController.navigate("review_form_screen/$email") }) {
+//            Text("Review Contractor")
+//        }
+    }
 }
 
 
