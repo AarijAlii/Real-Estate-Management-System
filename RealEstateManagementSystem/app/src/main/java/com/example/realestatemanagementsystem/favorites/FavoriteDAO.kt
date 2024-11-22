@@ -21,6 +21,8 @@ interface FavoriteDao {
     @Query("SELECT * FROM favorites WHERE email = :email")
     suspend fun getFavoritesByEmail(email: String): List<Favorite>
 
+
+
     @Query("""
     SELECT property.* 
     FROM favorites 

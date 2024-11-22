@@ -74,15 +74,18 @@ fun BuyPropertyCards(
     property: Property,
     navHostController: NavHostController,
     viewModel: PropertyViewModel,
-    onFavoriteClicked: (String, Int, Boolean) -> Unit,
-    isFavorite: Boolean,
+    favoriteViewModel: FavoriteViewModel,
     onBuy: () -> Unit,
     onclick: () -> Unit
 ) {
 
     val coroutineScope = rememberCoroutineScope()
-    val favoriteState = remember { mutableStateOf(isFavorite) }
-
+    val isLoading = remember { mutableStateOf(false) }
+    val favoriteState = remember { mutableStateOf(false) }
+    // Fetch the initial favorite state when the component is loaded
+    LaunchedEffect(email, propertyId) {
+        favoriteState.value = favoriteViewModel.isFavorite(email, propertyId)
+    }
 
 
     Card(
@@ -202,11 +205,28 @@ fun BuyPropertyCards(
 
 
                     // Favorite icon toggle logic
-                Log.d("Useremail and propertyid","${email}  ${propertyId}")
-                Log.d("fav","$favoriteState")
+
                     IconButton(onClick = {
-                        favoriteState.value = !favoriteState.value
-                        onFavoriteClicked(email, propertyId, favoriteState.value) // Pass favorite state to ViewModel
+                        if (isLoading.value) return@IconButton // Prevent double clicks while loading
+
+                        // Optimistically toggle the favorite state
+                        val previousState = favoriteState.value
+                        favoriteState.value = !previousState
+                        isLoading.value = true
+
+                        coroutineScope.launch {
+                            try {
+                                // Perform database operation
+                                favoriteViewModel.addOrRemoveFavorite(email, propertyId)
+                            } catch (e: Exception) {
+                                // Rollback state in case of failure
+                                favoriteState.value = previousState
+                                Log.e("FavoriteError", "Failed to toggle favorite: ${e.message}")
+                            } finally {
+                                isLoading.value = false
+                            }
+                        }
+
                     }) {
                         Icon(
                             imageVector = if (favoriteState.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,

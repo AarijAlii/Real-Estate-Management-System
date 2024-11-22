@@ -37,14 +37,21 @@ class FavoriteViewModel(application: Application) : AndroidViewModel(application
             _favorites.value = favoriteDao.getFavoritesByEmail(email)
         }
     }
-
-    fun addOrRemoveFavorite(email: String, propertyId: Int, isFavorite: Boolean) {
+    suspend fun isFavorite(email: String, propertyId: Int): Boolean{
+        if(favoriteDao.isFavorite(email,propertyId)){
+            return true
+        }
+        else{
+            return false
+        }
+    }
+    fun addOrRemoveFavorite(email: String, propertyId: Int) {
         viewModelScope.launch {
-            if (isFavorite) {
+            if (!favoriteDao.isFavorite(email,propertyId)) {
                 val favorite = Favorite(email = email, propertyId = propertyId)
                 favoriteDao.addToFavorites(favorite) // Insert the favorite
             } else {
-                val favorite = Favorite(email = email, propertyId = propertyId)
+
                 favoriteDao.removeFromFavorites(email, propertyId) // Remove the favorite
             }
             getFavoritesByEmail(email) // Refresh favorites list after add/remove

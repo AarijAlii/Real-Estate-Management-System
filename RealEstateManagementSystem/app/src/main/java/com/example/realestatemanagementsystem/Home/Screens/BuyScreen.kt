@@ -222,10 +222,8 @@ fun BuyScreen(
                     onBuy=:: refreshBuyProperties,
                     email = email,
                     propertyId=property.propertyId,
-                     onFavoriteClicked = { email, propertyId, isFavorite ->
-                        favoriteViewModel.addOrRemoveFavorite(email, propertyId,isFavorite)
-                    },
-                    isFavorite = isFavorite
+                    favoriteViewModel=favoriteViewModel
+
                 ){
                     showPopup=true
                     selectedProperty=property
