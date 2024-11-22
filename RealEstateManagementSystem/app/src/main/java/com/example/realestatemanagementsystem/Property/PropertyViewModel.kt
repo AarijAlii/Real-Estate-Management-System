@@ -164,6 +164,7 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
             try {
                 val unsoldList = propertyDao.getCurrentListings(email)
                 _unsoldProperties.value = unsoldList
+
                 //_properties.value = propertyDao.getCurrentListings(email)
             } catch (e: Exception) {
                 _errorMessage.value = "Error fetching properties: ${e.message}"

@@ -95,7 +95,7 @@ fun BuyPropertyCards(
             .clickable { onclick() }// Add padding around the card for spacing
             .shadow(16.dp, RoundedCornerShape(16.dp))  // Shadow and rounded corners
     ) {
-        onBuy()
+
         Column(modifier = Modifier) {
             // Image part: Ensure the image takes the full width of the card and is aligned to the start
             Image(

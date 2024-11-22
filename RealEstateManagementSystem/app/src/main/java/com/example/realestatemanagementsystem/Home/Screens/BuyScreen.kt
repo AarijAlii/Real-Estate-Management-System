@@ -259,7 +259,7 @@ fun FiltersExample(viewModel: PropertyViewModel) {
 
     var selectedSortOption by remember { mutableStateOf("None") }
     var isDropdownExpanded by remember { mutableStateOf(false) }
-    val sortOptions = listOf("Price:Low to High", "Price:High to Low")
+    val sortOptions = listOf("Price: Low to High", "Price: High to Low")
 
 
 
