@@ -107,7 +107,8 @@ interface PropertyDao {
             (:type IS NULL OR type LIKE :type) AND
             (:noOfRooms IS NULL OR rooms = :noOfRooms) AND
             (:bedrooms IS NULL OR bedrooms = :bedrooms) AND
-            (:garage IS NULL OR garage = :garage)
+            (:garage IS NULL OR garage = :garage) AND
+            (isSold = 0)
        """
     )
     fun filterProperties(

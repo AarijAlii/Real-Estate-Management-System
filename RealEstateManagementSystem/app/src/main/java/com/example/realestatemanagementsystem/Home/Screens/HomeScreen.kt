@@ -71,6 +71,7 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.Navigation.getNavigationItems
 import com.example.realestatemanagementsystem.Property.Property
+import com.example.realestatemanagementsystem.Property.PropertyFilter
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
@@ -107,7 +108,7 @@ fun HomeScreen(
     // Dropdown state
     var selectedIndex by remember { mutableStateOf(0) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
+    val filter=PropertyFilter()
 
 
     LaunchedEffect(authState.value) {
@@ -123,7 +124,7 @@ fun HomeScreen(
 //    }
     LaunchedEffect(viewModel){
         try{
-            viewModel.getAllBuyingProperties()
+            viewModel.getAllBuyingProperties(filter)
         }catch (e:Exception){
             Toast.makeText(getApplicationContext(),propertyErroMessage,Toast.LENGTH_SHORT).show()
         }
@@ -244,7 +245,8 @@ fun HomeScreen(
                                innerPadding = innerPadding,
                                profileViewModel = profileViewModel,
                                favoriteViewModel = favoriteViewModel,
-                            email = email
+                            email = email,
+
                            )
                            1 -> SellScreen(
                                userProfileDao = userProfileDao,

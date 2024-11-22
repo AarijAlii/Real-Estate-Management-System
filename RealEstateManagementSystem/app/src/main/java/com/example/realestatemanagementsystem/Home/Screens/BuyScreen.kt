@@ -60,6 +60,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Property.Property
+import com.example.realestatemanagementsystem.Property.PropertyFilter
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
@@ -77,8 +78,10 @@ fun MainScreen(
     profileViewModel: UserProfileViewModel,
     innerPadding: PaddingValues,
     favoriteViewModel: FavoriteViewModel,
-    email: String
+    email: String,
+
 ) {
+
     val tabs = listOf("Buy", "Favourites")
     val pagerState = rememberPagerState(initialPage = 0){tabs.size}
     val scope= rememberCoroutineScope()
@@ -116,6 +119,7 @@ fun MainScreen(
                         favoriteViewModel = favoriteViewModel,
                         email = email
 
+
                     )
 
                     1 -> FavoritesScreenContent(
@@ -140,11 +144,12 @@ fun BuyScreen(
     navHostController: NavHostController,
     favoriteViewModel: FavoriteViewModel,
     profileViewModel: UserProfileViewModel,
-    email: String
+    email: String,
+
 ) {
 
 
-
+    val filter=PropertyFilter()
     var isDropdownExpanded by remember { mutableStateOf(false) }
     var selectedSortOption by remember { mutableStateOf("None") }
     val sortOptions = listOf("Price: Low to High", "Price: High to Low")
@@ -156,7 +161,7 @@ fun BuyScreen(
     favoriteViewModel.getFavoritessByEmail(email)
     fun refreshBuyProperties() {
         scope.launch {
-            viewModel.getAllBuyingProperties()
+            viewModel.getAllBuyingProperties(filter)
         }
     }
     Column(modifier = Modifier) {
@@ -169,7 +174,7 @@ fun BuyScreen(
         ) {
 
             Column {
-                FiltersExample(viewModel)
+                FiltersExample(viewModel,filter)
             }
             // Sort By Dropdown
             Box {
@@ -248,7 +253,7 @@ fun BuyScreen(
     }
 }
 @Composable
-fun FiltersExample(viewModel: PropertyViewModel) {
+fun FiltersExample(viewModel: PropertyViewModel,filter: PropertyFilter) {
     // States to control filter visibility and values
     var showFilters by remember { mutableStateOf(false) }
     val searchText = remember { mutableStateOf("") }
@@ -348,18 +353,19 @@ fun FiltersExample(viewModel: PropertyViewModel) {
                         viewModel.searchByEmail(searchText.value)
                     }
                 } else {
-                    viewModel.filterProperties(
-                        city = cityFilter.value.takeIf { it.isNotEmpty() },
-                        state = stateFilter.value.takeIf { it.isNotEmpty() },
-                        minPrice = minPrice.value.toDoubleOrNull(),
-                        maxPrice = maxPrice.value.toDoubleOrNull(),
-                        zipCode = null,
-                        type = null,
-                        noOfRooms = null,
-                        bedrooms = null,
-                        garage = null,
 
-                        )
+                    filter.city = cityFilter.value.takeIf { it.isNotEmpty() }
+                    filter.state = stateFilter.value.takeIf { it.isNotEmpty() }
+                    filter.minPrice = minPrice.value.toDoubleOrNull()
+                    filter.maxPrice = maxPrice.value.toDoubleOrNull()
+                    filter.zipCode = null
+                    filter.type = null
+                    filter.noOfRooms = null
+                    filter.bedrooms = null
+                    filter.garage = null
+
+                    viewModel.filterProperties(filter)
+
                 }
                 showFilters=false
             },colors = ButtonColors(
