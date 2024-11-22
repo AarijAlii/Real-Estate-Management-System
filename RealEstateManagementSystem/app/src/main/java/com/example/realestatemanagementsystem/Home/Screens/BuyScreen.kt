@@ -101,15 +101,14 @@ fun MainScreen(
         // HorizontalPager for swiping between tabs
         HorizontalPager(
             state=pagerState,
-            modifier = Modifier.weight(1f)
+
 
         ) { page ->
             when (page) {
                 0 -> BuyScreen(
                     viewModel = viewModel,
                     navHostController = navHostController,
-                    profileViewModel = profileViewModel,
-                    innerPadding = innerPadding
+                    profileViewModel = profileViewModel
                 )
 
                 2 -> FavoritesScreenContent(
@@ -124,17 +123,20 @@ fun MainScreen(
 }
 
 @Composable
-fun BuyScreen(modifier: Modifier = Modifier, viewModel: PropertyViewModel, navHostController: NavHostController, innerPadding: PaddingValues, profileViewModel: UserProfileViewModel) {
+fun BuyScreen(
+    modifier: Modifier = Modifier,
+    viewModel: PropertyViewModel,
+    navHostController: NavHostController,
+
+    profileViewModel: UserProfileViewModel
+) {
 
     var isDropdownExpanded by remember { mutableStateOf(false) }
     var selectedSortOption by remember { mutableStateOf("None") }
     val sortOptions = listOf("Price: Low to High", "Price: High to Low")
-    var selectedProperty: Property? =null
+    var selectedProperty by remember { mutableStateOf<Property?>(null) }
     var showPopup by remember { mutableStateOf(false) }
     val allProperties by viewModel.unsoldProperties.collectAsState()
-    val propertyErroMessage by viewModel.errorMessage.collectAsState()
-    var profileErrorMessage by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
     fun refreshBuyProperties() {
         scope.launch {
@@ -151,7 +153,7 @@ fun BuyScreen(modifier: Modifier = Modifier, viewModel: PropertyViewModel, navHo
         ) {
 
             Column {
-                FiltersExample(viewModel, innerPadding)
+                FiltersExample(viewModel)
             }
             // Sort By Dropdown
             Box {
@@ -207,12 +209,10 @@ fun BuyScreen(modifier: Modifier = Modifier, viewModel: PropertyViewModel, navHo
 
             }
         }
-        if (showPopup && selectedProperty != null) {
+
+        if(showPopup && selectedProperty != null){
             Box(
                 modifier = Modifier
-
-                    .zIndex(1f) // Ensures popup is on top of other UI elements
-                    .padding(16.dp)
             ) {
                 PropertyDetailDialog(
                     property = selectedProperty!!,
@@ -225,7 +225,7 @@ fun BuyScreen(modifier: Modifier = Modifier, viewModel: PropertyViewModel, navHo
     }
 }
 @Composable
-fun FiltersExample(viewModel: PropertyViewModel, innerPadding: PaddingValues) {
+fun FiltersExample(viewModel: PropertyViewModel) {
     // States to control filter visibility and values
     var showFilters by remember { mutableStateOf(false) }
     val searchText = remember { mutableStateOf("") }

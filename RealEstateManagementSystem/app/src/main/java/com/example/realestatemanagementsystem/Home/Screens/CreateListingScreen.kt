@@ -291,7 +291,7 @@ Column(modifier=Modifier.weight(2f).verticalScroll(scrollState).imePadding()) {
                         email = email
                     )
                     propertyViewModel.adddProperty(newProperty)
-                    navController.navigate("sell_screen/$email"){
+                    navController.navigate("home_screen/$email"){
                         popUpTo("create_listing_screen/$email"){
                             inclusive=true
                     }}

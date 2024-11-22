@@ -2,11 +2,11 @@ package com.example.realestatemanagementsystem.Navigation
 
 import com.example.realestatemanagementsystem.R
 
-data class NavigationItems(val icon: Int, val title:String,val route:String)
+data class NavigationItems(val icon: Int, val title:String)
 fun getNavigationItems():List<NavigationItems>{
-    val items= listOf<NavigationItems>(
-        NavigationItems(R.drawable.buy,"Buy",Screen.HomeScreen.route),
-        NavigationItems(R.drawable.sell,"Sell",Screen.SellScreen.route),
+    val items= listOf(
+        NavigationItems(R.drawable.buy,"Buy"),
+        NavigationItems(R.drawable.sell,"Sell"),
 //        NavigationItems(R.drawable.baseline_logout_24,"Logout",Screen.LoginScreen.route)
 
 

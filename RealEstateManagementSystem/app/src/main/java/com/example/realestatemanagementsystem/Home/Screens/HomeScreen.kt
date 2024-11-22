@@ -194,6 +194,7 @@ fun HomeScreen(
                                 selected = selectedIndex ==index,
                                 onClick = {
                                    selectedIndex=index
+                                    scope.launch { drawerState.close() }
                                 },
                                 modifier = Modifier.padding(2.dp)
                             )
@@ -241,7 +242,15 @@ fun HomeScreen(
                                innerPadding = innerPadding,
                                profileViewModel = profileViewModel
                            )
-                           1 -> SellScreen(userProfileDao = userProfileDao,email = email,propertyViewModel = viewModel,navHostController = navHostController,authViewModel = authViewModel,profileViewModel = profileViewModel,innerPadding = innerPadding)
+                           1 -> SellScreen(
+                               userProfileDao = userProfileDao,
+                               email = email,
+                               propertyViewModel = viewModel,
+                               navHostController = navHostController,
+                               authViewModel = authViewModel,
+                               profileViewModel = profileViewModel,
+                               innerPadding = innerPadding
+                           )
 
                        }
 
