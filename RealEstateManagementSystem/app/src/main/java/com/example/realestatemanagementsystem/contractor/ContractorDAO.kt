@@ -3,6 +3,8 @@ package com.example.realestatemanagementsystem.contractor
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
+
 
 @Dao
 interface ContractorDao {
@@ -36,7 +38,18 @@ interface ContractorDao {
         WHERE contractorId = :id
     """)
     suspend fun updateContractor(id: Int, experience: String, contact: String, speciality: String)
+
+
+    @Query("""
+        SELECT contractor.contractorId, contractor.email, contractor.experience, contractor.contact, contractor.speciality, contractor.overallRating,
+               user_profile.firstName, user_profile.lastName
+        FROM contractor
+        INNER JOIN user_profile
+        ON contractor.email = user_profile.email
+    """)
+    suspend fun getAllContractorDetails(): List<ContractorWithUserProfile>
 }
+
 // Join query to fetch contractor along with user profile details
 //    @Transaction
 //    @Query("""

@@ -9,19 +9,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ContractorViewModel(private val contractorDao: ContractorDao) : ViewModel() {
-    private val _contractors = MutableLiveData<List<Contractor>>()
-    val contractors: LiveData<List<Contractor>> get() = _contractors
+//    private val _contractors = MutableLiveData<List<Contractor>>()
+//    val contractors: LiveData<List<Contractor>> get() = _contractors
 
-    fun getAllContractors() {
-        viewModelScope.launch {
-            try {
-                val contractorsList = contractorDao.getAllContractors()
-                _contractors.value = contractorsList
-            } catch (e: Exception) {
-                Log.e("ContractorViewModel", "Error fetching contractors", e)
-            }
-        }
-    }
+//    fun getAllContractors() {
+//        viewModelScope.launch {
+//            try {
+//                val contractorsList = contractorDao.getAllContractors()
+//                _contractors.value = contractorsList
+//            } catch (e: Exception) {
+//                Log.e("ContractorViewModel", "Error fetching contractors", e)
+//            }
+//        }
+//    }
 
 
     fun insertContractor(
@@ -54,6 +54,20 @@ class ContractorViewModel(private val contractorDao: ContractorDao) : ViewModel(
                 Log.d("ContractorViewModel", "Contractor updated successfully")
             } catch (e: Exception) {
                 Log.e("ContractorViewModel", "Error updating contractor", e)
+            }
+        }
+    }
+
+    private val _contractors = MutableLiveData<List<ContractorWithUserProfile>>()
+    val contractors: LiveData<List<ContractorWithUserProfile>> get() = _contractors
+
+    fun fetchAllContractorsWithDetails() {
+        viewModelScope.launch {
+            try {
+                val contractorsList = contractorDao.getAllContractorDetails()
+                _contractors.value = contractorsList
+            } catch (e: Exception) {
+                Log.e("ContractorViewModel", "Error fetching contractors with details", e)
             }
         }
     }

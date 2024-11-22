@@ -33,7 +33,7 @@ fun ContractorListScreen(
 ) {
     // Trigger the fetch when the screen loads
     LaunchedEffect(Unit) {
-        contractorViewModel.getAllContractors()
+        contractorViewModel.fetchAllContractorsWithDetails()
     }
 
     // Observe the contractors LiveData
@@ -73,7 +73,7 @@ fun ContractorListScreen(
 
 
 @Composable
-fun ContractorItem(contractor: Contractor) {
+fun ContractorItem(contractor: ContractorWithUserProfile) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
     ) {
@@ -93,6 +93,8 @@ fun ContractorItem(contractor: Contractor) {
             Text(text = "Experience: ${contractor.experience}")
             Text(text = "Speciality: ${contractor.speciality}")
             Text(text = "Contact: ${contractor.contact}")
+            Text(text = "First Name: ${contractor.firstName}")
+            Text(text = "Last Name: ${contractor.lastName}")
         }
     }
 }
