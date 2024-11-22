@@ -67,21 +67,18 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BuyPropertyCards(
+fun FavoritePropertyCard(
     modifier: Modifier = Modifier,
     email: String,
     propertyId: Int,
     property: Property,
     navHostController: NavHostController,
     viewModel: PropertyViewModel,
-    onFavoriteClicked: (String, Int, Boolean) -> Unit,
-    isFavorite: Boolean,
-    onBuy: () -> Unit,
-    onclick: () -> Unit
+
 ) {
 
-    val coroutineScope = rememberCoroutineScope()
-    val favoriteState = remember { mutableStateOf(isFavorite) }
+
+
 
 
 
@@ -89,10 +86,10 @@ fun BuyPropertyCards(
         modifier = Modifier
             .fillMaxWidth()  // Ensure the card fills the screen width
             .padding(8.dp)
-            .clickable { onclick() }// Add padding around the card for spacing
+            .clickable {  }// Add padding around the card for spacing
             .shadow(16.dp, RoundedCornerShape(16.dp))  // Shadow and rounded corners
     ) {
-        onBuy()
+
         Column(modifier = Modifier) {
             // Image part: Ensure the image takes the full width of the card and is aligned to the start
             Image(
@@ -134,8 +131,8 @@ fun BuyPropertyCards(
                     }
                 }
                 Text(
-                  text = text
-                ,
+                    text = text
+                    ,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
@@ -178,49 +175,13 @@ fun BuyPropertyCards(
             Row (verticalAlignment = Alignment.CenterVertically){
 
 
-                Button(
-                    onClick = {
-                        viewModel.markAsSold(propertyId = property.propertyId.toInt())
-                        onBuy()
 
-                    },
-                    colors = ButtonColors(
-                        contentColor = Color.White,
-                        disabledContainerColor = Color.Gray,
-                        containerColor = Color.Red,
-                        disabledContentColor = Color.White
-                    ),
-                    modifier = Modifier.weight(1f).padding(8.dp)
-                ) {
-                    Text(text = "Buy")
-
-                }
-
-
-
-
-
-
-                    // Favorite icon toggle logic
-                Log.d("Useremail and propertyid","${email}  ${propertyId}")
-                Log.d("fav","$favoriteState")
-                    IconButton(onClick = {
-                        favoriteState.value = !favoriteState.value
-                        onFavoriteClicked(email, propertyId, favoriteState.value) // Pass favorite state to ViewModel
-                    }) {
-                        Icon(
-                            imageVector = if (favoriteState.value) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = "Favorite Icon",
-                            tint =Color.Red
-                        )
-                    }
-                }
 
 
         }
 
     }
-}
+}}
 
 
 

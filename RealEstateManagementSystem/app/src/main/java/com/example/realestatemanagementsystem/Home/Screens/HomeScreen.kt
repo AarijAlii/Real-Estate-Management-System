@@ -73,6 +73,7 @@ import com.example.realestatemanagementsystem.Navigation.getNavigationItems
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -89,7 +90,8 @@ fun HomeScreen(
     navHostController: NavHostController,
     userProfileDao: UserProfileDao,
     viewModel: PropertyViewModel,
-    profileViewModel: UserProfileViewModel
+    profileViewModel: UserProfileViewModel,
+    favoriteViewModel: FavoriteViewModel
 ) {
     // Other states and logic remain the same...
 
@@ -240,7 +242,9 @@ fun HomeScreen(
                                viewModel = viewModel,
                                navHostController = navHostController,
                                innerPadding = innerPadding,
-                               profileViewModel = profileViewModel
+                               profileViewModel = profileViewModel,
+                               favoriteViewModel = favoriteViewModel,
+                            email = email
                            )
                            1 -> SellScreen(
                                userProfileDao = userProfileDao,

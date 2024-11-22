@@ -2,7 +2,7 @@ package com.example.realestatemanagementsystem.user.authentication.FirebaseCode
 
 
 import androidx.lifecycle.ViewModel
-import com.example.realestatemanagementsystem.Database.AppDatabase
+import com.example.realestatemanagementsystem.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth

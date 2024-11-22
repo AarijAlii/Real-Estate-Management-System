@@ -11,11 +11,11 @@ import androidx.navigation.compose.composable
 import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
-import com.example.realestatemanagementsystem.Home.Screens.SellScreen
 import com.example.realestatemanagementsystem.Home.Screens.UpdateListingScreen
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.Property.PropertyViewModelFactory
-import com.example.realestatemanagementsystem.Database.AppDatabase
+import com.example.realestatemanagementsystem.AppDatabase
+import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -53,9 +53,13 @@ fun NavigationGraph(
             val appDatabase = AppDatabase.getDatabase(context)
             val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
-            val propertyFactory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val propertyFactory = PropertyViewModelFactory(
+                appDatabase.propertyDao(),   // propertyDao
+                appDatabase.imageDao()       // imageDao
+            )
             val propertyViewModel: PropertyViewModel = viewModel(factory = propertyFactory)
-            val userProfileDao=appDatabase.userProfileDao()
+            val favoritesViewModel = viewModel<FavoriteViewModel>()
+             val userProfileDao=appDatabase.userProfileDao()
 
             if (email != null) {
                 Log.d("HomeScreen", "Email received: $email")
@@ -71,7 +75,8 @@ fun NavigationGraph(
                     navHostController = navController,
                     viewModel =propertyViewModel,
                     userProfileDao=userProfileDao,
-                    profileViewModel = userProfileViewModel
+                    profileViewModel = userProfileViewModel,
+                    favoriteViewModel = favoritesViewModel
                 )
             }
         }
@@ -117,7 +122,10 @@ fun NavigationGraph(
             val propertyID = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current
             val appDatabase = AppDatabase.getDatabase(context)
-            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val factory = PropertyViewModelFactory(
+                appDatabase.propertyDao(),   // propertyDao
+                appDatabase.imageDao()       // imageDao
+            )
             val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
             val propertyDao = appDatabase.propertyDao()
             if (propertyID != null) {
@@ -130,7 +138,10 @@ fun NavigationGraph(
             val email = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current
             val appDatabase = AppDatabase.getDatabase(context)
-            val factory = PropertyViewModelFactory(appDatabase.propertyDao())
+            val factory = PropertyViewModelFactory(
+                appDatabase.propertyDao(),   // propertyDao
+                appDatabase.imageDao()       // imageDao
+            )
             val propertyViewModel: PropertyViewModel = viewModel(factory = factory)
             if (email != null) {
                 CreateListingScreen(email = email, navController = navController, propertyViewModel = propertyViewModel)

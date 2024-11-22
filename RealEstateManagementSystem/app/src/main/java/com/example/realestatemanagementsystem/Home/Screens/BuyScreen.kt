@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -61,9 +62,12 @@ import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.example.realestatemanagementsystem.util.BuyPropertyCards
+import com.example.realestatemanagementsystem.util.FavoritePropertyCard
+
 import kotlinx.coroutines.launch
 
 @Composable
@@ -71,10 +75,12 @@ fun MainScreen(
     viewModel: PropertyViewModel,
     navHostController: NavHostController,
     profileViewModel: UserProfileViewModel,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    favoriteViewModel: FavoriteViewModel,
+    email: String
 ) {
     val tabs = listOf("Buy", "Favourites")
-    val pagerState = rememberPagerState(initialPage = 0){2}
+    val pagerState = rememberPagerState(initialPage = 0){tabs.size}
     val scope= rememberCoroutineScope()
     Column(modifier = Modifier.padding(innerPadding)) {
         // TabRow to display tabs
@@ -101,24 +107,29 @@ fun MainScreen(
         // HorizontalPager for swiping between tabs
         HorizontalPager(
             state=pagerState,
+        ){page ->
+                when (page) {
+                    0 -> BuyScreen(
+                        viewModel = viewModel,
+                        navHostController = navHostController,
+                        profileViewModel = profileViewModel,
+                        favoriteViewModel = favoriteViewModel,
+                        email = email
+
+                    )
+
+                    1 -> FavoritesScreenContent(
+                        viewModel = viewModel,
+                        navHostController = navHostController,
+                        profileViewModel = profileViewModel,
+                        innerPadding = innerPadding,
+                        favoriteViewModel=favoriteViewModel,
+                        email=email
+                    )
+                }}
 
 
-        ) { page ->
-            when (page) {
-                0 -> BuyScreen(
-                    viewModel = viewModel,
-                    navHostController = navHostController,
-                    profileViewModel = profileViewModel
-                )
 
-                2 -> FavoritesScreenContent(
-                    viewModel = viewModel,
-                    navHostController = navHostController,
-                    profileViewModel = profileViewModel,
-                    innerPadding = innerPadding
-                )
-            }
-        }
     }
 }
 
@@ -127,9 +138,12 @@ fun BuyScreen(
     modifier: Modifier = Modifier,
     viewModel: PropertyViewModel,
     navHostController: NavHostController,
-
-    profileViewModel: UserProfileViewModel
+    favoriteViewModel: FavoriteViewModel,
+    profileViewModel: UserProfileViewModel,
+    email: String
 ) {
+
+
 
     var isDropdownExpanded by remember { mutableStateOf(false) }
     var selectedSortOption by remember { mutableStateOf("None") }
@@ -138,6 +152,8 @@ fun BuyScreen(
     var showPopup by remember { mutableStateOf(false) }
     val allProperties by viewModel.unsoldProperties.collectAsState()
     val scope = rememberCoroutineScope()
+    val favorites = favoriteViewModel.favorites.collectAsState(initial = emptyList()).value
+    favoriteViewModel.getFavoritessByEmail(email)
     fun refreshBuyProperties() {
         scope.launch {
             viewModel.getAllBuyingProperties()
@@ -192,15 +208,24 @@ fun BuyScreen(
 
 
         // Property list (sorted dynamically)
+
         LazyColumn() {
             items(allProperties) { property ->
                 // Display each property (replace with your card implementation)
+
+                val isFavorite = favorites.any { it.propertyId == property.propertyId }
                 BuyPropertyCards(
                     modifier = Modifier,
                     property = property ,
                     navHostController = navHostController,
                     viewModel=viewModel,
-                    onBuy=:: refreshBuyProperties
+                    onBuy=:: refreshBuyProperties,
+                    email = email,
+                    propertyId=property.propertyId,
+                     onFavoriteClicked = { email, propertyId, isFavorite ->
+                        favoriteViewModel.addOrRemoveFavorite(email, propertyId,isFavorite)
+                    },
+                    isFavorite = isFavorite
                 ){
                     showPopup=true
                     selectedProperty=property
@@ -539,9 +564,32 @@ fun FavoritesScreenContent(
     viewModel: PropertyViewModel,
     navHostController: NavHostController,
     profileViewModel: UserProfileViewModel,
-    innerPadding: PaddingValues
+    innerPadding: PaddingValues,
+    favoriteViewModel: FavoriteViewModel,
+    email :String
 ) {
     // Implement the Favorites logic here
-    Text("Favorites Screen Content")
+    val favorites by favoriteViewModel.favoriteProperties.collectAsState()
+    favoriteViewModel.getFavoritessByEmail(email)
+    Log.d("Favorite", favorites.toString())
+    LazyColumn(modifier=Modifier.fillMaxHeight()) {
+        items(favorites) { property ->
+            // Display each property (replace with your card implementation)
+
+
+            FavoritePropertyCard (
+                modifier = Modifier,
+                property = property ,
+                navHostController = navHostController,
+                viewModel=viewModel,
+
+                email = email,
+                propertyId=property.propertyId,
+            )
+
+
+        }
+    }
+
 }
 

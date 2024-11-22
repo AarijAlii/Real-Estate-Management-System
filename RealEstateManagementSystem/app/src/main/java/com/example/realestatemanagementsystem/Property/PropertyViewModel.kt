@@ -1,12 +1,117 @@
 package com.example.realestatemanagementsystem.Property
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.realestatemanagementsystem.image.ImageDao
+import com.example.realestatemanagementsystem.image.ImageEntity
+import com.example.realestatemanagementsystem.image.uploadImageToImgur
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PropertyViewModel(private val propertyDao: PropertyDao) : ViewModel() {
+class PropertyViewModel(private val propertyDao: PropertyDao, private val imageDao: ImageDao) : ViewModel() {
+
+    //       private val _errorMessage = MutableLiveData<String>()
+    //    val errorMessage: MutableLiveData<String> get() = _errorMessage
+    suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
+
+        val imageUrls = mutableListOf<String>()
+
+        // Upload images to Imgur
+        imageUris.forEach { uri ->
+            uploadImageToImgur(context, uri, clientId) { imageUrl ->
+                if (imageUrl != null) {
+                    imageUrls.add(imageUrl)
+
+                    // Once all images are uploaded, insert the property and image URLs into the database
+                    if (imageUrls.size == imageUris.size) {
+                        insertPropertyWithImages(property, imageUrls)
+                    }
+                } else {
+                    _errorMessage.value = "Failed to upload some images"
+                }
+            }
+        }
+    }
+
+
+    private fun insertPropertyWithImages(
+        property: Property,
+        imageUrls: List<String>
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Insert the property using the custom adddProperty query
+                val propertyId = propertyDao.adddProperty(
+                    property.city, property.state, property.propertyNumber,
+                    property.rooms, property.bedrooms, property.garage,
+                    property.area, property.type, property.price,
+                    property.zipCode, property.email, property.isSold
+                )
+
+                // Prepare the images to insert
+                val images = imageUrls.map { imageUrl ->
+                    ImageEntity(propertyId = propertyId, imageUrl = imageUrl)  // No need to call toInt() here
+                }
+
+                // Insert the images into the database
+                imageDao.insertImages(images)
+            } catch (e: Exception) {
+                _errorMessage.value = "Error adding property: ${e.message}"
+            }
+        }
+    }
+
+//        // LiveData to observe uploaded image URLs
+//        private val _uploadedImageUrls = MutableLiveData<List<String>>()
+//        val uploadedImageUrls: LiveData<List<String>> = _uploadedImageUrls
+//
+//        fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
+//            viewModelScope.launch(Dispatchers.IO) {
+//                try {
+//                    // Insert property into the local database
+//                    val propertyId = propertyDao.insertProperty(property)
+//
+//                    // Upload images to Imgur (or another cloud service)
+//                    val imageUrls = uploadImagesToCloud(imageUris, clientId)
+//
+//                    // Save the image URLs into the database
+//                    val images = imageUrls.map { ImageEntity(propertyId = propertyId, imageUrl = it) }
+//                    imageDao.insertImages(images)
+//
+//                    // Return the image URLs to the UI
+//                    _uploadedImageUrls.postValue(imageUrls)
+//
+//                } catch (e: Exception) {
+//                    // Handle errors
+//                }
+//            }
+//        }
+//
+//        private suspend fun uploadImagesToCloud(imageUris: List<Uri>, clientId: String): List<String> {
+//            val imageUrls = mutableListOf<String>()
+//            for (uri in imageUris) {
+//                val imageUrl = uploadImageToImgur(uri, clientId)
+//                imageUrls.add(imageUrl)
+//            }
+//            return imageUrls
+//        }
+//
+//        private suspend fun uploadImageToImgur(uri: Uri, clientId: String): String {
+//            // Logic to upload the image to Imgur and return the image URL
+//            val requestBody = // Prepare the image data for upload
+//            val response = imgurService.uploadImage(clientId, requestBody)
+//            if (response.isSuccessful) {
+//                return response.body()?.link ?: ""
+//            } else {
+//                throw Exception("Image upload failed")
+//            }
+//        }
+
+
 
     private val _soldProperties = MutableStateFlow<List<Property>>(emptyList())
     val soldProperties: StateFlow<List<Property>> = _soldProperties
@@ -28,6 +133,9 @@ class PropertyViewModel(private val propertyDao: PropertyDao) : ViewModel() {
 
     private val _filteredProperties = MutableStateFlow<List<Property>>(emptyList())
     val filteredProperties: StateFlow<List<Property>> = _filteredProperties
+
+    private val _imageUploadStatus = MutableStateFlow<String>("")
+    val imageUploadStatus: StateFlow<String> = _imageUploadStatus
 
 
     fun loadSoldListings(email: String) {
@@ -71,7 +179,7 @@ class PropertyViewModel(private val propertyDao: PropertyDao) : ViewModel() {
                 _errorMessage.value = "Error fetching properties: ${e.message}"
             }
 
-                     }
+        }
     }
 
     fun sortProperties(option: String) {
@@ -157,35 +265,7 @@ class PropertyViewModel(private val propertyDao: PropertyDao) : ViewModel() {
     }
 
 
-//    fun addProperty(property: Property) {
-//        viewModelScope.launch {
-//            try {
-//                propertyDao.addProperty(property)
-//            } catch (e: Exception) {
-//                _errorMessage.value = "Error adding property: ${e.message}"
-//            }
-//        }
-//    }
-//
-//    fun updateProperty(property: Property) {
-//        viewModelScope.launch {
-//            try {
-//                propertyDao.updateProperty(property)
-//            } catch (e: Exception) {
-//                _errorMessage.value = "Error updating property: ${e.message}"
-//            }
-//        }
-//    }
-//
-//    fun deleteProperty(property: Property) {
-//        viewModelScope.launch {
-//            try {
-//                propertyDao.deleteProperty(property)
-//            } catch (e: Exception) {
-//                _errorMessage.value = "Error deleting property: ${e.message}"
-//            }
-//        }
-//    }
+
     fun filterProperties(
         city: String?,
         state: String?,
@@ -197,7 +277,7 @@ class PropertyViewModel(private val propertyDao: PropertyDao) : ViewModel() {
         bedrooms: Int?,
         garage: Boolean?,
 
-    ) {
+        ) {
         viewModelScope.launch {
             try {
                 // Apply filters using the DAO method

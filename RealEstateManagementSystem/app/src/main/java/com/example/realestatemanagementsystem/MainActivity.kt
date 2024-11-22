@@ -15,6 +15,7 @@ import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Navigation.NavigationGraph
 import com.example.realestatemanagementsystem.Navigation.Screen
+import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.ui.theme.RealEstateManagementSystemTheme
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
@@ -33,6 +34,7 @@ class MainActivity : ComponentActivity() {
             //val profile = viewModel.getProfile(1).collectAsState(initial = null)
             val navController = rememberNavController()
             val authViewModel: AuthViewModel = viewModel()
+
             RealEstateManagementSystemTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     //SignUpScreen(authViewModel,navController)
