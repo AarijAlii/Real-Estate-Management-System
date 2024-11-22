@@ -10,5 +10,7 @@ sealed class Screen(val route:String){
     data object CreateListingScreen :Screen("create_listing_screen/{email}")
     data object UserProfileUpdateScreen:Screen("update_profile_screen/{email}")
     data object UpdateListingScreen:Screen("update_listing_screen/{email}")
+    data object ContractorFormScreen:Screen("contractor_form_screen/{email}")
+    data object ContractorListScreen:Screen("contractor_list_screen")
 
 }

@@ -15,6 +15,10 @@ import com.example.realestatemanagementsystem.Home.Screens.UpdateListingScreen
 import com.example.realestatemanagementsystem.property.PropertyViewModel
 import com.example.realestatemanagementsystem.property.PropertyViewModelFactory
 import com.example.realestatemanagementsystem.AppDatabase
+import com.example.realestatemanagementsystem.contractor.ContractorFormScreen
+import com.example.realestatemanagementsystem.contractor.ContractorViewModel
+import com.example.realestatemanagementsystem.contractor.ContractorViewModelFactory
+import com.example.realestatemanagementsystem.contractor.ContractorListScreen
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
@@ -170,6 +174,33 @@ fun NavigationGraph(
             if (email != null) {
                 CreateListingScreen(email = email, navController = navController, viewModel = propertyViewModel)
             }
+        }
+
+        //CONTRACTOR
+        composable(Screen.ContractorFormScreen.route) {
+                backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = ContractorViewModelFactory(appDatabase.contractorDao())  // Pass AppDatabase here
+            val contractorViewModel: ContractorViewModel = viewModel(factory = factory)
+            if (email != null) {
+                ContractorFormScreen(
+                    email = email,
+                    contractorViewModel = contractorViewModel,
+                    onRegistrationComplete = { navController.popBackStack() }
+                )
+            }
+        }
+
+        composable(Screen.ContractorListScreen.route) {
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory = ContractorViewModelFactory(appDatabase.contractorDao())  // Pass AppDatabase here
+            val contractorViewModel: ContractorViewModel = viewModel(factory = factory)
+            ContractorListScreen(
+                contractorViewModel = contractorViewModel
+            )
         }
     }
 }

@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonColors
-
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.livedata.observeAsState
@@ -21,6 +20,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -54,9 +54,8 @@ fun UserProfileScreen(
             var region by remember { mutableStateOf(userProfile?.region ?: "") }
             var postalCode by remember { mutableStateOf(userProfile?.postalCode ?: "") }
             val overallRating = userProfile?.rating ?: "No ratings yet"
-            Column(verticalArrangement = Arrangement.Center,modifier = Modifier
 
-                .padding(16.dp)) {
+            Column(verticalArrangement = Arrangement.Center,modifier = Modifier.padding(16.dp)) {
 
                 Text("Create Profile", fontSize = 34.sp, fontWeight = FontWeight.Bold,modifier=Modifier.padding(vertical = 16.dp))
 

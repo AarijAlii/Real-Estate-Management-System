@@ -9,6 +9,7 @@ import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -281,6 +282,21 @@ fun SellScreen(
             )
         }
     }
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Text(text = "User Profile")
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {navHostController.navigate("contractor_form_screen/$email")}
+        ) {
+            Text(text = "Sign Up as Contractor")
+        }
+        Button(
+            onClick = {navHostController.navigate("contractor_list_screen")}
+        ) {
+            Text(text = "CONTRACTOR LIST")
+        }
+    }
+
 }
 
 
