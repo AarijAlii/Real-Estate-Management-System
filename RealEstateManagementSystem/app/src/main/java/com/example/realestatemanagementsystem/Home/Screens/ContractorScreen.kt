@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,16 +28,17 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.contractor.Contractor
 import com.example.realestatemanagementsystem.contractor.ContractorViewModel
+import com.example.realestatemanagementsystem.review.ReviewViewModel
 import com.example.realestatemanagementsystem.util.ContractorCard
-import com.google.android.play.integrity.internal.f
 
 @Composable
-fun ContractorScreen(modifier: Modifier = Modifier,contractorViewModel: ContractorViewModel,innerPadding:PaddingValues,navHostController: NavHostController,email:String) {
+fun ContractorScreen(modifier: Modifier = Modifier,contractorViewModel: ContractorViewModel,innerPadding:PaddingValues,navHostController: NavHostController,email:String,reviewViewModel: ReviewViewModel) {
 
     var showDialog by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
+
     val allContractors by contractorViewModel.contractors.observeAsState(emptyList())
     var contractor by remember { mutableStateOf<Contractor?>(null) }
+
     LaunchedEffect(Unit) {
             contractorViewModel.fetchAllContractorsWithDetails()
             contractor=contractorViewModel.getContractorByEmail(email)
@@ -62,7 +61,8 @@ fun ContractorScreen(modifier: Modifier = Modifier,contractorViewModel: Contract
                         ContractorCard(
                             contractor = contractor,
                             modifier = Modifier,
-                            innerPadding = innerPadding
+                            innerPadding = innerPadding,
+                            reviewViewModel = reviewViewModel,
                         )
 
 

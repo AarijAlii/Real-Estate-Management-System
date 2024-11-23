@@ -53,6 +53,7 @@ import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.contractor.ContractorViewModel
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
+import com.example.realestatemanagementsystem.review.ReviewViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -70,7 +71,8 @@ fun HomeScreen(
     viewModel: PropertyViewModel,
     profileViewModel: UserProfileViewModel,
     favoriteViewModel: FavoriteViewModel,
-    contractorViewModel: ContractorViewModel
+    contractorViewModel: ContractorViewModel,
+    reviewViewModel: ReviewViewModel
 ) {
     // Other states and logic remain the same...
 
@@ -241,7 +243,8 @@ fun HomeScreen(
                                innerPadding = innerPadding,
                                contractorViewModel = contractorViewModel,
                                navHostController = navHostController,
-                               email = email
+                               email = email,
+                               reviewViewModel = reviewViewModel
                            )
 
                        }

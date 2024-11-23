@@ -16,6 +16,8 @@ import com.example.realestatemanagementsystem.Property.PropertyViewModelFactory
 import com.example.realestatemanagementsystem.contractor.ContractorViewModel
 import com.example.realestatemanagementsystem.contractor.ContractorViewModelFactory
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
+import com.example.realestatemanagementsystem.review.ReviewViewModel
+import com.example.realestatemanagementsystem.review.ReviewViewModelFactory
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -65,6 +67,8 @@ fun NavigationGraph(
             val contractorFactory = ContractorViewModelFactory(appDatabase.contractorDao())  // Pass AppDatabase here
             val contractorViewModel: ContractorViewModel = viewModel(factory = contractorFactory)
 
+            val reviewfactory =  ReviewViewModelFactory(appDatabase.reviewDao(),appDatabase.contractorDao())  // Pass AppDatabase here
+            val reviewViewModel: ReviewViewModel = viewModel(factory = reviewfactory)
             if (email != null) {
 
                 HomeScreen(
@@ -81,7 +85,8 @@ fun NavigationGraph(
                     userProfileDao=userProfileDao,
                     profileViewModel = userProfileViewModel,
                     favoriteViewModel = favoritesViewModel,
-                    contractorViewModel = contractorViewModel
+                    contractorViewModel = contractorViewModel,
+                    reviewViewModel = reviewViewModel
                 )
             }
         }
