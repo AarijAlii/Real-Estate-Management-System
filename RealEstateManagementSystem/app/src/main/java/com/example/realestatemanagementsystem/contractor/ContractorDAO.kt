@@ -51,4 +51,5 @@ interface ContractorDao {
 
     @Query("UPDATE contractor SET overallRating = :newRating WHERE contractorId = :contractorId")
     suspend fun updateOverallRating(contractorId: Int, newRating: Float)
+    
 }

@@ -16,11 +16,14 @@ import com.example.realestatemanagementsystem.property.PropertyViewModel
 import com.example.realestatemanagementsystem.property.PropertyViewModelFactory
 import com.example.realestatemanagementsystem.AppDatabase
 import com.example.realestatemanagementsystem.contractor.ContractorFormScreen
+import com.example.realestatemanagementsystem.contractor.ContractorItem
 import com.example.realestatemanagementsystem.contractor.ContractorViewModel
 import com.example.realestatemanagementsystem.contractor.ContractorViewModelFactory
 import com.example.realestatemanagementsystem.contractor.ContractorListScreen
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
-import com.example.realestatemanagementsystem.review.ReviewFormScreen
+import com.example.realestatemanagementsystem.review.ReviewViewModel
+import com.example.realestatemanagementsystem.review.ReviewViewModelFactory
+import com.example.realestatemanagementsystem.review.SubmitReviewScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -200,22 +203,30 @@ fun NavigationGraph(
             val factory = ContractorViewModelFactory(appDatabase.contractorDao())  // Pass AppDatabase here
             val contractorViewModel: ContractorViewModel = viewModel(factory = factory)
             ContractorListScreen(
-                contractorViewModel = contractorViewModel
+                contractorViewModel = contractorViewModel,
+                 navController = navController
             )
         }
 
-//        composable(Screen.ReviewFormScreen.route) {
-//                backStackEntry ->
-//            val email = backStackEntry.arguments?.getString("email")
-//            val context = LocalContext.current
-//            val appDatabase = AppDatabase.getDatabase(context)
-//            val factory = ContractorViewModelFactory(appDatabase.contractorDao())  // Pass AppDatabase here
-//            val contractorViewModel: ContractorViewModel = viewModel(factory = factory)
-//            ReviewFormScreen(
-//                email = email,
-//                contractorViewModel = contractorViewModel
-//            )
-//        }
 
+
+        composable(Screen.ReviewFormScreen.route) {
+                    backStackEntry ->
+            val contractorId = backStackEntry.arguments?.getInt("contractorId") ?: 0
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val factory =  ReviewViewModelFactory(appDatabase.reviewDao(),appDatabase.contractorDao())  // Pass AppDatabase here
+            val reviewViewModel: ReviewViewModel = viewModel(factory = factory)
+            if (email != null) {
+                SubmitReviewScreen(
+                    contractorId = contractorId,
+                    email = email, // Pass the user's email here
+                    reviewViewModel = reviewViewModel,
+                    onReviewSubmitted = { navController.popBackStack() }
+                )
+            }
+        }
     }
 }
+

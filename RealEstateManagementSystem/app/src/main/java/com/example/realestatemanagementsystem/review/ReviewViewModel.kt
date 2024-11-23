@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.realestatemanagementsystem.contractor.ContractorDao
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ReviewViewModel(
@@ -12,7 +11,7 @@ class ReviewViewModel(
     private val contractorDao: ContractorDao
 ) : ViewModel() {
 
-    fun submitReview(contractorId: Int, userEmail: String, rating: Float, comment: String) {
+    fun submitReview(contractorId: Int, userEmail: String, rating: Int, comment: String) {
         viewModelScope.launch {
             try {
                 // Insert the review

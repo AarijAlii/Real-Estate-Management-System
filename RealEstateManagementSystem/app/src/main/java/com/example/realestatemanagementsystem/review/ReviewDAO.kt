@@ -13,9 +13,8 @@ interface ReviewDao {
         INSERT INTO review (contractorId, email, rating, comment) 
         VALUES (:contractorId, :userEmail, :rating, :comment)
     """)
-    suspend fun insertReview(contractorId: Int, userEmail: String, rating: Float, comment: String)
+    suspend fun insertReview(contractorId: Int, userEmail: String, rating:Int, comment: String)
 
     @Query("SELECT AVG(rating) FROM review WHERE contractorId = :contractorId")
     suspend fun calculateAverageRating(contractorId: Int): Float
 }
-
