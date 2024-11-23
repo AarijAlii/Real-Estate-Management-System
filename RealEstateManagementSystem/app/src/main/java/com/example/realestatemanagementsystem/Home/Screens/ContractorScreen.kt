@@ -1,5 +1,6 @@
 package com.example.realestatemanagementsystem.Home.Screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +32,7 @@ import com.example.realestatemanagementsystem.contractor.Contractor
 import com.example.realestatemanagementsystem.contractor.ContractorViewModel
 import com.example.realestatemanagementsystem.review.ReviewViewModel
 import com.example.realestatemanagementsystem.util.ContractorCard
+import kotlinx.coroutines.launch
 
 @Composable
 fun ContractorScreen(modifier: Modifier = Modifier,contractorViewModel: ContractorViewModel,innerPadding:PaddingValues,navHostController: NavHostController,email:String,reviewViewModel: ReviewViewModel) {
@@ -38,7 +41,11 @@ fun ContractorScreen(modifier: Modifier = Modifier,contractorViewModel: Contract
 
     val allContractors by contractorViewModel.contractors.observeAsState(emptyList())
     var contractor by remember { mutableStateOf<Contractor?>(null) }
-
+    val scope= rememberCoroutineScope()
+    fun refreshContractor(){
+        scope.launch {
+        contractorViewModel.fetchAllContractorsWithDetails()
+    }}
     LaunchedEffect(Unit) {
             contractorViewModel.fetchAllContractorsWithDetails()
             contractor=contractorViewModel.getContractorByEmail(email)
@@ -63,6 +70,11 @@ fun ContractorScreen(modifier: Modifier = Modifier,contractorViewModel: Contract
                             modifier = Modifier,
                             innerPadding = innerPadding,
                             reviewViewModel = reviewViewModel,
+                            contractorViewModel = contractorViewModel,
+                            onRefresh = {
+                                contractorViewModel.fetchAllContractorsWithDetails()
+                                Log.d("ContractorScreen", "Refreshed contractors")
+                            }
                         )
 
 

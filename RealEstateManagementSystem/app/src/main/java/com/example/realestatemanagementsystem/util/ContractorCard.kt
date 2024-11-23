@@ -1,6 +1,5 @@
 package com.example.realestatemanagementsystem.util
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,15 +40,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.example.realestatemanagementsystem.R
+import com.example.realestatemanagementsystem.contractor.ContractorViewModel
 import com.example.realestatemanagementsystem.contractor.ContractorWithUserProfile
 import com.example.realestatemanagementsystem.review.ReviewViewModel
 
 @Composable
-fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,contractor: ContractorWithUserProfile,reviewViewModel: ReviewViewModel) {
+fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,contractor: ContractorWithUserProfile,reviewViewModel: ReviewViewModel,contractorViewModel: ContractorViewModel,onRefresh:()->Unit) {
 
     var showReviewForm by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .background(color = Color.White)
@@ -145,7 +145,8 @@ fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,cont
     }
     if(showReviewForm){
         Dialog(onDismissRequest = { showReviewForm=false }) {
-            SubmitReviewScreen(contractorId = contractor.contractorId, email = contractor.email, reviewViewModel = reviewViewModel,onReviewSubmitted = { showReviewForm=false })
+            SubmitReviewScreen(contractorId = contractor.contractorId, email = contractor.email, reviewViewModel = reviewViewModel, onReviewSubmitted = {showReviewForm=false
+            onRefresh()})
         }
     }
 }
@@ -201,10 +202,11 @@ fun SubmitReviewScreen(
                         rating = rating.toFloat(),
                         comment = comment
                     )
+
                     onReviewSubmitted()
-                } else {
-                    Toast.makeText(getApplicationContext(), "Invalid rating", Toast.LENGTH_SHORT).show()
                 }
+
+
             },
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.White,
