@@ -25,12 +25,30 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.rememberImagePainter
 import kotlinx.coroutines.launch
+import android.content.Context
+import android.widget.Toast
+import androidx.compose.foundation.border
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.realestatemanagementsystem.R
+
 
 
 @Composable

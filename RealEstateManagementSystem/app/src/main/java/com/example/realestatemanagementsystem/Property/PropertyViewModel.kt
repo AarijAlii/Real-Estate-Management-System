@@ -66,53 +66,6 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
         }
     }
 
-//        // LiveData to observe uploaded image URLs
-//        private val _uploadedImageUrls = MutableLiveData<List<String>>()
-//        val uploadedImageUrls: LiveData<List<String>> = _uploadedImageUrls
-//
-//        fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
-//            viewModelScope.launch(Dispatchers.IO) {
-//                try {
-//                    // Insert property into the local database
-//                    val propertyId = propertyDao.insertProperty(property)
-//
-//                    // Upload images to Imgur (or another cloud service)
-//                    val imageUrls = uploadImagesToCloud(imageUris, clientId)
-//
-//                    // Save the image URLs into the database
-//                    val images = imageUrls.map { ImageEntity(propertyId = propertyId, imageUrl = it) }
-//                    imageDao.insertImages(images)
-//
-//                    // Return the image URLs to the UI
-//                    _uploadedImageUrls.postValue(imageUrls)
-//
-//                } catch (e: Exception) {
-//                    // Handle errors
-//                }
-//            }
-//        }
-//
-//        private suspend fun uploadImagesToCloud(imageUris: List<Uri>, clientId: String): List<String> {
-//            val imageUrls = mutableListOf<String>()
-//            for (uri in imageUris) {
-//                val imageUrl = uploadImageToImgur(uri, clientId)
-//                imageUrls.add(imageUrl)
-//            }
-//            return imageUrls
-//        }
-//
-//        private suspend fun uploadImageToImgur(uri: Uri, clientId: String): String {
-//            // Logic to upload the image to Imgur and return the image URL
-//            val requestBody = // Prepare the image data for upload
-//            val response = imgurService.uploadImage(clientId, requestBody)
-//            if (response.isSuccessful) {
-//                return response.body()?.link ?: ""
-//            } else {
-//                throw Exception("Image upload failed")
-//            }
-//        }
-
-
 
     private val _soldProperties = MutableStateFlow<List<Property>>(emptyList())
     val soldProperties: StateFlow<List<Property>> = _soldProperties

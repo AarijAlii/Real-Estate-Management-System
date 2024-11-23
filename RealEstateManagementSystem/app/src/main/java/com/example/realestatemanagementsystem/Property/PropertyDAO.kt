@@ -8,18 +8,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PropertyDao {
 
-
-    @Insert
-    suspend fun insertProperty(property: Property): Long
-
-    // Update property
-    @Update
-    suspend fun updateProperty(property: Property)
-
-    // Delete property
-    @Delete
-    suspend fun deleteProperty(property: Property)
-
     // Get properties by user email
     @Query("SELECT * FROM property WHERE email = :email")
     suspend fun getPropertiesByUser(email: String): List<Property>
@@ -123,3 +111,4 @@ interface PropertyDao {
     @Insert
     suspend fun insertImages(images: List<ImageEntity>)
 }
+
