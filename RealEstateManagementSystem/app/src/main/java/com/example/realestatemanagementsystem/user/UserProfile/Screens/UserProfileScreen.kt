@@ -1,35 +1,35 @@
 package com.example.realestatemanagementsystem.user.UserProfile.Screens
 
 
-import androidx.compose.foundation.layout.*
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
-import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
-import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
-import kotlinx.coroutines.delay
 
 @Composable
 fun UserProfileScreen(
@@ -40,13 +40,13 @@ fun UserProfileScreen(
     // State variables for the user input
     val focusManager= LocalFocusManager.current
 
-   val userProfile by profileViewModel.userProfile.collectAsState()
+   val userProfile by remember { mutableStateOf<UserProfile?>(null)}
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf("") }
     profileViewModel.getUserProfile(email)
 
 
-
+    Log.d("userprof","${userProfile.toString()}")
         if (userProfile != null) {
             var firstName by remember { mutableStateOf(userProfile?.firstName?:"") }
             var lastName by remember { mutableStateOf(userProfile?.lastName?:"") }

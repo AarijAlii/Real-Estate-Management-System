@@ -1,25 +1,26 @@
 package com.example.realestatemanagementsystem.Navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-
+import com.example.realestatemanagementsystem.AppDatabase
+import com.example.realestatemanagementsystem.Home.Screens.ContractorFormScreen
 import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
-import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
 import com.example.realestatemanagementsystem.Home.Screens.UpdateListingScreen
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.Property.PropertyViewModelFactory
-import com.example.realestatemanagementsystem.AppDatabase
+import com.example.realestatemanagementsystem.contractor.ContractorViewModel
+import com.example.realestatemanagementsystem.contractor.ContractorViewModelFactory
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileScreen
 import com.example.realestatemanagementsystem.user.UserProfile.Screens.UserProfileUpdateScreen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserViewModelFactory
+import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
 import com.example.realestatemanagementsystem.user.authentication.Screens.LoginScreen
 import com.example.realestatemanagementsystem.user.authentication.Screens.SignUpScreen
 
@@ -61,8 +62,11 @@ fun NavigationGraph(
             val favoritesViewModel = viewModel<FavoriteViewModel>()
              val userProfileDao=appDatabase.userProfileDao()
 
+            val contractorFactory = ContractorViewModelFactory(appDatabase.contractorDao())  // Pass AppDatabase here
+            val contractorViewModel: ContractorViewModel = viewModel(factory = contractorFactory)
+
             if (email != null) {
-                Log.d("HomeScreen", "Email received: $email")
+
                 HomeScreen(
 //                    email: String,
 //                    authViewModel: AuthViewModel,
@@ -76,12 +80,22 @@ fun NavigationGraph(
                     viewModel =propertyViewModel,
                     userProfileDao=userProfileDao,
                     profileViewModel = userProfileViewModel,
-                    favoriteViewModel = favoritesViewModel
+                    favoriteViewModel = favoritesViewModel,
+                    contractorViewModel = contractorViewModel
                 )
             }
         }
 
+        composable(Screen.ContractorRegistrationForm.route){
+                backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email")
+            val context = LocalContext.current
+            val appDatabase = AppDatabase.getDatabase(context)
+            val contractorFactory = ContractorViewModelFactory(appDatabase.contractorDao())  // Pass AppDatabase here
+            val contractorViewModel: ContractorViewModel = viewModel(factory = contractorFactory)
+            ContractorFormScreen(contractorViewModel = contractorViewModel, email =email.toString(),onRegistrationComplete = { navController.popBackStack() })
 
+        }
         composable(Screen.UserProfileUpdateScreen.route) { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current
@@ -105,9 +119,7 @@ fun NavigationGraph(
             val appDatabase = AppDatabase.getDatabase(context)
             val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
-            if (email != null) {
-                userProfileViewModel.getUserProfile(email)
-            }
+
             if (email != null) {
                 UserProfileScreen(
                     email = email,

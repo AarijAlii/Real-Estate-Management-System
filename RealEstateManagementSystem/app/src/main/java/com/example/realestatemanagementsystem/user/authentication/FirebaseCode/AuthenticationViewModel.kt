@@ -125,7 +125,7 @@ class AuthViewModel() : ViewModel() {
 
                 val currentUserEmail = auth.currentUser?.email
 
-                    if (currentUserEmail != null) {
+                if (currentUserEmail != null) {
                     onSuccess(currentUserEmail) // Pass the email to the onSuccess callback
                 } else {
                     onError("Unable to retrieve user email.")
