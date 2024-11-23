@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +31,7 @@ import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.contractor.Contractor
 import com.example.realestatemanagementsystem.contractor.ContractorViewModel
 import com.example.realestatemanagementsystem.util.ContractorCard
+import com.google.android.play.integrity.internal.f
 
 @Composable
 fun ContractorScreen(modifier: Modifier = Modifier,contractorViewModel: ContractorViewModel,innerPadding:PaddingValues,navHostController: NavHostController,email:String) {
@@ -69,29 +71,22 @@ fun ContractorScreen(modifier: Modifier = Modifier,contractorViewModel: Contract
 
 
         }
-        Button(onClick = {
-            showDialog=true
-
-        },
-             colors = ButtonColors(
-                contentColor = Color.White,
-                disabledContainerColor = Color.Gray,
-                containerColor = Color.Red,
-                disabledContentColor = Color.White,
-            ),
-            enabled = if(contractor!=null)
-                            false
-                        else
-                            true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-
-        ){
-            if(contractor!=null)
-            Text(text = "Already Registered")
-            else
+        if (contractor == null) { // Show the button only if the user is not a contractor
+            Button(
+                onClick = {
+                    showDialog = true
+                },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    containerColor = Color.Red,
+                    disabledContentColor = Color.Gray
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
                 Text(text = "Register")
+            }
         }
     }
     if (showDialog) {

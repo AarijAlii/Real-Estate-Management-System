@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -53,7 +55,7 @@ fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,cont
             Divider(
                 color = Color.Gray,
                 modifier = Modifier
-                    .padding(top=16.dp, start = 8.dp)
+                    .padding(top = 16.dp, start = 8.dp)
                     .width(1.dp)
                     .height(100.dp)
 
@@ -64,7 +66,7 @@ fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,cont
             Column(
                 modifier = Modifier
                     .weight(2f)
-                    .padding(16.dp),
+                    .padding(8.dp),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
@@ -88,12 +90,25 @@ fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,cont
 
                 }
 
-                Text(
-                    text = contractor.speciality,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Black,
-                    modifier=Modifier.padding(top=16.dp)
-                )
+                Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(
+                        text = "Deals in: ${contractor.speciality}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Black,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(
+                        onClick = { /* Handle button click */ },
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = Color.White,
+                            containerColor = Color.Red,
+                            disabledContentColor = Color.Gray
+                        ),
+                    ) {
+                        Text(text = "Hire")
+                    }
+                }
             }
         }
     }
