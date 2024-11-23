@@ -1,7 +1,6 @@
 package com.example.realestatemanagementsystem.user.UserProfile.Screens
 
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
@@ -11,9 +10,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,37 +30,57 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 
 @Composable
 fun UserProfileScreen(
     email:String,
     profileViewModel: UserProfileViewModel,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    userProfileDao: UserProfileDao
 ) {
     // State variables for the user input
-    val focusManager= LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
 
-   val userProfile by remember { mutableStateOf<UserProfile?>(null)}
+    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf("") }
-    profileViewModel.getUserProfile(email)
+    LaunchedEffect(email) {
+        try {
+            // Fetch the user profile from the database in a coroutine
+            val profile = userProfileDao.getUserByEmail(email)
+            userProfile = profile
+            isLoading = false
+        } catch (e: Exception) {
+            errorMessage = "Failed to load profile: ${e.message}"
+            isLoading = false
+        }
+    }
 
-
-    Log.d("userprof","${userProfile.toString()}")
+    if (isLoading){
+        CircularProgressIndicator()}
+    else{
         if (userProfile != null) {
-            var firstName by remember { mutableStateOf(userProfile?.firstName?:"") }
-            var lastName by remember { mutableStateOf(userProfile?.lastName?:"") }
+            var firstName by remember { mutableStateOf(userProfile?.firstName ?: "") }
+            var lastName by remember { mutableStateOf(userProfile?.lastName ?: "") }
             var contact by remember { mutableStateOf(userProfile?.contact ?: "") }
             var city by remember { mutableStateOf(userProfile?.city ?: "") }
             var region by remember { mutableStateOf(userProfile?.region ?: "") }
             var postalCode by remember { mutableStateOf(userProfile?.postalCode ?: "") }
             val overallRating = userProfile?.rating ?: "No ratings yet"
-            Column(verticalArrangement = Arrangement.Center,modifier = Modifier
+            Column(
+                verticalArrangement = Arrangement.Center, modifier = Modifier
 
-                .padding(16.dp)) {
+                    .padding(16.dp)
+            ) {
 
-                Text("Create Profile", fontSize = 34.sp, fontWeight = FontWeight.Bold,modifier=Modifier.padding(vertical = 16.dp))
+                Text(
+                    "Create Profile",
+                    fontSize = 34.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 16.dp)
+                )
 
                 Column(
 
@@ -180,7 +201,7 @@ fun UserProfileScreen(
                             disabledContainerColor = Color.Gray,
                             containerColor = Color.Red,
                             disabledContentColor = Color.White,
-                        ) ,
+                        ),
                         modifier = Modifier.fillMaxWidth()
 
                     ) {
@@ -193,13 +214,14 @@ fun UserProfileScreen(
             Text("User profile not found.")
         }
 
-        if (errorMessage.isNotEmpty()) {
-            Text(
-                text = errorMessage,
-                color = Color.Red,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
+    if (errorMessage.isNotEmpty()) {
+        Text(
+            text = errorMessage,
+            color = Color.Red,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+    }
+}
     }
 
 
