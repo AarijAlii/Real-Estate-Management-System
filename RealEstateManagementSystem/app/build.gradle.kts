@@ -52,13 +52,23 @@ android {
 }
 
 dependencies {
-    //Retrofit and API
-    implementation("io.coil-kt:coil-compose:2.2.2") // Use the latest version
+    //Glide and API
+    implementation(libs.coil.compose)
 
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.okhttp3:okhttp:4.9.1")
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
+
+    //coil
+    implementation (libs.coil)  // Check for the latest version
+
+
+    // Accompanist Glide for Compose integration
+
+
+    // Use the latest version
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.okhttp)
+    implementation (libs.logging.interceptor)
 
 
     //Navigation

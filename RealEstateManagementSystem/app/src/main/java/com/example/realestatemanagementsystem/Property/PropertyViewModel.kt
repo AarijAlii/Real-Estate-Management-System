@@ -67,8 +67,8 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
 
 
     private fun insertImagesForProperty(propertyId: Long, imageUrls: List<String>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
+        Log.d("Before Insert", "Inserting image for propertyId: $propertyId,${imageUrls.toString()}")
+
                 // Insert images one by one
                 Log.d("AddProperty0", "Inserting image for propertyId: $propertyId,${imageUrls.toString()}")
                 imageUrls.forEach { imageUrl ->
@@ -76,8 +76,21 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
                     imageDao.insertImage(propertyId, imageUrl)
                 }
                 Log.d("AddProperty", "Images added successfully for propertyId: $propertyId")
+
+
+
+
+    }
+    private val _imageUrls = MutableStateFlow<List<String>>(emptyList())
+    val imageUrls: StateFlow<List<String>> get() = _imageUrls
+
+    fun fetchImagesForProperty(propertyId: Int) {
+        viewModelScope.launch {
+            try {
+                val urls = imageDao.getImageUrlsForProperty(propertyId) // Fetch multiple URLs
+                _imageUrls.value=urls// Update LiveData with the list of URLs
             } catch (e: Exception) {
-                Log.e("AddProperty", "Error adding images: ${e.message}")
+                Log.e("PropertyViewModel", "Error fetching image URLs: ${e.message}")
             }
         }
     }

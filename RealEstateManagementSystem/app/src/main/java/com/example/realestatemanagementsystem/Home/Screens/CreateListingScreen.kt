@@ -66,6 +66,7 @@ fun CreateListingScreen(email: String,
     var isFormValid by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
+
     val context = LocalContext.current
     val clientId = "68edc80df54e62f"
 

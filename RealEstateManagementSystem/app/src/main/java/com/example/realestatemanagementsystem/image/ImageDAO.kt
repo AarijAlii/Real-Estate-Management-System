@@ -1,7 +1,6 @@
 package com.example.realestatemanagementsystem.image
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 
@@ -12,7 +11,7 @@ interface ImageDao {
         INSERT OR REPLACE INTO property_images (propertyId, imageUrl)
         VALUES (:propertyId, :imageUrl)
     """)
-    suspend fun insertImage(propertyId: Long, imageUrl: String)
+     fun insertImage(propertyId: Long, imageUrl: String)
 
     @Transaction
     suspend fun insertImages(propertyId:Long,images: List<ImageEntity>) {
@@ -20,4 +19,9 @@ interface ImageDao {
             insertImage(image.propertyId, image.imageUrl)
         }
     }
+
+
+        @Query("SELECT imageUrl FROM property_images WHERE propertyId = :propertyId")
+        suspend fun getImageUrlsForProperty(propertyId: Int): List<String>
+
 }

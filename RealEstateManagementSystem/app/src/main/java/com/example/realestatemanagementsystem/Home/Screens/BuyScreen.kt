@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,6 +37,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,11 +64,9 @@ import com.example.realestatemanagementsystem.Property.PropertyFilter
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
-import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.example.realestatemanagementsystem.util.BuyPropertyCards
 import com.example.realestatemanagementsystem.util.FavoritePropertyCard
-
 import kotlinx.coroutines.launch
 
 @Composable
@@ -164,6 +162,7 @@ fun BuyScreen(
             viewModel.getAllBuyingProperties(filter)
         }
     }
+
     Column(modifier = Modifier) {
         Row(
             modifier = Modifier
