@@ -1,17 +1,17 @@
 package com.example.realestatemanagementsystem
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import android.content.Context
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.realestatemanagementsystem.Property.Property
+import com.example.realestatemanagementsystem.Property.PropertyDao
 import com.example.realestatemanagementsystem.contractor.Contractor
 import com.example.realestatemanagementsystem.contractor.ContractorDao
 import com.example.realestatemanagementsystem.favorites.Favorite
 import com.example.realestatemanagementsystem.favorites.FavoriteDao
-import com.example.realestatemanagementsystem.Property.Property
-import com.example.realestatemanagementsystem.Property.PropertyDao
 import com.example.realestatemanagementsystem.image.ImageDao
 import com.example.realestatemanagementsystem.image.ImageEntity
 import com.example.realestatemanagementsystem.previousworks.PreviousWorks
@@ -260,4 +260,3 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
         db.execSQL("ALTER TABLE review_new RENAME TO review")
     }
 }
-

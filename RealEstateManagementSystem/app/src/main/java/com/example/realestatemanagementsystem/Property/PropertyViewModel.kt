@@ -2,6 +2,7 @@ package com.example.realestatemanagementsystem.Property
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.realestatemanagementsystem.image.ImageDao
@@ -22,10 +23,12 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
 
         // Upload images to Imgur
         imageUris.forEach { uri ->
+            Log.d("PropertyViewModel", "Uploading image: $uri")
             uploadImageToImgur(context, uri, clientId) { imageUrl ->
+                Log.d("PropertyViewModel1q", "Uploading image: $imageUrl")
                 if (imageUrl != null) {
                     imageUrls.add(imageUrl)
-
+                    Log.d("Reached uploading",imageUrl.toString())
                     // Once all images are uploaded, insert the property and image URLs into the database
                     if (imageUrls.size == imageUris.size) {
                         insertPropertyWithImages(property, imageUrls)
@@ -45,6 +48,7 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Insert the property using the custom adddProperty query
+                Log.d("Reached DAO",property.toString())
                 val propertyId = propertyDao.adddProperty(
                     property.city, property.state, property.propertyNumber,
                     property.rooms, property.bedrooms, property.garage,
@@ -53,10 +57,11 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
                 )
 
                 // Prepare the images to insert
+                Log.d("Reached DAO","$propertyId")
                 val images = imageUrls.map { imageUrl ->
                     ImageEntity(propertyId = propertyId, imageUrl = imageUrl)  // No need to call toInt() here
                 }
-
+                Log.d("generated urls",images.toString())
                 // Insert the images into the database
                 imageDao.insertImages(images)
             } catch (e: Exception) {

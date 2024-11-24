@@ -2,6 +2,7 @@ package com.example.realestatemanagementsystem.util
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,7 +47,7 @@ import com.example.realestatemanagementsystem.contractor.ContractorWithUserProfi
 import com.example.realestatemanagementsystem.review.ReviewViewModel
 
 @Composable
-fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,contractor: ContractorWithUserProfile,reviewViewModel: ReviewViewModel,contractorViewModel: ContractorViewModel,onRefresh:()->Unit) {
+fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,contractor: ContractorWithUserProfile,reviewViewModel: ReviewViewModel,contractorViewModel: ContractorViewModel,onRefresh:()->Unit,onCardClick:()->Unit) {
 
     var showReviewForm by remember { mutableStateOf(false) }
 
@@ -55,6 +56,7 @@ fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,cont
             .background(color = Color.White)
             .padding()
             .padding(8.dp)
+            .clickable { onCardClick() }
     ) {
         Row(
             modifier = Modifier

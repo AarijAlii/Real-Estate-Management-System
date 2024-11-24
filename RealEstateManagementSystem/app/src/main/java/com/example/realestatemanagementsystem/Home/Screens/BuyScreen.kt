@@ -218,7 +218,7 @@ fun BuyScreen(
             items(allProperties) { property ->
                 // Display each property (replace with your card implementation)
 
-                val isFavorite = favorites.any { it.propertyId == property.propertyId }
+
                 BuyPropertyCards(
                     modifier = Modifier,
                     property = property ,

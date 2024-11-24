@@ -2,11 +2,15 @@ package com.example.realestatemanagementsystem.image
 
 import android.content.Context
 import android.net.Uri
+import okhttp3.Callback
 import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.Response
 import java.io.File
 import java.io.IOException
-import okhttp3.*
+
 
 //object ImageUploader {
 //
@@ -63,8 +67,7 @@ suspend fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, cal
     val url = "https://api.imgur.com/3/image"
     val authorizationHeader = "68edc80df54e62f"
     val bearerToken = "42204b0e8ca8596e704a03a93d6718e7009096f5"
-    val filePath =
-        context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() }
+    val filePath = context.contentResolver.openInputStream(uri)?.bufferedReader().use { it?.readText() }
     // Replace with the actual file path
     val title = "abc"
     val mediaType = "image"
@@ -80,7 +83,6 @@ suspend fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, cal
     // Create multipart body
     val requestBody = MultipartBody.Builder()
         .setType(MultipartBody.FORM)
-
         .addFormDataPart("image", tempFile.name, tempFile.asRequestBody())
         .addFormDataPart("title", title)
         .addFormDataPart("type", mediaType)
@@ -96,7 +98,6 @@ suspend fun uploadImageToImgur(context: Context, uri: Uri, clientId: String, cal
 
     // Create OkHttpClient
     val client = OkHttpClient()
-
     // Make the request
     client.newCall(request).enqueue(object : Callback {
         override fun onFailure(call: okhttp3.Call, e: IOException) {

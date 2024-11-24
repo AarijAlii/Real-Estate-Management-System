@@ -4,14 +4,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.realestatemanagementsystem.contractor.ContractorDao
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class ReviewViewModel(
     private val reviewDao: ReviewDao,
     private val contractorDao: ContractorDao
 ) : ViewModel() {
-
+    private val _reviews = MutableStateFlow<List<Review>>(emptyList())
+    val reviews = _reviews
     fun submitReview(contractorId: Int, userEmail: String, rating: Float, comment: String) {
         viewModelScope.launch {
             try {
@@ -31,6 +32,11 @@ class ReviewViewModel(
             } catch (e: Exception) {
                 Log.e("ReviewViewModel", "Error submitting review", e)
             }
+        }
+    }
+    fun getReviewsForContractor(contractorId: Int) {
+        viewModelScope.launch {
+             _reviews.value=reviewDao.getReviewsForContractor(contractorId)
         }
     }
 }
