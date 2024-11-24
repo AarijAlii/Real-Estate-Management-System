@@ -1,13 +1,13 @@
 package com.example.realestatemanagementsystem.Property
 
+//import com.example.realestatemanagementsystem.image.uploadImageToImgur
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.realestatemanagementsystem.image.ImageDao
-import com.example.realestatemanagementsystem.image.ImageEntity
-import com.example.realestatemanagementsystem.image.uploadImageToImgur
+import com.example.realestatemanagementsystem.image.ImageUploader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,55 +17,67 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
 
     //       private val _errorMessage = MutableLiveData<String>()
     //    val errorMessage: MutableLiveData<String> get() = _errorMessage
+
     suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
+        // Launch a coroutine to perform property insertion
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Add the property and retrieve the generated propertyId
+                val propertyId = propertyDao.adddProperty(
+                    city = property.city,
+                    state = property.state,
+                    propertyNumber = property.propertyNumber,
+                    rooms = property.rooms,
+                    bedrooms = property.bedrooms,
+                    garage = property.garage,
+                    area = property.area,
+                    type = property.type,
+                    price = property.price,
+                    zipCode = property.zipCode,
+                    email = property.email,
+                    isSold = property.isSold
+                )
 
-        val imageUrls = mutableListOf<String>()
+                // List to store uploaded image URLs
+                val imageUrls = mutableListOf<String>()
 
-        // Upload images to Imgur
-        imageUris.forEach { uri ->
-            Log.d("PropertyViewModel", "Uploading image: $uri")
-            uploadImageToImgur(context, uri, clientId) { imageUrl ->
-                Log.d("PropertyViewModel1q", "Uploading image: $imageUrl")
-                if (imageUrl != null) {
-                    imageUrls.add(imageUrl)
-                    Log.d("Reached uploading",imageUrl.toString())
-                    // Once all images are uploaded, insert the property and image URLs into the database
-                    if (imageUrls.size == imageUris.size) {
-                        insertPropertyWithImages(property, imageUrls)
+                // Upload images one by one
+                imageUris.forEach { uri ->
+                    ImageUploader.uploadImageToImgur(context, uri, clientId) { imageUrl ->
+                        if (imageUrl != null) {
+                            imageUrls.add(imageUrl)
+
+                            // Once all images are uploaded, insert them into the database
+                            if (imageUrls.size == imageUris.size) {
+                                Log.d("Image dao","${imageUrls.size}")
+                                insertImagesForProperty(propertyId, imageUrls)
+                            }
+                        } else {
+                            _errorMessage.value = "Failed to upload image: $uri"
+                        }
                     }
-                } else {
-                    _errorMessage.value = "Failed to upload some images"
                 }
+            } catch (e: Exception) {
+                Log.e("AddProperty", "Error adding property: ${e.message}")
             }
         }
     }
 
 
-    private fun insertPropertyWithImages(
-        property: Property,
-        imageUrls: List<String>
-    ) {
+
+
+    private fun insertImagesForProperty(propertyId: Long, imageUrls: List<String>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Insert the property using the custom adddProperty query
-                Log.d("Reached DAO",property.toString())
-                val propertyId = propertyDao.adddProperty(
-                    property.city, property.state, property.propertyNumber,
-                    property.rooms, property.bedrooms, property.garage,
-                    property.area, property.type, property.price,
-                    property.zipCode, property.email, property.isSold
-                )
-
-                // Prepare the images to insert
-                Log.d("Reached DAO","$propertyId")
-                val images = imageUrls.map { imageUrl ->
-                    ImageEntity(propertyId = propertyId, imageUrl = imageUrl)  // No need to call toInt() here
+                // Insert images one by one
+                Log.d("AddProperty0", "Inserting image for propertyId: $propertyId,${imageUrls.toString()}")
+                imageUrls.forEach { imageUrl ->
+                    Log.d("AddProperty", "Inserting image for propertyId: $propertyId,$imageUrl")
+                    imageDao.insertImage(propertyId, imageUrl)
                 }
-                Log.d("generated urls",images.toString())
-                // Insert the images into the database
-                imageDao.insertImages(images)
+                Log.d("AddProperty", "Images added successfully for propertyId: $propertyId")
             } catch (e: Exception) {
-                _errorMessage.value = "Error adding property: ${e.message}"
+                Log.e("AddProperty", "Error adding images: ${e.message}")
             }
         }
     }

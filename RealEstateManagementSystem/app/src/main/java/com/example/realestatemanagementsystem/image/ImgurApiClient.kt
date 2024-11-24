@@ -1,6 +1,5 @@
 package com.example.realestatemanagementsystem.image
 
-
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -20,4 +19,3 @@ object RetrofitClient {
         retrofit.create(ImgurApiService::class.java)
     }
 }
-
