@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.rememberImagePainter
 import kotlinx.coroutines.launch
 import android.content.Context
 import android.widget.Toast
@@ -47,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.realestatemanagementsystem.R
 
 
@@ -107,12 +107,12 @@ fun CreateListingScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // If images are selected, show them using Coil
+        // If images are selected, show them using Coil
         if (imageUris.isNotEmpty()) {
             LazyRow {
                 items(imageUris) { uri ->
-                    val painter = rememberImagePainter(uri)
-                    Image(
-                        painter = painter,
+                    AsyncImage(
+                        model = uri,
                         contentDescription = "Selected image",
                         modifier = Modifier
                             .padding(8.dp)
@@ -122,6 +122,7 @@ fun CreateListingScreen(
                 }
             }
         }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 

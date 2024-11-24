@@ -110,5 +110,9 @@ interface PropertyDao {
 
     @Insert
     suspend fun insertImages(images: List<ImageEntity>)
+
+
+    @Query("SELECT propertyId FROM property ORDER BY propertyId DESC LIMIT 1")
+    suspend fun getMostRecentProperty(): Long
 }
 

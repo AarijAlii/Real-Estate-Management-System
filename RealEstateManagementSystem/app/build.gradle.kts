@@ -63,6 +63,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:okhttp:4.9.1")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
+    implementation ("io.coil-kt:coil-compose:2.4.0")
 
 
     implementation (platform(libs.firebase.bom))

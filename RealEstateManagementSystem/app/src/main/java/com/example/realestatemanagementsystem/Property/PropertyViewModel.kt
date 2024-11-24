@@ -2,66 +2,142 @@ package com.example.realestatemanagementsystem.property
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.realestatemanagementsystem.image.ImageDao
 import com.example.realestatemanagementsystem.image.ImageEntity
+import com.example.realestatemanagementsystem.image.ImageUploader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import com.example.realestatemanagementsystem.image.uploadImageToImgur
+//import com.example.realestatemanagementsystem.image.uploadImageToImgur
 
 
 class PropertyViewModel(private val propertyDao: PropertyDao, private val imageDao: ImageDao) : ViewModel() {
-
- //       private val _errorMessage = MutableLiveData<String>()
+    //       private val _errorMessage = MutableLiveData<String>()
     //    val errorMessage: MutableLiveData<String> get() = _errorMessage
-        suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
-
-            val imageUrls = mutableListOf<String>()
-
-            // Upload images to Imgur
-            imageUris.forEach { uri ->
-                uploadImageToImgur(context, uri, clientId) { imageUrl ->
-                    if (imageUrl != null) {
-                        imageUrls.add(imageUrl)
-
-                        // Once all images are uploaded, insert the property and image URLs into the database
-                        if (imageUrls.size == imageUris.size) {
-                            insertPropertyWithImages(property, imageUrls)
-                        }
-                    } else {
-                        _errorMessage.value = "Failed to upload some images"
-                    }
-                }
-            }
-        }
 
 
-        private fun insertPropertyWithImages(
-            property: Property,
-            imageUrls: List<String>
-    ) {
+//    suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            try {
+//                val propertyId = propertyDao.adddProperty(
+//                    city = property.city,
+//                    state = property.state,
+//                    propertyNumber = property.propertyNumber,
+//                    rooms = property.rooms,
+//                    bedrooms = property.bedrooms,
+//                    garage = property.garage,
+//                    area = property.area,
+//                    type = property.type,
+//                    price = property.price,
+//                    zipCode = property.zipCode,
+//                    email = property.email,
+//                    isSold = property.isSold
+//                )
+//            } catch (e: Exception) {
+//                Log.e("AddProperty", "Error adding property with images: ${e.message}")
+//            }
+//        }
+//
+//            val imageUrls = mutableListOf<String>()
+//            imageUris.forEach { uri ->
+//            ImageUploader.uploadImageToImgur(context, uri, clientId) { imageUrl ->
+//                if (imageUrl != null) {
+//                    if (imageUrls.size == imageUris.size) {
+//                        insertPropertyWithImages(property, imageUrls)
+//                    }
+//                    else {
+//                    _errorMessage.value = "Failed to upload some images"
+//                }
+//                    Log.d("MainActivity", "Image uploaded successfully: $imageUrl")
+//                } else {
+//                    Log.e("MainActivity", "Image upload failed")
+//                }
+//            }
+//        }
+//    }
+
+
+
+    suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
+        // Launch a coroutine to perform property insertion
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Insert the property using the custom adddProperty query
+                // Add the property and retrieve the generated propertyId
                 val propertyId = propertyDao.adddProperty(
-                    property.city, property.state, property.propertyNumber,
-                    property.rooms, property.bedrooms, property.garage,
-                    property.area, property.type, property.price,
-                    property.zipCode, property.email, property.isSold
+                    city = property.city,
+                    state = property.state,
+                    propertyNumber = property.propertyNumber,
+                    rooms = property.rooms,
+                    bedrooms = property.bedrooms,
+                    garage = property.garage,
+                    area = property.area,
+                    type = property.type,
+                    price = property.price,
+                    zipCode = property.zipCode,
+                    email = property.email,
+                    isSold = property.isSold
                 )
 
-                // Prepare the images to insert
-                val images = imageUrls.map { imageUrl ->
-                    ImageEntity(propertyId = propertyId, imageUrl = imageUrl)  // No need to call toInt() here
-                }
+                // List to store uploaded image URLs
+                val imageUrls = mutableListOf<String>()
 
-                // Insert the images into the database
-                imageDao.insertImages(images)
+                // Upload images one by one
+                imageUris.forEach { uri ->
+                    ImageUploader.uploadImageToImgur(context, uri, clientId) { imageUrl ->
+                        if (imageUrl != null) {
+                            imageUrls.add(imageUrl)
+
+                            // Once all images are uploaded, insert them into the database
+                            if (imageUrls.size == imageUris.size) {
+                                insertImagesForProperty(propertyId, imageUrls)
+                            }
+                        } else {
+                            _errorMessage.value = "Failed to upload image: $uri"
+                        }
+                    }
+                }
             } catch (e: Exception) {
-                _errorMessage.value = "Error adding property: ${e.message}"
+                Log.e("AddProperty", "Error adding property: ${e.message}")
+            }
+        }
+    }
+
+
+//    private fun insertPropertyWithImages(
+//            property: Property,
+//            imageUrls: List<String>
+//    ) {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            try {
+//                val propertyId = propertyDao.getMostRecentProperty()
+//
+//                val images = imageUrls.map { imageUrl ->
+//                    ImageEntity(propertyId = propertyId, imageUrl = imageUrl)
+//                    imageDao.insertImage(propertyId,imageUrl)// No need to call toInt() here
+//                }
+//                Log.d("AddProperty", "Property and images added successfully")
+//
+//            } catch (e: Exception) {
+//                Log.e("AddProperty", "Error adding property with images: ${e.message}")
+//                _errorMessage.value = "Error adding property: ${e.message}"
+//            }
+//        }
+//    }
+
+    private fun insertImagesForProperty(propertyId: Long, imageUrls: List<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Insert images one by one
+                imageUrls.forEach { imageUrl ->
+                    imageDao.insertImage(propertyId, imageUrl)
+                }
+                Log.d("AddProperty", "Images added successfully for propertyId: $propertyId")
+            } catch (e: Exception) {
+                Log.e("AddProperty", "Error adding images: ${e.message}")
             }
         }
     }
