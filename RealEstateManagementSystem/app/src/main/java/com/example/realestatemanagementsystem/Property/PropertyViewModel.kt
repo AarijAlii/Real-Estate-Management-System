@@ -20,48 +20,6 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
     //    val errorMessage: MutableLiveData<String> get() = _errorMessage
 
 
-//    suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            try {
-//                val propertyId = propertyDao.adddProperty(
-//                    city = property.city,
-//                    state = property.state,
-//                    propertyNumber = property.propertyNumber,
-//                    rooms = property.rooms,
-//                    bedrooms = property.bedrooms,
-//                    garage = property.garage,
-//                    area = property.area,
-//                    type = property.type,
-//                    price = property.price,
-//                    zipCode = property.zipCode,
-//                    email = property.email,
-//                    isSold = property.isSold
-//                )
-//            } catch (e: Exception) {
-//                Log.e("AddProperty", "Error adding property with images: ${e.message}")
-//            }
-//        }
-//
-//            val imageUrls = mutableListOf<String>()
-//            imageUris.forEach { uri ->
-//            ImageUploader.uploadImageToImgur(context, uri, clientId) { imageUrl ->
-//                if (imageUrl != null) {
-//                    if (imageUrls.size == imageUris.size) {
-//                        insertPropertyWithImages(property, imageUrls)
-//                    }
-//                    else {
-//                    _errorMessage.value = "Failed to upload some images"
-//                }
-//                    Log.d("MainActivity", "Image uploaded successfully: $imageUrl")
-//                } else {
-//                    Log.e("MainActivity", "Image upload failed")
-//                }
-//            }
-//        }
-//    }
-
-
-
     suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
         // Launch a coroutine to perform property insertion
         viewModelScope.launch(Dispatchers.IO) {
@@ -107,26 +65,7 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
     }
 
 
-//    private fun insertPropertyWithImages(
-//            property: Property,
-//            imageUrls: List<String>
-//    ) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            try {
-//                val propertyId = propertyDao.getMostRecentProperty()
-//
-//                val images = imageUrls.map { imageUrl ->
-//                    ImageEntity(propertyId = propertyId, imageUrl = imageUrl)
-//                    imageDao.insertImage(propertyId,imageUrl)// No need to call toInt() here
-//                }
-//                Log.d("AddProperty", "Property and images added successfully")
-//
-//            } catch (e: Exception) {
-//                Log.e("AddProperty", "Error adding property with images: ${e.message}")
-//                _errorMessage.value = "Error adding property: ${e.message}"
-//            }
-//        }
-//    }
+
 
     private fun insertImagesForProperty(propertyId: Long, imageUrls: List<String>) {
         viewModelScope.launch(Dispatchers.IO) {
