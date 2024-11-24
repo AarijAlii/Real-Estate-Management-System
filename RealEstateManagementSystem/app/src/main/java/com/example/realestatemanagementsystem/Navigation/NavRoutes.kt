@@ -13,5 +13,6 @@ sealed class Screen(val route:String){
     data object ContractorFormScreen:Screen("contractor_form_screen/{email}")
     data object ContractorListScreen:Screen("contractor_list_screen")
     data object ReviewFormScreen:Screen("review_form_screen/{email}{contractorId}")
+    data object AuthenticationScreen:Screen("auth_screen")
 
 }

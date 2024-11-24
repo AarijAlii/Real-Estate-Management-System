@@ -9,9 +9,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.realestatemanagementsystem.Navigation.NavigationGraph
+//import com.example.realestatemanagementsystem.Navigation.NavigationGraph
 import com.example.realestatemanagementsystem.ui.theme.RealEstateManagementSystemTheme
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
+import com.example.realestatemanagementsystem.user.authentication.Screens.SetupNavGraph
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +22,8 @@ class MainActivity : ComponentActivity() {
             val authViewModel: AuthViewModel = viewModel()
             RealEstateManagementSystemTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                   NavigationGraph(navController, authViewModel)
+                   //NavigationGraph(navController, authViewModel)
+                    SetupNavGraph(navController)
                 }
             }
         }

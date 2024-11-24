@@ -66,6 +66,7 @@ dependencies {
     implementation ("io.coil-kt:coil-compose:2.4.0")
 
 
+
     implementation (platform(libs.firebase.bom))
     implementation (libs.firebase.storage.ktx)
     //Navigation
