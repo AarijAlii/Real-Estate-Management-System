@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "394169160573",
     "project_id": "real-estate-mis",
-    "storage_bucket": "real-estate-mis.appspot.com"
+    "storage_bucket": "real-estate-mis.firebasestorage.app"
   },
   "client": [
     {

@@ -4,7 +4,9 @@ androidxActivityCompose = "1.7.2"
 animatedNavigationBar = "1.0.0"
 coilCompose = "2.4.0"
 datastorePreferences = "1.1.1"
+firebaseAuthKtx = "23.1.0"
 firebaseBom = "33.6.0"
+firebaseFirestoreKtxVersion = "24.9.0"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -26,6 +28,7 @@ uiToolingPreview = "1.5.0"
 firebaseStorage = "21.0.1"
 firebaseFirestore = "25.1.1"
 foundationAndroid = "1.7.2"
+firebaseDatabase = "21.0.0"
 
 [libraries]
 androidx-activity-compose-v172 = { module = "androidx.activity:activity-compose", version.ref = "androidxActivityCompose" }
@@ -40,7 +43,9 @@ androidx-ui-tooling-preview-v150 = { module = "androidx.compose.ui:ui-tooling-pr
 androidx-ui-v173 = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 animated-navigation-bar = { module = "com.exyte:animated-navigation-bar", version.ref = "animatedNavigationBar" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-firestore-ktx-v2490 = { module = "com.google.firebase:firebase-firestore-ktx", version.ref = "firebaseFirestoreKtxVersion" }
 firebase-storage-ktx = { module = "com.google.firebase:firebase-storage-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -70,6 +75,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 
 
 [plugins]
