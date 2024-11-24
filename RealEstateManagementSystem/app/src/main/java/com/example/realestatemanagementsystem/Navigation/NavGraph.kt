@@ -30,6 +30,7 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewMo
 import com.example.realestatemanagementsystem.user.UserProfile.UserViewModelFactory
 import com.example.realestatemanagementsystem.user.authentication.Screens.LoginScreen
 import com.example.realestatemanagementsystem.user.authentication.Screens.SignUpScreen
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun NavigationGraph(
@@ -41,10 +42,12 @@ fun NavigationGraph(
         startDestination = Screen.LoginScreen.route
     ) {
         composable(Screen.SignupScreen.route) {
+            val firebaseFirestore = FirebaseFirestore.getInstance()
             SignUpScreen(
                 authViewModel = viewModel(),
                 navHostController =  navController,
-                appDatabase = AppDatabase.getDatabase(LocalContext.current) // Pass the appDatabase here
+                appDatabase = AppDatabase.getDatabase(LocalContext.current) ,
+                firebaseFirestore = firebaseFirestore// Pass the appDatabase here
             )
         }
         composable(Screen.LoginScreen.route) {
@@ -60,7 +63,8 @@ fun NavigationGraph(
             val favoriteViewModel = viewModel<FavoriteViewModel>()
             val context = LocalContext.current
             val appDatabase = AppDatabase.getDatabase(context)
-            val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val firebaseFirestore = FirebaseFirestore.getInstance()
+            val factory = UserViewModelFactory(appDatabase,firebaseFirestore)  // Pass AppDatabase here
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
             val propertyFactory = PropertyViewModelFactory(
                 appDatabase.propertyDao(),   // propertyDao
@@ -72,12 +76,6 @@ fun NavigationGraph(
             if (email != null) {
                 Log.d("HomeScreen", "Email received: $email")
                 HomeScreen(
-//                    email: String,
-//                    authViewModel: AuthViewModel,
-//                    navHostController: NavHostController,
-//                    userProfileDao: UserProfileDao,
-//                    viewModel: PropertyViewModel,
-//                    profileViewModel: UserProfileViewModel
                     email = email,
                     authViewModel = AuthViewModel(),
                     navHostController = navController,
@@ -89,12 +87,15 @@ fun NavigationGraph(
             }
         }
 
+
+
         composable(Screen.SellScreen.route){
                 backStackEntry ->
             val email = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current
             val appDatabase = AppDatabase.getDatabase(context)
-            val userFactory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val firebaseFirestore = FirebaseFirestore.getInstance()
+            val userFactory = UserViewModelFactory(appDatabase,firebaseFirestore)  // Pass AppDatabase here
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = userFactory)
             val propertyFactory = PropertyViewModelFactory(
                 appDatabase.propertyDao(),   // propertyDao
@@ -118,7 +119,8 @@ fun NavigationGraph(
             val email = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current
             val appDatabase = AppDatabase.getDatabase(context)
-            val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val firebaseFirestore = FirebaseFirestore.getInstance()
+            val factory = UserViewModelFactory(appDatabase,firebaseFirestore)  // Pass AppDatabase here
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
 
             if (email != null) {
@@ -135,7 +137,8 @@ fun NavigationGraph(
             val email = backStackEntry.arguments?.getString("email")
             val context = LocalContext.current
             val appDatabase = AppDatabase.getDatabase(context)
-            val factory = UserViewModelFactory(appDatabase)  // Pass AppDatabase here
+            val firebaseFirestore = FirebaseFirestore.getInstance()
+            val factory = UserViewModelFactory(appDatabase, firebaseFirestore)  // Pass AppDatabase here
             val userProfileViewModel: UserProfileViewModel = viewModel(factory = factory)
             if (email != null) {
                 userProfileViewModel.getUserProfile(email)

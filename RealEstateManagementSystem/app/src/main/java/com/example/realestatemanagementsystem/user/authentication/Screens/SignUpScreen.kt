@@ -1,5 +1,5 @@
 package com.example.realestatemanagementsystem.user.authentication.Screens
-
+//
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,16 +49,19 @@ import com.example.realestatemanagementsystem.AppDatabase
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthViewModel
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 @Composable
 fun SignUpScreen(
     authViewModel: AuthViewModel,
     navHostController: NavHostController,
-    appDatabase: AppDatabase
+    appDatabase: AppDatabase,
+    firebaseFirestore: FirebaseFirestore
 ) {
-    val focusManager= LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
     var email by remember { mutableStateOf("") }
-    var confirmPassword by remember{ mutableStateOf("")}
+    var confirmPassword by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
@@ -74,198 +77,329 @@ fun SignUpScreen(
         lastName = lastName,
         contact = contactInfo
     )
+
     LaunchedEffect(authState.value) {
         when (authState.value) {
             is AuthState.Success -> {
-               navHostController.navigate("profile_screen/${email}")
+                navHostController.navigate("profile_screen/${email}")
             }
-
             is AuthState.Error -> {
-                Toast.makeText(
-                    context,
-                    (authState.value as AuthState.Error).message,
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT).show()
             }
-
             else -> Unit
         }
     }
-    Surface(modifier = Modifier
-        .fillMaxSize(),
-         color = Color.Red
 
-
-    ) {
-
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
-                ) {
-                Text("Property Hub", color = Color.White, fontSize = 40.sp, fontWeight = FontWeight.ExtraBold, fontFamily = FontFamily.SansSerif)
-            Column(
-                modifier = Modifier
-
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                Card() {
-
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Create Account",
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            modifier = Modifier.padding(horizontal = 26.dp, vertical = 16.dp)
-                        )
+    Surface(modifier = Modifier.fillMaxSize(), color = Color.Red) {
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
+            Text("Property Hub", color = Color.White, fontSize = 40.sp, fontWeight = FontWeight.ExtraBold, fontFamily = FontFamily.SansSerif)
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                Card {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = "Create Account", fontSize = 22.sp, fontWeight = FontWeight.ExtraBold, modifier = Modifier.padding(horizontal = 26.dp, vertical = 16.dp))
                         OutlinedTextField(
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Email,
-                                imeAction = ImeAction.Next
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onNext = {
-                                    focusManager.moveFocus(FocusDirection.Down)
-                                }),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+                            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                             value = email,
                             onValueChange = { email = it },
                             label = { Text("Email") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
+                            modifier = Modifier.fillMaxWidth().padding(8.dp)
                         )
                         OutlinedTextField(
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Next
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onNext = {
-                                    focusManager.moveFocus(FocusDirection.Down)
-                                }),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+                            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
                             value = password,
                             onValueChange = { password = it },
                             label = { Text("Password") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
+                            modifier = Modifier.fillMaxWidth().padding(8.dp),
                             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                             trailingIcon = {
-                                val image = if (passwordVisible)
-                                    painterResource(id = R.drawable.baseline_visibility_24)
-                                else
-                                    painterResource(id = R.drawable.baseline_visibility_off_24)
-
-                                // IconButton to toggle password visibility
-                                IconButton(onClick = {
-                                    passwordVisible = !passwordVisible
-                                }) {
-                                    Icon(painter=image, contentDescription = "show pass")
+                                val image = if (passwordVisible) painterResource(id = R.drawable.baseline_visibility_24) else painterResource(id = R.drawable.baseline_visibility_off_24)
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(painter = image, contentDescription = "show pass")
                                 }
                             }
                         )
                         OutlinedTextField(
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    if(password==confirmPassword){
-                                        authViewModel.signUp(
-                                            email = email,
-                                            password = password,
-                                            confirmPassword = confirmPassword,
-                                            userProfile = userProfile,
-                                            appDatabase = appDatabase// Pass appDatabase here
-                                        )
-                                        navHostController.navigate("profile_screen/${email}")}
-                                    else {
-                                        errorMessage = "Passwords do not match"
-                                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
-                                    }
-                                }),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(onDone = {
+                                if (password == confirmPassword) {
+                                    authViewModel.signUp(
+                                        email = email,
+                                        password = password,
+                                        confirmPassword = confirmPassword,
+                                        userProfile = userProfile,
+                                        appDatabase = appDatabase,
+                                        firebaseFirestore = firebaseFirestore
+                                    )
+                                    navHostController.navigate("profile_screen/${email}")
+                                } else {
+                                    errorMessage = "Passwords do not match"
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                }
+                            }),
                             value = confirmPassword,
                             onValueChange = { confirmPassword = it },
                             label = { Text("Confirm Password") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
+                            modifier = Modifier.fillMaxWidth().padding(8.dp),
                             visualTransformation = PasswordVisualTransformation(),
                             trailingIcon = {
-                                val image = if (confirmPasswordVisible)
-                                    painterResource(id = R.drawable.baseline_visibility_24)
-                                else
-                                    painterResource(id = R.drawable.baseline_visibility_off_24)
-
-                                // IconButton to toggle password visibility
-                                IconButton(onClick = {
-                                    confirmPasswordVisible = !confirmPasswordVisible
-                                }) {
-                                    Icon(painter=image, contentDescription = "show pass")
+                                val image = if (confirmPasswordVisible) painterResource(id = R.drawable.baseline_visibility_24) else painterResource(id = R.drawable.baseline_visibility_off_24)
+                                IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
+                                    Icon(painter = image, contentDescription = "show pass")
                                 }
                             }
                         )
                         Button(
                             onClick = {
-                                if(password==confirmPassword){
-                                authViewModel.signUp(
-                                    email = email,
-                                    password = password,
-                                    confirmPassword = confirmPassword,
-                                    userProfile = userProfile,
-                                    appDatabase = appDatabase// Pass appDatabase here
-                                )
-
-                                navHostController.navigate("profile_screen/${email}")}
-                                      else {
-                                            errorMessage = "Passwords do not match"
-                                           Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                if (password == confirmPassword) {
+                                    authViewModel.signUp(
+                                        email = email,
+                                        password = password,
+                                        confirmPassword = confirmPassword,
+                                        userProfile = userProfile,
+                                        appDatabase = appDatabase,
+                                        firebaseFirestore = firebaseFirestore
+                                    )
+                                    navHostController.navigate("profile_screen/${email}")
+                                } else {
+                                    errorMessage = "Passwords do not match"
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                                 }
                             },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            colors = ButtonColors(
-                                contentColor = Color.White,
-                                disabledContainerColor = Color.Gray,
-                                containerColor = Color.Red,
-                                disabledContentColor = Color.White,
-                            ),
-                            enabled = authState.value != AuthState.Loading
+                            modifier = Modifier.fillMaxWidth().padding(8.dp)
                         ) {
                             Text("Sign Up")
                         }
-
-                        Row {
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Text("Already have an account? ",
-                                modifier = Modifier.clickable {
-                                    navHostController.navigate(route = Screen.LoginScreen.route)
-                                }
-
-                            )
-                            Text(
-                                text = "Sign in.", modifier = Modifier
-                                    .clickable { navHostController.navigate(route = Screen.LoginScreen.route)},
-                                color = Color.Red
-                            )
-                        }
-
                     }
                 }
             }
         }
     }
-    }
+}
 
+
+//@Composable
+//fun SignUpScreen(
+//    authViewModel: AuthViewModel,
+//    navHostController: NavHostController,
+//    appDatabase: AppDatabase,
+//    firebaseFirestore: FirebaseFirestore
+//) {
+//
+//    val focusManager= LocalFocusManager.current
+//    var email by remember { mutableStateOf("") }
+//    var confirmPassword by remember{ mutableStateOf("")}
+//    var password by remember { mutableStateOf("") }
+//    var passwordVisible by remember { mutableStateOf(false) }
+//    var confirmPasswordVisible by remember { mutableStateOf(false) }
+//    var firstName by remember { mutableStateOf("") }
+//    var lastName by remember { mutableStateOf("") }
+//    var contactInfo by remember { mutableStateOf("") }
+//    var errorMessage by remember { mutableStateOf("") }
+//    val context = LocalContext.current
+//    val authState = authViewModel.authState.collectAsState()
+//    val userProfile = UserProfile(
+//        email = email,
+//        firstName = firstName,
+//        lastName = lastName,
+//        contact = contactInfo
+//    )
+//    LaunchedEffect(authState.value) {
+//        when (authState.value) {
+//            is AuthState.Success -> {
+//               navHostController.navigate("profile_screen/${email}")
+//            }
+//
+//            is AuthState.Error -> {
+//                Toast.makeText(
+//                    context,
+//                    (authState.value as AuthState.Error).message,
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//
+//            else -> Unit
+//        }
+//    }
+//    Surface(modifier = Modifier
+//        .fillMaxSize(),
+//         color = Color.Red
+//
+//
+//    ) {
+//
+//        Column(modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.SpaceEvenly
+//                ) {
+//                Text("Property Hub", color = Color.White, fontSize = 40.sp, fontWeight = FontWeight.ExtraBold, fontFamily = FontFamily.SansSerif)
+//            Column(
+//                modifier = Modifier
+//
+//                    .padding(16.dp),
+//                verticalArrangement = Arrangement.Center,
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//
+//                Card() {
+//
+//                    Column(
+//                        modifier = Modifier
+//                            .padding(16.dp),
+//                        verticalArrangement = Arrangement.Center,
+//                        horizontalAlignment = Alignment.CenterHorizontally
+//                    ) {
+//                        Text(
+//                            text = "Create Account",
+//                            fontSize = 22.sp,
+//                            fontWeight = FontWeight.ExtraBold,
+//                            modifier = Modifier.padding(horizontal = 26.dp, vertical = 16.dp)
+//                        )
+//                        OutlinedTextField(
+//                            keyboardOptions = KeyboardOptions(
+//                                keyboardType = KeyboardType.Email,
+//                                imeAction = ImeAction.Next
+//                            ),
+//                            keyboardActions = KeyboardActions(
+//                                onNext = {
+//                                    focusManager.moveFocus(FocusDirection.Down)
+//                                }),
+//                            value = email,
+//                            onValueChange = { email = it },
+//                            label = { Text("Email") },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(8.dp)
+//                        )
+//                        OutlinedTextField(
+//                            keyboardOptions = KeyboardOptions(
+//                                keyboardType = KeyboardType.Password,
+//                                imeAction = ImeAction.Next
+//                            ),
+//                            keyboardActions = KeyboardActions(
+//                                onNext = {
+//                                    focusManager.moveFocus(FocusDirection.Down)
+//                                }),
+//                            value = password,
+//                            onValueChange = { password = it },
+//                            label = { Text("Password") },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(8.dp),
+//                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+//                            trailingIcon = {
+//                                val image = if (passwordVisible)
+//                                    painterResource(id = R.drawable.baseline_visibility_24)
+//                                else
+//                                    painterResource(id = R.drawable.baseline_visibility_off_24)
+//
+//                                // IconButton to toggle password visibility
+//                                IconButton(onClick = {
+//                                    passwordVisible = !passwordVisible
+//                                }) {
+//                                    Icon(painter=image, contentDescription = "show pass")
+//                                }
+//                            }
+//                        )
+//                        OutlinedTextField(
+//                            keyboardOptions = KeyboardOptions(
+//                                keyboardType = KeyboardType.Password,
+//                                imeAction = ImeAction.Done
+//                            ),
+//                            keyboardActions = KeyboardActions(
+//                                onDone = {
+//                                    if(password==confirmPassword){
+//                                        authViewModel.signUp(
+//                                            email = email,
+//                                            password = password,
+//                                            confirmPassword = confirmPassword,
+//                                            userProfile = userProfile,
+//                                            appDatabase = appDatabase,// Pass appDatabase here
+//                                            firebaseFirestore =  firebaseFirestore
+//                                        )
+//                                        navHostController.navigate("profile_screen/${email}")}
+//                                    else {
+//                                        errorMessage = "Passwords do not match"
+//                                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+//                                    }
+//                                }),
+//                            value = confirmPassword,
+//                            onValueChange = { confirmPassword = it },
+//                            label = { Text("Confirm Password") },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(8.dp),
+//                            visualTransformation = PasswordVisualTransformation(),
+//                            trailingIcon = {
+//                                val image = if (confirmPasswordVisible)
+//                                    painterResource(id = R.drawable.baseline_visibility_24)
+//                                else
+//                                    painterResource(id = R.drawable.baseline_visibility_off_24)
+//
+//                                // IconButton to toggle password visibility
+//                                IconButton(onClick = {
+//                                    confirmPasswordVisible = !confirmPasswordVisible
+//                                }) {
+//                                    Icon(painter=image, contentDescription = "show pass")
+//                                }
+//                            }
+//                        )
+//                        Button(
+//                            onClick = {
+//                                if(password==confirmPassword){
+//                                authViewModel.signUp(
+//                                    email = email,
+//                                    password = password,
+//                                    confirmPassword = confirmPassword,
+//                                    userProfile = userProfile,
+//                                    appDatabase = appDatabase,
+//                                    firebaseFirestore =  firebaseFirestore
+//                                // Pass appDatabase here
+//                                )
+//
+//                                navHostController.navigate("profile_screen/${email}")}
+//                                      else {
+//                                            errorMessage = "Passwords do not match"
+//                                           Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+//                                }
+//                            },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(8.dp),
+//                            colors = ButtonColors(
+//                                contentColor = Color.White,
+//                                disabledContainerColor = Color.Gray,
+//                                containerColor = Color.Red,
+//                                disabledContentColor = Color.White,
+//                            ),
+//                            enabled = authState.value != AuthState.Loading
+//                        ) {
+//                            Text("Sign Up")
+//                        }
+//
+//                        Row {
+//                            Spacer(modifier = Modifier.height(16.dp))
+//
+//                            Text("Already have an account? ",
+//                                modifier = Modifier.clickable {
+//                                    navHostController.navigate(route = Screen.LoginScreen.route)
+//                                }
+//
+//                            )
+//                            Text(
+//                                text = "Sign in.", modifier = Modifier
+//                                    .clickable { navHostController.navigate(route = Screen.LoginScreen.route)},
+//                                color = Color.Red
+//                            )
+//                        }
+//
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    }
+//

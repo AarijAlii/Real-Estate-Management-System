@@ -1,6 +1,5 @@
 package com.example.realestatemanagementsystem.user.authentication.Screens
 
-
 import androidx.compose.material3.OutlinedTextField
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -72,7 +71,7 @@ fun LoginScreen(
             email=authViewModel.getCurrentUserEmail().toString()
             navHostController.navigate("Home_Screen/$email")
 
-            } else if (authState.value is AuthState.Error) {
+        } else if (authState.value is AuthState.Error) {
             Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show()
 
         }
@@ -178,55 +177,54 @@ fun LoginScreen(
                                     Icon(painter=image, contentDescription = "show pass")
                                 }
                             })
-        Button(
-            onClick = {
-                authViewModel.signIn(
-                    email = email,
-                    password = password,
-                    onSuccess = { userEmail ->
-                        // Navigate to the Profile screen after successful sign-in
-                        navHostController.navigate("home_screen/${userEmail}")
-                    },
-                    onError = { error ->
-                        // Use error message directly
-                        errorMessage = error
-                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
-                        password=""
+                        Button(
+                            onClick = {
+                                authViewModel.signIn(
+                                    email = email,
+                                    password = password,
+                                    onSuccess = { userEmail ->
+                                        // Navigate to the Profile screen after successful sign-in
+                                        navHostController.navigate("home_screen/${userEmail}")
+                                    },
+                                    onError = { error ->
+                                        // Use error message directly
+                                        errorMessage = error
+                                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                        password=""
+                                    }
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+
+                            , colors = ButtonColors(
+                                contentColor = Color.White,
+                                disabledContainerColor = Color.Gray,
+                                containerColor = Color.Red,
+                                disabledContentColor = Color.White,
+                            ),
+
+
+                            enabled = authState.value != AuthState.Loading
+                        ) {
+                            Text("Login")
+                        }
+                        Row {
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Text("Don't have an account? ",
+                                modifier = Modifier.clickable {
+                                    navHostController.navigate(route = Screen.SignupScreen.route)
+                                }
+
+                            )
+                            Text(text= "Sign up.",modifier=Modifier
+                                .clickable { navHostController.navigate(route = Screen.SignupScreen.route) },
+                                color = Color.Red)}
                     }
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-
-            , colors = ButtonColors(
-                contentColor = Color.White,
-                disabledContainerColor = Color.Gray,
-                containerColor = Color.Red,
-                disabledContentColor = Color.White,
-            ),
-
-
-            enabled = authState.value != AuthState.Loading
-        ) {
-            Text("Login")
-        }
-        Row {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text("Don't have an account? ",
-                modifier = Modifier.clickable {
-                    navHostController.navigate(route = Screen.SignupScreen.route)
                 }
-
-            )
-            Text(text= "Sign up.",modifier=Modifier
-                .clickable { navHostController.navigate(route = Screen.SignupScreen.route) },
-                color = Color.Red)}
-    }
-}
             }
         }
     }
 }
-

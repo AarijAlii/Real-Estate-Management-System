@@ -47,7 +47,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SellPropertyCards(modifier: Modifier = Modifier, area:String, city:String, state:String, bedrooms:String, bathrooms:String, price:Double, propertyId:String, navHostController:NavHostController, propertyDao: PropertyDao, onDeleted:()->Unit) {
+fun SellPropertyCards(modifier: Modifier = Modifier,
+                      area:String, city:String, state:String, bedrooms:String, bathrooms:String, price:Double,
+                      propertyId:String, navHostController:NavHostController, propertyDao: PropertyDao,
+                      onDeleted:()->Unit) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     Card(

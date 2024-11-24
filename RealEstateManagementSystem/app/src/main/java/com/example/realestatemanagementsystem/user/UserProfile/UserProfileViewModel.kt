@@ -9,11 +9,14 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.ViewModel
 import com.example.realestatemanagementsystem.AppDatabase
 import com.example.realestatemanagementsystem.property.Property
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.tasks.await
 
 
-class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
+class UserProfileViewModel(private val appDatabase: AppDatabase,
+                           private val firebaseFirestore: FirebaseFirestore) : ViewModel() {
     private val _userProfile = MutableStateFlow<UserProfile?>(
         null
     )
@@ -25,17 +28,6 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
     val filteredProperties: StateFlow<List<Property>> = _filteredProperties
     private val userProfileDao = appDatabase.userProfileDao()
 
-
-    //new material
-//    private val userProfileDao = appDatabase.userProfileDao()
-//    private val _userProfile = MutableStateFlow<UserProfile?>(null)
-//    val userProfile: StateFlow<UserProfile?> = _userProfile
-//
-//    private val _isLoading = MutableStateFlow(false)
-//    val isLoading: StateFlow<Boolean> = _isLoading
-//
-//    private val _errorMessage = MutableStateFlow("")
-//    val errorMessage: StateFlow<String> = _errorMessage
 
     // Function to get the user profile from the local database by email(PK)
     fun getUserByEmail(email: String, onSuccess: (UserProfile) -> Unit, onError: (String) -> Unit) {
@@ -84,34 +76,6 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
     }
 
 
-    fun updateUserProfile(
-        email: String,
-        firstName: String,
-        lastName: String,
-        contact: String,
-        city: String,
-        region: String,
-        postalCode: String
-    ) {
-        viewModelScope.launch {
-            try {
-                val updatedProfile = _userProfile.value?.copy(
-                    firstName = firstName,
-                    lastName = lastName,
-                    contact = contact,
-                    city = city,
-                    region = region,
-                    postalCode = postalCode
-                )
-                if (updatedProfile != null) {
-                    userProfileDao.updateUser(updatedProfile)
-                    _userProfile.value = updatedProfile
-                }
-            } catch (e: Exception) {
-                _errorMessage.value = "Error updating profile: ${e.message}"
-            }
-        }
-    }
 
     fun updateUserrProfile(
         email: String,
@@ -132,4 +96,91 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
             }
         }
     }
+
+
+        private val firestore = FirebaseFirestore.getInstance()  // Firestore instance
+
+
+
+        // Function to save or update user profile in Firestore
+        suspend fun saveUserProfileToFirestore(userProfile: FirestoreUserProfile) {
+            try {
+                firestore.collection("users").document(userProfile.email).set(userProfile).await()
+                Log.d("UserProfileViewModel", "User profile saved to Firestore")
+            } catch (e: Exception) {
+                Log.e("UserProfileViewModel", "Error saving user profile to Firestore: ${e.message}")
+            }
+        }
+
+        // Sync user profile data between Room and Firestore
+        fun syncUserProfileToFirestore(userProfile: UserProfile) {
+            viewModelScope.launch {
+                val firestoreUserProfile = FirestoreUserProfile(
+                    email = userProfile.email,
+                    firstName = userProfile.firstName,
+                    lastName = userProfile.lastName,
+                    contact = userProfile.contact,
+                    city = userProfile.city,
+                    region = userProfile.region,
+                    postalCode = userProfile.postalCode,
+                    rating = userProfile.rating
+                )
+                saveUserProfileToFirestore(firestoreUserProfile)
+            }
+        }
+
+    fun getUserProfileFromFirestore(email: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Try fetching from Firestore
+                val documentSnapshot = firebaseFirestore.collection("users").document(email).get().await()
+
+                if (documentSnapshot.exists()) {
+                    val userProfile = documentSnapshot.toObject(UserProfile::class.java)
+                    if (userProfile != null) {
+                        // If data found in Firestore, update Room database
+                        userProfileDao.insert(userProfile)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("UserProfile", "Error fetching user from Firestore: ${e.message}")
+            }
+        }
+    }
+
+
+
+
+    // Function to update user profile in Firestore and Room database
+    fun updateUserProfileInFirestoreAndRoom(
+        email: String,
+        firstName: String,
+        lastName: String,
+        contact: String,
+        city: String,
+        region: String,
+        postalCode: String
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Update Firestore
+                val userProfile = UserProfile(
+                    email,
+                    firstName,
+                    lastName,
+                    contact,
+                    city,
+                    region,
+                    postalCode
+                )
+                firebaseFirestore.collection("users").document(email).set(userProfile).await()
+
+                // Update Room database
+                userProfileDao.updateUserr(email, firstName, lastName, contact, city, region, postalCode)
+            } catch (e: Exception) {
+                Log.e("UserProfile", "Error updating user profile: ${e.message}")
+            }
+        }
+    }
 }
+

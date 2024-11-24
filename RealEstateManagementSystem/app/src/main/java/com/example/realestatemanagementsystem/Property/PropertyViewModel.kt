@@ -8,19 +8,89 @@ import androidx.lifecycle.viewModelScope
 import com.example.realestatemanagementsystem.image.ImageDao
 import com.example.realestatemanagementsystem.image.ImageEntity
 import com.example.realestatemanagementsystem.image.ImageUploader
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+
 //import com.example.realestatemanagementsystem.image.uploadImageToImgur
 
 
 class PropertyViewModel(private val propertyDao: PropertyDao, private val imageDao: ImageDao) : ViewModel() {
     //       private val _errorMessage = MutableLiveData<String>()
     //    val errorMessage: MutableLiveData<String> get() = _errorMessage
+    private val firestore = FirebaseFirestore.getInstance()
 
-
+    // Phase 1: Add the property to Firestore and get the generated propertyId
     suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Add the property details to Firestore
+                val propertyRef = firestore.collection("properties").document() // Auto-generated ID for property
+                val firestoreProperty = FireStoreProperty(
+                    city = property.city,
+                    state = property.state,
+                    propertyNumber = property.propertyNumber,
+                    rooms = property.rooms,
+                    bedrooms = property.bedrooms,
+                    garage = property.garage,
+                    area = property.area,
+                    type = property.type,
+                    price = property.price,
+                    zipCode = property.zipCode,
+                    email = property.email,
+                    isSold = property.isSold
+                )
+
+                // Save the property and get the propertyId
+                propertyRef.set(firestoreProperty).await()
+
+                // Once the property is saved, proceed to upload images
+                val imageUrls = mutableListOf<String>()
+
+                // Upload images one by one
+                imageUris.forEach { uri ->
+                    ImageUploader.uploadImageToImgur(context, uri, clientId) { imageUrl ->
+                        if (imageUrl != null) {
+                            imageUrls.add(imageUrl)
+
+                            // Once all images are uploaded, insert them into Firestore
+                            if (imageUrls.size == imageUris.size) {
+                                insertImagesForProperty(propertyRef.id, imageUrls)
+                            }
+                        } else {
+                            _errorMessage.value = "Failed to upload image: $uri"
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("AddProperty", "Error adding property: ${e.message}")
+            }
+        }
+    }
+
+    // Phase 2: Insert image URLs into Firestore under the images_property collection
+    private fun insertImagesForProperty(propertyId: String, imageUrls: List<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Store the image URLs with the corresponding propertyId
+                val imageCollection = firestore.collection("property_images")
+                imageUrls.forEach { imageUrl ->
+                    val imageDoc = imageCollection.document() // Auto-generated ID for image
+                    imageDoc.set(mapOf(
+                        "propertyId" to propertyId, // Reference to the property
+                        "imageUrl" to imageUrl
+                    ))
+                }
+                Log.d("AddProperty", "Images added successfully for propertyId: $propertyId")
+            } catch (e: Exception) {
+                Log.e("AddProperty", "Error adding images: ${e.message}")
+            }
+        }
+    }
+    suspend fun adddProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
         // Launch a coroutine to perform property insertion
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -51,7 +121,7 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
 
                             // Once all images are uploaded, insert them into the database
                             if (imageUrls.size == imageUris.size) {
-                                insertImagesForProperty(propertyId, imageUrls)
+                                iinsertImagesForProperty(propertyId, imageUrls)
                             }
                         } else {
                             _errorMessage.value = "Failed to upload image: $uri"
@@ -67,7 +137,7 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
 
 
 
-    private fun insertImagesForProperty(propertyId: Long, imageUrls: List<String>) {
+    private fun iinsertImagesForProperty(propertyId: Long, imageUrls: List<String>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // Insert images one by one
@@ -107,7 +177,7 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
     val imageUploadStatus: StateFlow<String> = _imageUploadStatus
 
 
-    fun loadSoldListings(email: String) {
+    fun lloadSoldListings(email: String) {
         viewModelScope.launch {
             try {
                 val soldList = propertyDao.getSoldListings(email)
@@ -128,7 +198,7 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
             }
         }
     }
-    fun loadCurrentListings(email: String) {
+    fun lloadCurrentListings(email: String) {
         viewModelScope.launch {
             try {
                 val unsoldList = propertyDao.getCurrentListings(email)
@@ -295,4 +365,30 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
             }
         }
     }
+    fun loadCurrentListings(email: String) {
+        firestore.collection("properties")
+            .whereEqualTo("email", email)
+            .whereEqualTo("isSold", 0) // Filter unsold properties
+            .get()
+            .addOnSuccessListener { result ->
+                _unsoldProperties.value = result.toObjects(Property::class.java)
+            }
+            .addOnFailureListener {
+                _errorMessage.value = "Failed to load properties"
+            }
+    }
+
+    fun loadSoldListings(email: String) {
+        firestore.collection("properties")
+            .whereEqualTo("email", email)
+            .whereEqualTo("isSold", 1) // Filter sold properties
+            .get()
+            .addOnSuccessListener { result ->
+                _soldProperties.value = result.toObjects(Property::class.java)
+            }
+            .addOnFailureListener {
+                _errorMessage.value = "Failed to load properties"
+            }
+    }
+
 }

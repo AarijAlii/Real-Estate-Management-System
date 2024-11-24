@@ -48,8 +48,8 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.realestatemanagementsystem.R
-
-
+import com.example.realestatemanagementsystem.image.ImageUploader
+import com.example.realestatemanagementsystem.image.ImageUploader.uploadImageToImgur
 
 @Composable
 fun CreateListingScreen(
@@ -99,6 +99,8 @@ fun CreateListingScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+
+
         // Image upload button
         Button(onClick = { imagePickerLauncher.launch("image/*") }) {
             Text("Select Images")
@@ -106,7 +108,6 @@ fun CreateListingScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // If images are selected, show them using Coil
         // If images are selected, show them using Coil
         if (imageUris.isNotEmpty()) {
             LazyRow {
@@ -123,33 +124,136 @@ fun CreateListingScreen(
             }
         }
 
-
         Spacer(modifier = Modifier.height(16.dp))
+
 
         // Add Property button
         Button(onClick = {
             if (imageUris.isNotEmpty()) {
-                // Launch coroutine for suspend function
                 coroutineScope.launch {
                     viewModel.addProperty(property, imageUris, context, clientId)
                 }
             } else {
                 errorMessage = "Please select at least one image."
             }
-        }) {
+        })
+            {
             Text("Add Property")
         }
-
-        // Show error message if any
-        if (errorMessage.isNotEmpty()) {
-            Text(
-                text = errorMessage,
-                color = Color.Red,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
+            if (errorMessage.isNotEmpty()) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 8.dp)
+                ) }
     }
 }
+
+
+
+
+
+
+
+//@Composable
+//fun CreateListingScreen(
+//    email: String,
+//    navController: NavHostController,
+//    viewModel: PropertyViewModel
+//) {
+//    val context = LocalContext.current
+//    val clientId = "68edc80df54e62f" // Replace with your actual Imgur client ID
+//
+//    // Define your Property object (hardcoded for testing purposes)
+//    val property = Property(
+//        city = "Karachi",
+//        state = "Sindh",
+//        propertyNumber = "12345",
+//        rooms = 3,
+//        bedrooms = 2,
+//        garage = 1,
+//        area = 150.0,
+//        type = "House",
+//        price = 3000000.0,
+//        zipCode = "75800", // Ensure zipCode is included
+//        email = email,
+//        isSold = false
+//    )
+//
+//    var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+//    var errorMessage by remember { mutableStateOf("") }
+//
+//    // Image picker
+//    val imagePickerLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetMultipleContents()
+//    ) { uris: List<Uri> -> imageUris = uris }
+//
+//    // Coroutine scope for launching suspend functions
+//    val coroutineScope = rememberCoroutineScope()
+//
+//    Column(modifier = Modifier.padding(16.dp)) {
+//        // Property form inputs (could be replaced with user inputs)
+//        TextField(
+//            value = property.city,
+//            onValueChange = { /* Update the property city */ },
+//            label = { Text("City") },
+//            modifier = Modifier.fillMaxWidth()
+//        )
+//        // Add other fields (state, price, etc.) in a similar way
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        // Image upload button
+//        Button(onClick = { imagePickerLauncher.launch("image/*") }) {
+//            Text("Select Images")
+//        }
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        // If images are selected, show them using Coil
+//        // If images are selected, show them using Coil
+//        if (imageUris.isNotEmpty()) {
+//            LazyRow {
+//                items(imageUris) { uri ->
+//                    AsyncImage(
+//                        model = uri,
+//                        contentDescription = "Selected image",
+//                        modifier = Modifier
+//                            .padding(8.dp)
+//                            .size(100.dp), // Adjust size as needed
+//                        contentScale = ContentScale.Crop
+//                    )
+//                }
+//            }
+//        }
+//
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        // Add Property button
+//        Button(onClick = {
+//            if (imageUris.isNotEmpty()) {
+//                // Launch coroutine for suspend function
+//                coroutineScope.launch {
+//                    viewModel.addProperty(property, imageUris, context, clientId)
+//                }
+//            } else {
+//                errorMessage = "Please select at least one image."
+//            }
+//        }) {
+//            Text("Add Property")
+//        }
+//
+//        // Show error message if any
+//        if (errorMessage.isNotEmpty()) {
+//            Text(
+//                text = errorMessage,
+//                color = Color.Red,
+//                modifier = Modifier.padding(top = 8.dp)
+//            )
+//        }
+//    }
+//}
 
 //@Composable
 //fun CreateListingScreen(email: String,
