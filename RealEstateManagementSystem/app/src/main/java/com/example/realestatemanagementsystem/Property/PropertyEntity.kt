@@ -1,10 +1,12 @@
 package com.example.realestatemanagementsystem.Property
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 
+@Immutable
 @Entity(
     tableName = "property",
     foreignKeys = [

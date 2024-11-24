@@ -1,10 +1,11 @@
 package com.example.realestatemanagementsystem.image
 
+import androidx.compose.runtime.Immutable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.example.realestatemanagementsystem.Property.Property
-
+@Immutable
 @Entity(tableName = "property_images",
     foreignKeys = [
         ForeignKey(

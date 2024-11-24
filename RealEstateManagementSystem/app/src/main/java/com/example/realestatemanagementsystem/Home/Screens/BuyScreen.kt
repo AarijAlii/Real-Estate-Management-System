@@ -37,7 +37,6 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -214,7 +213,7 @@ fun BuyScreen(
         // Property list (sorted dynamically)
 
         LazyColumn() {
-            items(allProperties) { property ->
+            items(allProperties,key = {it.propertyId}) { property ->
                 // Display each property (replace with your card implementation)
 
 

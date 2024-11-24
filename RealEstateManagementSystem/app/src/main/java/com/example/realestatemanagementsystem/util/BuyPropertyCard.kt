@@ -1,8 +1,10 @@
 package com.example.realestatemanagementsystem.util
 
+
 import android.app.Application
+import android.app.DatePickerDialog
 import android.util.Log
-import androidx.compose.foundation.Image
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,21 +35,32 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
+import coil.ImageLoader
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.memory.MemoryCache
+import coil.request.CachePolicy
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 
@@ -63,6 +76,15 @@ fun BuyPropertyCards(
     onBuy: () -> Unit,
     onclick: () -> Unit
 ) {
+    var selectedDate by remember { mutableStateOf<Date?>(null) }
+    var isDialogOpen by remember { mutableStateOf(false) }
+
+
+
+
+
+
+
     val coroutineScope = rememberCoroutineScope()
     val isLoading = remember { mutableStateOf(false) }
     val favoriteState = remember { mutableStateOf(false) }
@@ -75,7 +97,13 @@ fun BuyPropertyCards(
 
     // Fetch images for the property
     val imageUrls by viewModel.imageUrls.collectAsState()
-    val customImageLoader = createCustomImageLoader(application)
+    val customImageLoader = remember {
+        ImageLoader.Builder(context)
+            .memoryCache { MemoryCache.Builder(context).maxSizePercent(0.25).build() }  // 25% of app's memory for image caching
+            .diskCachePolicy(CachePolicy.ENABLED) // Enable disk caching
+            .memoryCachePolicy(CachePolicy.ENABLED) // Enable memory caching
+            .build()
+    }
     viewModel.fetchImagesForProperty(propertyId)
 
 
@@ -96,20 +124,17 @@ fun BuyPropertyCards(
             verticalArrangement = Arrangement.Bottom
         ) {
             // Display Images
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentAlignment = Alignment.Center // Adjust height for the image area
-            ) {
-                if (imageUrls.isNotEmpty()) {
-                    DisplayImages(imageUrls, customImageLoader)
-                }
-                else{
-                    Text(text = "No images available")
+            if (imageUrls.isNotEmpty()) {
+                // Use rememberAsyncImagePainter to cache the image
+
+             DisplayImages(imageUrls,customImageLoader)
+            }
+            else{
+                Box(modifier=Modifier.height(200.dp)){
+                    Text("No Image Available")
                 }
             }
-
+        }
             Spacer(modifier = Modifier.height(8.dp))
 
             // Price and Area Information
@@ -168,8 +193,7 @@ fun BuyPropertyCards(
             ) {
                 Button(
                     onClick = {
-                        viewModel.markAsSold(propertyId = propertyId)
-                        onBuy()
+                        isDialogOpen = true
                     },
                     colors = ButtonColors(
                         contentColor = Color.White,
@@ -209,27 +233,40 @@ fun BuyPropertyCards(
                 }
             }
         }
+    if (isDialogOpen) {
+        DatePickerDialog(onDateSelected = { date->
+            selectedDate = date
+
+        }, onDismiss = { isDialogOpen = false })
+
     }
-}
+    val formattedDate = selectedDate?.let {
+        val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        sdf.format(it)  // Format the selected date
+    } ?: "No date selected"
+    Toast.makeText((LocalContext.current), "Date: $formattedDate", Toast.LENGTH_SHORT).show()
+    }
+
 
 @Composable
-fun DisplayImages(imageUrls: List<String>,customImageLoader:coil.ImageLoader) {
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(imageUrls) { imageUrl ->
-            Image(
-                painter = rememberAsyncImagePainter(imageUrl,customImageLoader),
-                contentDescription = "Property Image",
-                modifier = Modifier
-                    .size(150.dp) // Resize image to a more reasonable size
-                    .clip(RoundedCornerShape(8.dp))
-            )
-        }
-    }
+fun DisplayImages(imageUrls: List<String>,customImageLoader: ImageLoader) {
+
+LazyRow  {
+ items(imageUrls) {imageurl->
+     rememberAsyncImagePainter(
+         AsyncImage(
+             model = imageUrls[0],
+             contentDescription = "image",
+             imageLoader = customImageLoader,
+             contentScale = ContentScale.Crop
+         )
+
+     )
+     Spacer(modifier=Modifier.size(8.dp))
+ }
 }
 
+}
 fun formatPrice(price: Double): String {
     return when {
         price >= 1_00_00_000 -> "${(price / 1_00_00_000).toInt()} Crore"
@@ -237,3 +274,94 @@ fun formatPrice(price: Double): String {
         else -> price.toInt().toString()
     }
 }
+@Composable
+fun DatePickerDialog(
+    onDateSelected: (Date) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val currentDate = Calendar.getInstance()
+    val initialYear = currentDate.get(Calendar.YEAR)
+    val initialMonth = currentDate.get(Calendar.MONTH)
+    val initialDay = currentDate.get(Calendar.DAY_OF_MONTH)
+
+    // Show date picker dialog
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            DatePicker(
+                year = initialYear,
+                month = initialMonth,
+                dayOfMonth = initialDay,
+                onDateSelected = onDateSelected,
+                onDismiss = onDismiss
+            )
+        }
+    }
+}
+@Composable
+fun DatePicker(
+    year: Int,
+    month: Int,
+    dayOfMonth: Int,
+    onDateSelected: (Date) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val datePickerDialog = DatePickerDialog(
+        LocalContext.current,
+        { _, selectedYear, selectedMonth, selectedDay ->
+            // Creating a Calendar instance with the selected year, month, and day
+            val selectedDate = Calendar.getInstance().apply {
+                set(Calendar.YEAR, selectedYear)
+                set(Calendar.MONTH, selectedMonth)  // month is zero-indexed
+                set(Calendar.DAY_OF_MONTH, selectedDay)
+            }.time
+
+            // Call the onDateSelected callback with the selected date
+            onDateSelected(selectedDate)
+
+            // Dismiss the dialog
+            onDismiss()
+        },
+        year,
+        month,
+        dayOfMonth
+    )
+
+    datePickerDialog.show()
+}
+//@Composable
+//fun MyDatePicker() {
+//    var selectedDate by remember { mutableStateOf("") }
+//    var isDialogOpen by remember { mutableStateOf(false) }
+//
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(16.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Center
+//    ) {
+//        Text(text = "Selected Date: $selectedDate")
+//        Spacer(modifier = Modifier.height(8.dp))
+//
+//        Button(onClick = { isDialogOpen = true }) {
+//            Text(text = "Select Date")
+//        }
+//
+//        if (isDialogOpen) {
+//            DatePickerDialog(
+//                onDateSelected = { date ->
+//                    selectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)
+//                    isDialogOpen = false
+//                },
+//                onDismiss = { isDialogOpen = false }
+//            )
+//        }
+//    }
+//}

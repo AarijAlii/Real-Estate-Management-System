@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.realestatemanagementsystem"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -70,6 +70,10 @@ dependencies {
     implementation (libs.okhttp)
     implementation (libs.logging.interceptor)
 
+    //Calendar
+    implementation ("androidx.compose.ui:ui:1.5.0")
+    implementation ("androidx.compose.material3:material3:1.0.0")
+    implementation ("androidx.compose.foundation:foundation:1.5.0")
 
     //Navigation
     implementation(libs.androidx.navigation.compose)
