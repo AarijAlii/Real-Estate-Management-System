@@ -300,7 +300,7 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
                 FOREIGN KEY ('propertyId') REFERENCES 'property' ('propertyId') ON DELETE CASCADE,
                 FOREIGN KEY ('ownerEmail') REFERENCES 'user_profile' ('email') ON DELETE CASCADE,
                 FOREIGN KEY ('buyerEmail') REFERENCES 'user_profile' ('email') ON DELETE CASCADE,
-                FOREIGN KEY ('contact') REFERENCES 'user_profile' ('contact') ON DELETE CASCADE,
+                FOREIGN KEY ('contact') REFERENCES 'user_profile' ('contact') ON DELETE CASCADE
             )
         """.trimIndent()
             )
@@ -308,7 +308,7 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
             db.execSQL(
                 """
             INSERT INTO appointment_new (propertyId, ownerEmail,buyerEmail,contact, date)
-            SELECT appointmentId,propertyId, ownerEmail,buyerEmail, contact,date
+            SELECT appointmentId,propertyId, ownerEmail,buyerEmail,date
             FROM appointments
         """.trimIndent()
             )
