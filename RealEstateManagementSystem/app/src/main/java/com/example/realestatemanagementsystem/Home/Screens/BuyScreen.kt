@@ -19,7 +19,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -209,9 +211,27 @@ fun BuyScreen(
         }
 
 
-
-        // Property list (sorted dynamically)
-
+//        val scrollState = rememberScrollState()
+//        // Property list (sorted dynamically)
+//        Column(modifier=Modifier.verticalScroll(scrollState)){
+//            allProperties.forEach{property->
+//                BuyPropertyCards(
+//                    modifier = Modifier,
+//                    property = property ,
+//                    navHostController = navHostController,
+//
+//                    onBuy=:: refreshBuyProperties,
+//                    email = email,
+//                    propertyId=property.propertyId,
+//                    favoriteViewModel=favoriteViewModel
+//
+//                ){
+//                    showPopup=true
+//                    selectedProperty=property
+//                }
+//
+//            }
+//        }
         LazyColumn() {
             items(allProperties,key = {it.propertyId}) { property ->
                 // Display each property (replace with your card implementation)
@@ -221,7 +241,7 @@ fun BuyScreen(
                     modifier = Modifier,
                     property = property ,
                     navHostController = navHostController,
-                    viewModel=viewModel,
+
                     onBuy=:: refreshBuyProperties,
                     email = email,
                     propertyId=property.propertyId,

@@ -3,7 +3,10 @@ package com.example.realestatemanagementsystem.user.UserProfile.Screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
@@ -19,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
@@ -49,9 +53,10 @@ fun UserProfileScreen(
     LaunchedEffect(email) {
         try {
             // Fetch the user profile from the database in a coroutine
-            val profile = userProfileDao.getUserByEmail(email)
-            userProfile = profile
-            isLoading = false
+           while(userProfile==null){
+               val profile = userProfileDao.getUserByEmail(email)
+                userProfile = profile
+                isLoading = false}
         } catch (e: Exception) {
             errorMessage = "Failed to load profile: ${e.message}"
             isLoading = false
@@ -59,7 +64,12 @@ fun UserProfileScreen(
     }
 
     if (isLoading){
-        CircularProgressIndicator()}
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+        Row{
+            CircularProgressIndicator(color = Color.Red,)
+            Text("Loading")}
+        }
+    }
     else{
         if (userProfile != null) {
             var firstName by remember { mutableStateOf(userProfile?.firstName ?: "") }
@@ -210,8 +220,6 @@ fun UserProfileScreen(
                 }
             }
 
-        } else {
-            Text("User profile not found.")
         }
 
     if (errorMessage.isNotEmpty()) {

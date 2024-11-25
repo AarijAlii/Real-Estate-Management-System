@@ -1,8 +1,7 @@
 package com.example.realestatemanagementsystem.Home.Screens
 
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,12 +14,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,8 +37,6 @@ import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyDao
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
-import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
-import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
 
 @Composable
@@ -55,7 +53,7 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
     var isSold by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
-
+    var isChecked by remember { mutableStateOf(false) }
 
     // Check if form is valid
 
@@ -93,7 +91,10 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
             .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(modifier=Modifier.weight(2f).verticalScroll(scrollState).imePadding()) {
+            Column(modifier= Modifier
+                .weight(2f)
+                .verticalScroll(scrollState)
+                .imePadding()) {
                 Text(text = "Update Property Listing", style = MaterialTheme.typography.headlineLarge)
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -274,6 +275,17 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = isChecked,
+                        onCheckedChange = { isChecked = it
+                        isSold=isChecked},
+                        colors = CheckboxDefaults.colors(Color.Red)// Toggle the state when clicked
+                    )
+                    Text(text = "Mark as Sold")
+                }
+
+
             }
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -292,7 +304,9 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
                 city,
                 state
             ).all { it.isNotBlank() }
-            Button(modifier=Modifier.fillMaxWidth().padding(16.dp),
+            Button(modifier= Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
                 colors =  ButtonColors(
                     contentColor = Color.White,
                     disabledContainerColor = Color.Gray,

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -171,7 +172,7 @@ fun HomeScreen(
                                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                                                 .size(18.dp)
                                         )
-                                        Text(text = navigationItem.title)
+                                        Text(text = navigationItem.title, style = MaterialTheme.typography.bodyMedium)
                                     }
                                 },
                                 selected = selectedIndex ==index,
@@ -182,6 +183,9 @@ fun HomeScreen(
                                 modifier = Modifier.padding(2.dp)
                             )
                         }
+
+                            Divider(modifier=Modifier.wrapContentWidth())
+                        Spacer(modifier = Modifier.padding(8.dp))
 
                         Row(
                             modifier = Modifier
@@ -246,6 +250,7 @@ fun HomeScreen(
                                email = email,
                                reviewViewModel = reviewViewModel
                            )
+                           3 -> AppointmentScreen()
 
                        }
 
