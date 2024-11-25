@@ -1,11 +1,14 @@
 package com.example.realestatemanagementsystem.user.UserProfile
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.realestatemanagementsystem.AppDatabase
+import com.example.realestatemanagementsystem.image.ImageUploader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -123,5 +126,41 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
                 _errorMessage.value = "Error updating profile: ${e.message}"
             }
         }
+    }
+
+    fun saveUserProfile(
+        userProfile: UserProfile,
+        imageUri: Uri?,
+        context: Context,
+        clientId: String
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                if (imageUri != null) {
+                    // Upload the image and retrieve the URL
+                    ImageUploader.uploadImageToImgur(context, imageUri, clientId) { imageUrl ->
+                        if (imageUrl != null) {
+                            // Update the user profile with the image URL
+                            val updatedProfile = userProfile.copy(imageUrl = imageUrl)
+                            viewModelScope.launch {
+                                insertOrUpdateUserProfile(updatedProfile)
+                            }
+                        } else {
+                            Log.e("SaveUserProfile", "Image upload failed.")
+                        }
+                    }
+                } else {
+                    // No image provided; save the profile as is
+                    insertOrUpdateUserProfile(userProfile)
+                }
+            } catch (e: Exception) {
+                Log.e("SaveUserProfile", "Error saving profile: ${e.message}")
+            }
+        }
+    }
+
+    private suspend fun insertOrUpdateUserProfile(userProfile: UserProfile) {
+        userProfileDao.insertOrUpdateUserProfile(userProfile)
+        Log.d("SaveUserProfile", "User profile saved successfully: $userProfile")
     }
 }

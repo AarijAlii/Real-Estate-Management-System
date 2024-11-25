@@ -41,4 +41,11 @@ interface UserProfileDao {
         postalCode: String
     )
 
+
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        suspend fun insertOrUpdateUserProfile(userProfile: UserProfile)
+
+
+
+
 }

@@ -14,5 +14,6 @@ data class UserProfile(
     val city: String = "",
     val region: String = "",
     val postalCode: String = "",
-    val rating: Int = 0
+    val rating: Int = 0,
+    val imageUrl: String = "" 
 )
