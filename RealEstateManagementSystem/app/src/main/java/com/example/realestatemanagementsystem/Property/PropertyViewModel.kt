@@ -14,10 +14,50 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PropertyViewModel(private val propertyDao: PropertyDao, private val imageDao: ImageDao) : ViewModel() {
+    private val _soldProperties = MutableStateFlow<List<Property>>(emptyList())
+    val soldProperties: StateFlow<List<Property>> = _soldProperties
+
+    private val _unsoldProperties = MutableStateFlow<List<Property>>(emptyList())
+    val unsoldProperties: StateFlow<List<Property>> = _unsoldProperties
+
+    private val _properties = MutableStateFlow<List<Property>>(emptyList())
+    val properties: StateFlow<List<Property>> = _properties
+
+    private val _searchResults = MutableStateFlow<List<Property>>(emptyList())
+    val searchResults: StateFlow<List<Property>> = _searchResults
+
+    private val _errorMessage = MutableStateFlow<String>("")
+    val errorMessage: StateFlow<String> = _errorMessage
+
+    private val _property = MutableStateFlow<Property?>(null)
+    val property: StateFlow<Property?> = _property
+
+    private val _filteredProperties = MutableStateFlow<List<Property>>(emptyList())
+    val filteredProperties: StateFlow<List<Property>> = _filteredProperties
+
+    private val _imageUploadStatus = MutableStateFlow<String>("")
+    val imageUploadStatus: StateFlow<String> = _imageUploadStatus
+
+    private val _compareList=MutableStateFlow<MutableList<Property?>>(emptyList<Property>().toMutableList())
+    val compareList: StateFlow<MutableList<Property?>> get()=_compareList
+
 
     //       private val _errorMessage = MutableLiveData<String>()
     //    val errorMessage: MutableLiveData<String> get() = _errorMessage
 
+    fun addCompareList(property: List<Property?>){
+        property.forEach {
+            _compareList.value+=it
+        }
+    }
+    fun removeCompareList(propertyNum: Int){
+        val tempCompareList= _compareList.value
+        tempCompareList[propertyNum]=null
+        _compareList.value=tempCompareList
+    }
+    fun resetCompareList(){
+        _compareList.value.clear()
+    }
     suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
         // Launch a coroutine to perform property insertion
         viewModelScope.launch(Dispatchers.IO) {
@@ -143,29 +183,6 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
 
 
 
-    private val _soldProperties = MutableStateFlow<List<Property>>(emptyList())
-    val soldProperties: StateFlow<List<Property>> = _soldProperties
-
-    private val _unsoldProperties = MutableStateFlow<List<Property>>(emptyList())
-    val unsoldProperties: StateFlow<List<Property>> = _unsoldProperties
-
-    private val _properties = MutableStateFlow<List<Property>>(emptyList())
-    val properties: StateFlow<List<Property>> = _properties
-
-    private val _searchResults = MutableStateFlow<List<Property>>(emptyList())
-    val searchResults: StateFlow<List<Property>> = _searchResults
-
-    private val _errorMessage = MutableStateFlow<String>("")
-    val errorMessage: StateFlow<String> = _errorMessage
-
-    private val _property = MutableStateFlow<Property?>(null)
-    val property: StateFlow<Property?> = _property
-
-    private val _filteredProperties = MutableStateFlow<List<Property>>(emptyList())
-    val filteredProperties: StateFlow<List<Property>> = _filteredProperties
-
-    private val _imageUploadStatus = MutableStateFlow<String>("")
-    val imageUploadStatus: StateFlow<String> = _imageUploadStatus
 
 
     fun loadSoldListings(email: String) {

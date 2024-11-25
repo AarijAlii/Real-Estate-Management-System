@@ -49,6 +49,7 @@ import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.Navigation.getNavigationItems
+import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyFilter
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
 import com.example.realestatemanagementsystem.R
@@ -77,6 +78,7 @@ fun HomeScreen(
 ) {
     // Other states and logic remain the same...
 
+    val compareList = remember { mutableListOf<Property>() }
 
     val scope = rememberCoroutineScope()
     val items = getNavigationItems()
@@ -230,6 +232,12 @@ fun HomeScreen(
                                profileViewModel = profileViewModel,
                                favoriteViewModel = favoriteViewModel,
                                email = email,
+                               onCompare = {property->
+
+                                        compareList.add(property as Property)
+
+
+                               }
 
                                )
 
@@ -251,6 +259,8 @@ fun HomeScreen(
                                reviewViewModel = reviewViewModel
                            )
                            3 -> AppointmentScreen()
+                           4-> {viewModel.addCompareList(compareList)
+                               PropertyComparisonTable(compareList,viewModel)}
 
                        }
 

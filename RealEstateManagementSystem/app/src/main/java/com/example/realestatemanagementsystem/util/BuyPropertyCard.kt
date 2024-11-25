@@ -60,7 +60,7 @@ fun BuyPropertyCards(
     propertyId: Int,
     property: Property,
     navHostController: NavHostController,
-
+    onCompare: (Any?) -> Unit,
     favoriteViewModel: FavoriteViewModel,
     onBuy: () -> Unit,
     onclick: () -> Unit
@@ -178,6 +178,15 @@ fun BuyPropertyCards(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Button(onClick={onCompare(property)}, colors = ButtonColors(
+                    contentColor = Color.White,
+                    disabledContainerColor = Color.Gray,
+                    containerColor = Color.Red,
+                    disabledContentColor = Color.White,
+                ),
+                    modifier = Modifier.weight(1f)){
+                    Text(text = "Add to Compare")
+                }
                 Button(
                     onClick = {
                         isDialogOpen = true

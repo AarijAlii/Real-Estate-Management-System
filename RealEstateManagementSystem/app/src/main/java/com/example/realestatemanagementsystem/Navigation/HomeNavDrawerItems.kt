@@ -8,7 +8,8 @@ fun getNavigationItems():List<NavigationItems>{
         NavigationItems(R.drawable.buy,"Buy"),
         NavigationItems(R.drawable.sell,"Sell"),
         NavigationItems(R.drawable.baseline_construction_24,"Contractor"),
-        NavigationItems(R.drawable.outline_calendar_today_24,"Appointments")
+        NavigationItems(R.drawable.outline_calendar_today_24,"Appointments"),
+        NavigationItems(R.drawable.outline_compare_arrows_24,"Compare")
 
 //        NavigationItems(R.drawable.baseline_logout_24,"Logout",Screen.LoginScreen.route)
 

@@ -19,9 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -78,6 +76,7 @@ fun MainScreen(
     innerPadding: PaddingValues,
     favoriteViewModel: FavoriteViewModel,
     email: String,
+    onCompare:  (Any?) -> Unit
 
 ) {
 
@@ -116,8 +115,10 @@ fun MainScreen(
                         navHostController = navHostController,
                         profileViewModel = profileViewModel,
                         favoriteViewModel = favoriteViewModel,
-                        email = email
-
+                        email = email,
+                        onCompare = { property->
+                            onCompare(property as Property)
+                        }
 
                     )
 
@@ -144,8 +145,9 @@ fun BuyScreen(
     favoriteViewModel: FavoriteViewModel,
     profileViewModel: UserProfileViewModel,
     email: String,
+    onCompare:  (Any?) -> Unit,
 
-) {
+    ) {
 
 
     val filter=PropertyFilter()
@@ -242,10 +244,14 @@ fun BuyScreen(
                     property = property ,
                     navHostController = navHostController,
 
-                    onBuy=:: refreshBuyProperties,
+                    onBuy =:: refreshBuyProperties,
                     email = email,
-                    propertyId=property.propertyId,
-                    favoriteViewModel=favoriteViewModel
+                    propertyId =property.propertyId,
+                    favoriteViewModel =favoriteViewModel,
+                    onCompare = { property->
+                        onCompare(property as Property)
+
+                    }
 
                 ){
                     showPopup=true
