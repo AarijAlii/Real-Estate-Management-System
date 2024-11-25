@@ -1,129 +1,106 @@
 package com.example.realestatemanagementsystem.Home.Screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
+import com.example.realestatemanagementsystem.util.formatPrice
 
 
 @Composable
-fun PropertyComparisonTable(properties: List<Property>, viewModel: PropertyViewModel) {
+fun PropertyComparisonTable( viewModel: PropertyViewModel, innerPadding: PaddingValues) {
+    // Collect the compareList state
     val compareList by viewModel.compareList.collectAsState()
 
-    // Only show if there are 1 to 3 properties
-    if (compareList.isEmpty()) {
-        Text("No properties to compare", modifier = Modifier.padding(16.dp))
-        return
-    }
+    // Only show if compareList is not empty
 
-    LazyColumn(
+
+    Column(
         modifier = Modifier
+            .padding(innerPadding)
             .fillMaxSize()
             .padding(16.dp)
-            .border(BorderStroke(1.dp, Color.Black), shape = RoundedCornerShape(8.dp)),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        item {
-            // Table Header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.Gray)
-                    .padding(8.dp)
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Attributes", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                }
-                compareList.forEachIndexed { index, property ->
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(Color.LightGray)
-                            .padding(8.dp)
-                            .border(BorderStroke(1.dp, Color.Black))
+        Spacer(Modifier.padding(16.dp))
+
+        // Header Row
+        Row(horizontalArrangement = Arrangement.Center) {
+            Spacer(modifier = Modifier.weight(1f))
+            Text("Property 1", modifier = Modifier.weight(1f))
+            Text("Property 2", modifier = Modifier.weight(1f))
+            Text("Property 3")
+        }
+
+        Spacer(Modifier.padding(16.dp))
+        Divider(modifier = Modifier.wrapContentWidth())
+
+        // Displaying comparison values
+        ComparisonRow("Price", compareList) { property -> property?.price?.let { formatPrice(it) } ?: "-" }
+        ComparisonRow("City", compareList) { property -> property?.city ?: "-" }
+        ComparisonRow("State", compareList) { property -> property?.state ?: "-" }
+        ComparisonRow("Bedrooms", compareList) { property -> property?.bedrooms?.toString() ?: "-" }
+        ComparisonRow("Bathrooms", compareList) { property -> property?.rooms?.toString() ?: "-" }
+        ComparisonRow("Area", compareList) { property -> property?.area?.toString() ?: "-" }
+        ComparisonRow("Garage", compareList) { property -> property?.garage?.toString() ?: "-" }
+
+        Divider(modifier = Modifier.wrapContentWidth())
+
+        // Remove buttons for each property
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Spacer(Modifier.weight(1f))
+            compareList.forEachIndexed { index, _ ->
+                if (index < 3) {
+                    Button(
+                        onClick = { viewModel.removeCompareList(index) },
+                        modifier = Modifier.padding(start =8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red,
+                            contentColor = Color.White
+                        )
                     ) {
-                        Text(text = "Property ${property?.propertyId}", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Button(
-                            onClick = { viewModel.removeCompareList(index) },
-                            colors = ButtonDefaults.buttonColors(Color.Red),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text("Remove", color = Color.White)
-                        }
+                        Text("Remove")
                     }
                 }
             }
         }
-
-        // Comparison rows for each attribute
-        item { ComparisonRow("City", compareList) { it.city } }
-        item { ComparisonRow("State", compareList) { it.state } }
-        item { ComparisonRow("Property No.", compareList) { it.propertyNumber } }
-        item { ComparisonRow("Rooms", compareList) { it.rooms.toString() } }
-        item { ComparisonRow("Bedrooms", compareList) { it.bedrooms.toString() } }
-        item { ComparisonRow("Garage", compareList) { it.garage.toString() } }
-        item { ComparisonRow("Area (sq ft)", compareList) { it.area.toString() } }
-        item { ComparisonRow("Type", compareList) { it.type } }
-        item { ComparisonRow("Price (PKR)", compareList) { it.price.toString() } }
-        item { ComparisonRow("Zip Code", compareList) { it.zipCode } }
-        item { ComparisonRow("Sold Status", compareList) { if (it.isSold) "Sold" else "Available" } }
     }
 }
 
 @Composable
-fun ComparisonRow(
-    attributeName: String,
-    properties: MutableList<Property?>,
-    valueProvider: (Property) -> String
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(vertical = 4.dp)
-            .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp))
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        ) {
-            Text(text = attributeName, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-        }
-        properties.forEach { property ->
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp)
-                    .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp))
-                    .background(Color.LightGray)
-            ) {
-                Text(text = "${property?.let { valueProvider(it) }}", fontSize = 12.sp)
-            }
+fun ComparisonRow(attribute: String, compareList: List<Property?>, valueProvider: (Property?) -> String) {
+    Row(horizontalArrangement = Arrangement.Start) {
+        Text(attribute, modifier = Modifier.weight(1f))
+
+        // Safely access each property, providing fallback "-"
+        for (i in 0 until 3) {
+            Text(
+                text = valueProvider(compareList.getOrNull(i)),
+                modifier = Modifier.weight(1f)
+            )
         }
     }
+    Divider(modifier = Modifier.wrapContentWidth())
 }
+
+
 

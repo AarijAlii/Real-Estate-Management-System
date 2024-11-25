@@ -76,7 +76,7 @@ fun MainScreen(
     innerPadding: PaddingValues,
     favoriteViewModel: FavoriteViewModel,
     email: String,
-    onCompare:  (Any?) -> Unit
+    onCompare:  (Property?) -> Unit
 
 ) {
 
@@ -145,7 +145,7 @@ fun BuyScreen(
     favoriteViewModel: FavoriteViewModel,
     profileViewModel: UserProfileViewModel,
     email: String,
-    onCompare:  (Any?) -> Unit,
+    onCompare:  (Property?) -> Unit,
 
     ) {
 

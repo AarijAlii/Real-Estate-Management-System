@@ -60,7 +60,7 @@ fun BuyPropertyCards(
     propertyId: Int,
     property: Property,
     navHostController: NavHostController,
-    onCompare: (Any?) -> Unit,
+    onCompare: (Property?) -> Unit,
     favoriteViewModel: FavoriteViewModel,
     onBuy: () -> Unit,
     onclick: () -> Unit
@@ -184,7 +184,7 @@ fun BuyPropertyCards(
                     containerColor = Color.Red,
                     disabledContentColor = Color.White,
                 ),
-                    modifier = Modifier.weight(1f)){
+                    modifier = Modifier.weight(1f).padding(8.dp)){
                     Text(text = "Add to Compare")
                 }
                 Button(

@@ -38,26 +38,44 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
     private val _imageUploadStatus = MutableStateFlow<String>("")
     val imageUploadStatus: StateFlow<String> = _imageUploadStatus
 
-    private val _compareList=MutableStateFlow<MutableList<Property?>>(emptyList<Property>().toMutableList())
-    val compareList: StateFlow<MutableList<Property?>> get()=_compareList
+    private val _compareList=MutableStateFlow<List<Property?>>(emptyList())
+    val compareList: StateFlow<List<Property?>> get()=_compareList
 
 
     //       private val _errorMessage = MutableLiveData<String>()
     //    val errorMessage: MutableLiveData<String> get() = _errorMessage
 
-    fun addCompareList(property: List<Property?>){
-        property.forEach {
-            _compareList.value+=it
+    fun addCompareList(property: Property?){
+        if (_compareList.value.size < 3) {
+            val tempList=_compareList.value.toMutableList()
+                tempList.add(property)
+                 _compareList.value=tempList
+        } else {
+            var added = false
+            for (i in 0..2) {
+                if (_compareList.value[i] == null) {
+                    Log.d("property", "property added at index $i by ${property.toString()}")
+                    val tempList=_compareList.value.toMutableList()
+                    tempList[i]=property
+                    _compareList.value = tempList
+                    added = true
+                    break
+                }
+            }
+            if (!added) {
+                Log.d("property", "property not added - no null slots")
+            }
         }
-    }
+        }
+
+
     fun removeCompareList(propertyNum: Int){
-        val tempCompareList= _compareList.value
+        val tempCompareList= _compareList.value.toMutableList()
         tempCompareList[propertyNum]=null
         _compareList.value=tempCompareList
     }
     fun resetCompareList(){
-        _compareList.value.clear()
-    }
+            }
     suspend fun addProperty(property: Property, imageUris: List<Uri>, context: Context, clientId: String) {
         // Launch a coroutine to perform property insertion
         viewModelScope.launch(Dispatchers.IO) {
