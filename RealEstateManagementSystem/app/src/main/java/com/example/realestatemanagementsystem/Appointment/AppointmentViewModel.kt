@@ -2,7 +2,6 @@ package com.example.realestatemanagementsystem.Appointment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.realestatemanagementsystem.Appoitnment.Appointment
 import com.example.realestatemanagementsystem.Appoitnment.AppointmentDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,8 +9,13 @@ import kotlinx.coroutines.launch
 
 class AppointmentViewModel(private val appointmentDao: AppointmentDao) : ViewModel() {
 
-    private val _upComingAppointment =  MutableStateFlow<List<Appointment>>(emptyList())
-    val upComingAppointment : StateFlow<List<Appointment>> get()=_upComingAppointment
+    private val _upComingAppointment =  MutableStateFlow<List<AppointmentDetails>>(emptyList())
+    val upComingAppointment : StateFlow<List<AppointmentDetails>> get()=_upComingAppointment
+
+    private val _upComingAppointmentSeller =  MutableStateFlow<List<AppointmentDetailsSeller>>(emptyList())
+    val upComingAppointmentSeller : StateFlow<List<AppointmentDetailsSeller>> get()=_upComingAppointmentSeller
+
+
 
     fun insertAppointment(propertyId: Int, ownerEmail: String, buyerEmail: String, date: String) {
         viewModelScope.launch {
@@ -21,8 +25,12 @@ class AppointmentViewModel(private val appointmentDao: AppointmentDao) : ViewMod
 
     fun getAppointmentsByBuyer(buyerEmail: String) {
         viewModelScope.launch {
-        _upComingAppointment.value=appointmentDao.getAppointmentsByBuyer(buyerEmail)}
+        _upComingAppointment.value=appointmentDao.getAppointmentsForBuyer(buyerEmail)}
     }
-
+    fun getAppointmentsByOwner(ownerEmail: String) {
+        viewModelScope.launch {
+            _upComingAppointmentSeller.value=appointmentDao.getAppointmentsForOwner(ownerEmail)
+        }
+    }
 
 }
