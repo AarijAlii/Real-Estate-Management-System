@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
+import com.example.realestatemanagementsystem.Appointment.AppointmentViewModel
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyFilter
 import com.example.realestatemanagementsystem.Property.PropertyViewModel
@@ -70,6 +71,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainScreen(
+    appointmentViewModel: AppointmentViewModel,
     viewModel: PropertyViewModel,
     navHostController: NavHostController,
     profileViewModel: UserProfileViewModel,
@@ -111,6 +113,7 @@ fun MainScreen(
         ){page ->
                 when (page) {
                     0 -> BuyScreen(
+                        appointmentViewModel=appointmentViewModel,
                         viewModel = viewModel,
                         navHostController = navHostController,
                         profileViewModel = profileViewModel,
@@ -139,6 +142,7 @@ fun MainScreen(
 
 @Composable
 fun BuyScreen(
+    appointmentViewModel: AppointmentViewModel,
     modifier: Modifier = Modifier,
     viewModel: PropertyViewModel,
     navHostController: NavHostController,
@@ -240,6 +244,7 @@ fun BuyScreen(
 
 
                 BuyPropertyCards(
+                    appointmentViewModel=appointmentViewModel,
                     modifier = Modifier,
                     property = property ,
                     navHostController = navHostController,

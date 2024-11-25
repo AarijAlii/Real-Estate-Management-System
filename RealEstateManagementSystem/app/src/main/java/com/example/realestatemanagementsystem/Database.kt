@@ -6,6 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.realestatemanagementsystem.Appointment.Appointment
+import com.example.realestatemanagementsystem.Appointment.AppointmentDao
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyDao
 import com.example.realestatemanagementsystem.contractor.Contractor
@@ -21,7 +23,8 @@ import com.example.realestatemanagementsystem.review.ReviewDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
-@Database(entities = [UserProfile::class, Property::class, ImageEntity::class, Favorite::class, Contractor::class, PreviousWorks::class, Review::class], version = 9)
+@Database(entities = [UserProfile::class, Property::class, ImageEntity::class,
+Favorite::class, Contractor::class, PreviousWorks::class, Review::class, Appointment::class], version = 10)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao
@@ -30,6 +33,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun contractorDao(): ContractorDao
     abstract fun previousWorksDao(): PreviousWorksDao
     abstract fun reviewDao(): ReviewDao
+    abstract fun appointmentDao(): AppointmentDao
 
 
 
@@ -44,7 +48,8 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,MIGRATION_4_5,
-                    MIGRATION_5_4,MIGRATION_5_6, MIGRATION_6_7,MIGRATION_7_8, MIGRATION_8_9) // Add the migration here
+                    MIGRATION_5_4,MIGRATION_5_6, MIGRATION_6_7,MIGRATION_7_8, MIGRATION_8_9,
+                    MIGRATION_9_10) // Add the migration here
                     .build()
                 INSTANCE = db
                 db
@@ -258,5 +263,23 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
 
         db.execSQL("DROP TABLE review")
         db.execSQL("ALTER TABLE review_new RENAME TO review")
+    }
+}
+
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS 'appointments' (
+                'appointmentId' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                'propertyId' INTEGER NOT NULL,
+                'ownerEmail' TEXT NOT NULL,
+                'buyerEmail' TEXT NOT NULL,
+                'date' TEXT NOT NULL,
+                FOREIGN KEY ('propertyId') REFERENCES 'property' ('propertyId') ON DELETE CASCADE,
+                FOREIGN KEY ('ownerEmail') REFERENCES 'user_profile' ('email') ON DELETE CASCADE,
+                FOREIGN KEY ('buyerEmail') REFERENCES 'user_profile' ('email') ON DELETE CASCADE
+            )
+        """.trimIndent()
+        )
     }
 }

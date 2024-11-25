@@ -1,6 +1,5 @@
 package com.example.realestatemanagementsystem.Home.Screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -48,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import com.example.realestatemanagementsystem.Appointment.AppointmentViewModel
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.Navigation.getNavigationItems
 import com.example.realestatemanagementsystem.Property.PropertyFilter
@@ -74,7 +74,8 @@ fun HomeScreen(
     profileViewModel: UserProfileViewModel,
     favoriteViewModel: FavoriteViewModel,
     contractorViewModel: ContractorViewModel,
-    reviewViewModel: ReviewViewModel
+    reviewViewModel: ReviewViewModel,
+    appointmentViewModel: AppointmentViewModel
 ) {
     // Other states and logic remain the same...
 
@@ -225,7 +226,7 @@ fun HomeScreen(
 
                        when(selectedIndex) {
                            0 -> MainScreen(
-
+                                appointmentViewModel=appointmentViewModel,
                                viewModel = viewModel,
                                navHostController = navHostController,
                                innerPadding = innerPadding,
@@ -258,7 +259,11 @@ fun HomeScreen(
                                email = email,
                                reviewViewModel = reviewViewModel
                            )
-                           3 -> AppointmentScreen()
+                           3 -> AppointmentScreen(
+                               appointmentViewModel = appointmentViewModel,
+                                userProfileViewModel=profileViewModel,
+                               email = email
+                           )
                            4-> {
                                PropertyComparisonTable(viewModel,innerPadding)}
 

@@ -22,6 +22,9 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
+    private val _appointmentSellerProfile = MutableStateFlow<UserProfile?>(null)
+    val appointmentSellerProfile: StateFlow<UserProfile?> get()= _appointmentSellerProfile
+
     private val userProfileDao = appDatabase.userProfileDao()
 
 
@@ -48,7 +51,16 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
             }
             }
     }
+    fun getuserProfileForAppointment(email: String){
+        viewModelScope.launch {
+            try {
+                val userProfile=userProfileDao.getUserByEmail(email)
+                _appointmentSellerProfile.value=userProfile
 
+    }catch (e:Exception){
+        _errorMessage.value="Error fetching user profile: ${e.message}"
+            }
+        }}
     fun getUserProfile(email: String) {
         viewModelScope.launch {
             try {

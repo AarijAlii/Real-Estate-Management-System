@@ -43,6 +43,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.example.realestatemanagementsystem.AppDatabase
+import com.example.realestatemanagementsystem.Appointment.AppointmentViewModel
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import kotlinx.coroutines.launch
@@ -55,6 +56,7 @@ import java.util.Locale
 
 @Composable
 fun BuyPropertyCards(
+    appointmentViewModel: AppointmentViewModel,
     modifier: Modifier = Modifier,
     email: String,
     propertyId: Int,
@@ -240,7 +242,7 @@ fun BuyPropertyCards(
         val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
         sdf.format(it)  // Format the selected date
     } ?: "No date selected"
-
+    appointmentViewModel.insertAppointment(propertyId=propertyId, buyerEmail = email, ownerEmail = property.email, date = formattedDate)
     }
 
 

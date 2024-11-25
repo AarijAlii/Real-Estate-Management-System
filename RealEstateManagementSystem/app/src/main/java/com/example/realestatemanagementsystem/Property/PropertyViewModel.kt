@@ -48,8 +48,8 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
     fun addCompareList(property: Property?){
         if (_compareList.value.size < 3) {
             val tempList=_compareList.value.toMutableList()
-                tempList.add(property)
-                 _compareList.value=tempList
+            tempList.add(property)
+            _compareList.value=tempList
         } else {
             var added = false
             for (i in 0..2) {

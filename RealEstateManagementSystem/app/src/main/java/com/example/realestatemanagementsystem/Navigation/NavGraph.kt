@@ -7,6 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.realestatemanagementsystem.AppDatabase
+import com.example.realestatemanagementsystem.Appointment.AppointmentViewModel
+import com.example.realestatemanagementsystem.Appointment.AppointmentViewModelFactory
 import com.example.realestatemanagementsystem.Home.Screens.ContractorFormScreen
 import com.example.realestatemanagementsystem.Home.Screens.CreateListingScreen
 import com.example.realestatemanagementsystem.Home.Screens.HomeScreen
@@ -69,6 +71,9 @@ fun NavigationGraph(
 
             val reviewfactory =  ReviewViewModelFactory(appDatabase.reviewDao(),appDatabase.contractorDao())  // Pass AppDatabase here
             val reviewViewModel: ReviewViewModel = viewModel(factory = reviewfactory)
+
+            val appoointmenttFactory =AppointmentViewModelFactory(appDatabase.appointmentDao())
+            val appointmentViewModel: AppointmentViewModel = viewModel(factory = appoointmenttFactory)
             if (email != null) {
 
                 HomeScreen(
@@ -86,7 +91,8 @@ fun NavigationGraph(
                     profileViewModel = userProfileViewModel,
                     favoriteViewModel = favoritesViewModel,
                     contractorViewModel = contractorViewModel,
-                    reviewViewModel = reviewViewModel
+                    reviewViewModel = reviewViewModel,
+                    appointmentViewModel=appointmentViewModel
                 )
             }
         }
