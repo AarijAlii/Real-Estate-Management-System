@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AppointmentDao {
 
-    @Query("INSERT INTO appointments (propertyId, ownerEmail, buyerEmail, date) VALUES (:propertyId, :ownerEmail, :buyerEmail, :date)")
-    suspend fun insertAppointment(propertyId: Int, ownerEmail: String, buyerEmail: String, date: String)
+    @Query("INSERT INTO appointments (propertyId, ownerEmail, buyerEmail, contact,date) VALUES (:propertyId, :ownerEmail, :buyerEmail,:contact, :date)")
+    suspend fun insertAppointment(propertyId: Int, ownerEmail: String, buyerEmail: String, contact:String,date: String)
 
     @Query("SELECT * FROM appointments WHERE buyerEmail = :buyerEmail")
     fun getAppointmentsByBuyer(buyerEmail: String): Flow<List<Appointment>>

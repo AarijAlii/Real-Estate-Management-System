@@ -24,7 +24,7 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
 @Database(entities = [UserProfile::class, Property::class, ImageEntity::class,
-    Favorite::class, Contractor::class, PreviousWorks::class, Review::class, Appointment::class], version = 10)
+    Favorite::class, Contractor::class, PreviousWorks::class, Review::class, Appointment::class], version = 11)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao
@@ -49,7 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "app_database"
                 ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,MIGRATION_4_5,
                     MIGRATION_5_4,MIGRATION_5_6, MIGRATION_6_7,MIGRATION_7_8, MIGRATION_8_9,
-                    MIGRATION_9_10) // Add the migration here
+                    MIGRATION_9_10,MIGRATION_10_11) // Add the migration here
                     .build()
                 INSTANCE = db
                 db
@@ -268,7 +268,8 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
 
 val MIGRATION_9_10 = object : Migration(9, 10) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE TABLE IF NOT EXISTS 'appointments' (
                 'appointmentId' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 'propertyId' INTEGER NOT NULL,
@@ -283,3 +284,37 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
         )
     }
 }
+    val MIGRATION_10_11 = object : Migration(10, 11) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+
+            db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_user_profile_contact ON user_profile(contact)")
+            db.execSQL(
+                """
+            CREATE TABLE appointment_new (
+               'appointmentId' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                'propertyId' INTEGER NOT NULL,
+                'ownerEmail' TEXT NOT NULL,
+                'buyerEmail' TEXT NOT NULL,
+                'contact' TEXT NOT NULL,
+                'date' TEXT NOT NULL,
+                FOREIGN KEY ('propertyId') REFERENCES 'property' ('propertyId') ON DELETE CASCADE,
+                FOREIGN KEY ('ownerEmail') REFERENCES 'user_profile' ('email') ON DELETE CASCADE,
+                FOREIGN KEY ('buyerEmail') REFERENCES 'user_profile' ('email') ON DELETE CASCADE,
+                FOREIGN KEY ('contact') REFERENCES 'user_profile' ('contact') ON DELETE CASCADE,
+            )
+        """.trimIndent()
+            )
+
+            db.execSQL(
+                """
+            INSERT INTO appointment_new (propertyId, ownerEmail,buyerEmail,contact, date)
+            SELECT appointmentId,propertyId, ownerEmail,buyerEmail, contact,date
+            FROM appointments
+        """.trimIndent()
+            )
+
+            db.execSQL("DROP TABLE appointments")
+            db.execSQL("ALTER TABLE appointment_new RENAME TO appointments")
+        }
+    }
+

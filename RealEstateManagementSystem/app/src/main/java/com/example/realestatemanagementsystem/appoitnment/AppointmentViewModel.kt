@@ -7,9 +7,9 @@ import kotlinx.coroutines.launch
 
 class AppointmentViewModel(private val appointmentDao: AppointmentDao) : ViewModel() {
 
-    fun insertAppointment(propertyId: Int, ownerEmail: String, buyerEmail: String, date: String) {
+    fun insertAppointment(propertyId: Int, ownerEmail: String, buyerEmail: String, contact:String,date: String) {
         viewModelScope.launch {
-            appointmentDao.insertAppointment(propertyId, ownerEmail, buyerEmail, date)
+            appointmentDao.insertAppointment(propertyId, ownerEmail, buyerEmail, contact,date)
         }
     }
 

@@ -27,6 +27,12 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
             parentColumns = ["propertyId"],
             childColumns = ["propertyId"],
             onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = UserProfile::class,
+            parentColumns = ["contact"],
+            childColumns = ["contact"],
+            onDelete = ForeignKey.CASCADE
         )
     ]
 )
@@ -36,5 +42,6 @@ data class Appointment(
     val propertyId: Int,
     val ownerEmail: String,
     val buyerEmail: String,
+    val contact: String,
     val date: String
 )

@@ -30,6 +30,7 @@ fun ScheduleAppointmentScreen(
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     val today = LocalDate.now()
 
+
     Column(modifier = Modifier.padding(16.dp)) {
         Text(text = "Select Appointment Date")
         Spacer(modifier = Modifier.height(16.dp))
@@ -49,6 +50,7 @@ fun ScheduleAppointmentScreen(
                 propertyId = propertyId,
                 ownerEmail = ownerEmail,
                 buyerEmail = buyerEmail,
+                contact = "123",
                 date = selectedDate.toString()
             )
             navController.popBackStack()
