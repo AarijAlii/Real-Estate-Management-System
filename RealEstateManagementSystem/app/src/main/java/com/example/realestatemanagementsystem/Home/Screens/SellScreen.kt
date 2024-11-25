@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Tab
@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -111,70 +112,77 @@ fun SellScreen(
             val tabs = listOf("Unsold", "Sold")
             val pagerState = rememberPagerState(initialPage = 0){tabs.size}
 
-            Column(modifier = Modifier.padding(innerPadding)) {
-                // TabRow to display tabs
-                TabRow(
-                    selectedTabIndex = pagerState.currentPage,
+                Column(modifier=Modifier.padding(innerPadding),horizontalAlignment = Alignment.CenterHorizontally){
+                Column(modifier = Modifier.weight(1f)) {
+                    // TabRow to display tabs
+                    TabRow(
+                        selectedTabIndex = pagerState.currentPage,
 
-                    contentColor = Color.White,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(
-                            Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
-                            color = Color.Red
-                        )
+                        contentColor = Color.White,
+                        indicator = { tabPositions ->
+                            TabRowDefaults.Indicator(
+                                Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
+                                color = Color.Red
+                            )
+                        }
+                    ) {
+                        tabs.forEachIndexed { index, title ->
+                            Tab(
+                                text = { Text(title, color = Color.Black) },
+                                selected = pagerState.currentPage == index,
+                                onClick = { scope.launch { pagerState.animateScrollToPage(index) } }
+                            )
+                        }
                     }
-                ) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(
-                            text = { Text(title, color = Color.Black) },
-                            selected = pagerState.currentPage == index,
-                            onClick = { scope.launch { pagerState.animateScrollToPage(index) } }
-                        )
+
+                    // HorizontalPager for swiping between tabs
+                    HorizontalPager(
+                        state = pagerState,
+                    ) { page ->
+                        when (page) {
+                            1 -> SoldScreen(
+                                propertyViewModel = propertyViewModel,
+                                navHostController = navHostController,
+
+                                email = email,
+                                onDeleted = ::refreshProperties
+
+                            )
+
+                            0 -> UnSoldScreen(
+                                propertyViewModel = propertyViewModel,
+                                navHostController = navHostController,
+                                onDeleted = ::refreshProperties,
+                                email = email
+                            )
+                        }
+                    }
+
+
+                }
+
+                    Button (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                        , colors = ButtonColors(
+                            contentColor = Color.White,
+                            disabledContainerColor = Color.Gray,
+                            containerColor = Color.Red,
+                            disabledContentColor = Color.White,
+                        ),
+                        onClick = {
+                            navHostController.navigate("create_listing_screen/$email")
+                        }
+                    ) {
+                        Text(text = "Create Listing")
                     }
                 }
 
-                // HorizontalPager for swiping between tabs
-                HorizontalPager(
-                    state=pagerState,
-                ){page ->
-                    when (page) {
-                        1 -> SoldScreen(
-                            propertyViewModel = propertyViewModel,
-                            navHostController = navHostController,
-
-                            email = email,
-                            onDeleted = ::refreshProperties
-
-                        )
-
-                        0 -> UnSoldScreen(
-                            propertyViewModel = propertyViewModel,
-                            navHostController = navHostController,
-                            onDeleted = ::refreshProperties,
-                            email=email
-                        )
-                    }}
-
-
-
-            }
 
 
             // LazyColumn to show properties
 
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red
-                ),
-                onClick = {
-                    navHostController.navigate("create_listing_screen/$email")
-                }
-            ) {
-                Text(text = "Create Listing")
-            }
 
 
 
@@ -203,7 +211,7 @@ fun SoldScreen(modifier: Modifier = Modifier,propertyViewModel: PropertyViewMode
     }
 
     Column {
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn(/*modifier=Modifier.weight(1f)*/) {
 
             items(soldProperties) { property ->
                 SellPropertyCards(
@@ -234,7 +242,7 @@ fun UnSoldScreen(modifier: Modifier = Modifier,propertyViewModel: PropertyViewMo
     }
 
     Column {
-        LazyColumn(modifier = Modifier.weight(1f)) {
+        LazyColumn(/*modifier=Modifier.weight(1f)*/) {
 
             items(soldProperties) { property ->
                 SellPropertyCards(

@@ -6,8 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.realestatemanagementsystem.Appointment.Appointment
-import com.example.realestatemanagementsystem.Appointment.AppointmentDao
+import com.example.realestatemanagementsystem.Appoitnment.Appointment
+import com.example.realestatemanagementsystem.Appoitnment.AppointmentDao
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyDao
 import com.example.realestatemanagementsystem.contractor.Contractor
@@ -24,7 +24,7 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
 @Database(entities = [UserProfile::class, Property::class, ImageEntity::class,
-Favorite::class, Contractor::class, PreviousWorks::class, Review::class, Appointment::class], version = 10)
+    Favorite::class, Contractor::class, PreviousWorks::class, Review::class, Appointment::class], version = 11)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao
@@ -49,7 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "app_database"
                 ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,MIGRATION_4_5,
                     MIGRATION_5_4,MIGRATION_5_6, MIGRATION_6_7,MIGRATION_7_8, MIGRATION_8_9,
-                    MIGRATION_9_10) // Add the migration here
+                    MIGRATION_9_10,MIGRATION_10_11, MIGRATION_11_12) // Add the migration here
                     .build()
                 INSTANCE = db
                 db
@@ -268,7 +268,8 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
 
 val MIGRATION_9_10 = object : Migration(9, 10) {
     override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("""
+        db.execSQL(
+            """
             CREATE TABLE IF NOT EXISTS 'appointments' (
                 'appointmentId' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 'propertyId' INTEGER NOT NULL,
@@ -283,3 +284,76 @@ val MIGRATION_9_10 = object : Migration(9, 10) {
         )
     }
 }
+val MIGRATION_10_11 = object : Migration(10, 11) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_user_profile_contact ON user_profile(contact)")
+        db.execSQL(
+            """
+            CREATE TABLE appointment_new (
+               'appointmentId' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                'propertyId' INTEGER NOT NULL,
+                'ownerEmail' TEXT NOT NULL,
+                'buyerEmail' TEXT NOT NULL,
+                
+                'date' TEXT NOT NULL,
+                FOREIGN KEY ('propertyId') REFERENCES 'property' ('propertyId') ON DELETE CASCADE,
+                FOREIGN KEY ('ownerEmail') REFERENCES 'user_profile' ('email') ON DELETE CASCADE,
+                FOREIGN KEY ('buyerEmail') REFERENCES 'user_profile' ('email') ON DELETE CASCADE,
+                FOREIGN KEY ('contact') REFERENCES 'user_profile' ('contact') ON DELETE CASCADE
+            )
+        """.trimIndent()
+        )
+
+        db.execSQL(
+            """
+            INSERT INTO appointment_new (propertyId, ownerEmail,buyerEmail, date)
+            SELECT appointmentId,propertyId, ownerEmail,buyerEmail,date
+            FROM appointments
+        """.trimIndent()
+        )
+
+        db.execSQL("DROP TABLE appointments")
+        db.execSQL("ALTER TABLE appointment_new RENAME TO appointments")
+    }
+
+}
+val MIGRATION_11_12 = object : Migration(11, 12) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Create the new table with the added 'imageUrl' column
+        db.execSQL(
+            """
+            CREATE TABLE user_profile_new (
+                email TEXT NOT NULL PRIMARY KEY,
+                firstName TEXT NOT NULL,
+                lastName TEXT NOT NULL,
+                contact TEXT NOT NULL UNIQUE,
+                city TEXT NOT NULL,
+                region TEXT NOT NULL,
+                postalCode TEXT NOT NULL,
+                rating INTEGER NOT NULL DEFAULT 0,
+                imageUrl TEXT NOT NULL DEFAULT ''
+            )
+            """.trimIndent()
+        )
+
+        // Copy data from the old table to the new table
+        db.execSQL(
+            """
+            INSERT INTO user_profile_new (email, firstName, lastName, contact, city, region, postalCode, rating)
+            SELECT email, firstName, lastName, contact, city, region, postalCode, rating
+            FROM user_profile
+            """.trimIndent()
+        )
+
+        // Drop the old table
+        db.execSQL("DROP TABLE user_profile")
+
+        // Rename the new table to the original table name
+        db.execSQL("ALTER TABLE user_profile_new RENAME TO user_profile")
+
+        // Recreate the unique index
+        db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_user_profile_contact ON user_profile(contact)")
+    }
+}
+

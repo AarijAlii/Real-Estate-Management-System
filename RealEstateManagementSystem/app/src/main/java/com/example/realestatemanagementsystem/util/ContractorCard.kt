@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
 import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.contractor.ContractorViewModel
 import com.example.realestatemanagementsystem.contractor.ContractorWithUserProfile
@@ -62,17 +63,25 @@ fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,cont
             modifier = Modifier
         ) {
             // Image Section
-            Image(
-                painter = painterResource(id = R.drawable.house_file), // Replace with your image resource
-                contentDescription = "Card Image",
-                contentScale = ContentScale.Crop,
+            if (contractor.imageUrl!=null) {
 
-                modifier = Modifier
-                    .weight(1f)
 
-                    .padding(2.dp)
-                    .shadow(16.dp, RoundedCornerShape(16.dp))
-            )
+                AsyncImage(
+                    model=contractor.imageUrl,
+                    contentDescription = "Selected image",
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(100.dp), // Adjust size as needed
+                    contentScale = ContentScale.Fit
+                )
+
+
+            }
+            else{
+                Box(modifier = Modifier.size(100.dp)){
+                    Text(text = "No image available")
+                }
+            }
 
             // Separator
 

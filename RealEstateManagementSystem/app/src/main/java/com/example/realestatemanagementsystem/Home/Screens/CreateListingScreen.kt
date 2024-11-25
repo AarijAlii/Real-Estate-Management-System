@@ -1,7 +1,6 @@
 package com.example.realestatemanagementsystem.Home.Screens
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -77,6 +76,7 @@ fun CreateListingScreen(email: String,
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> -> imageUris = uris }
+
 
     // Coroutine scope for launching suspend functions
     val coroutineScope = rememberCoroutineScope()
@@ -343,7 +343,12 @@ Column(modifier=Modifier.weight(2f).verticalScroll(scrollState).imePadding()) {
             }) {
             Text(text = "Create Listing")
         }
-        Button(onClick = {imagePickerLauncher.launch("image/*")}){
+        Button(onClick = {imagePickerLauncher.launch("image/*")},modifier=Modifier.fillMaxWidth() , colors = ButtonColors(
+            contentColor = Color.White,
+            disabledContainerColor = Color.Gray,
+            containerColor = Color.Red,
+            disabledContentColor = Color.White,
+        )){
             Text(text = "Add Photo")
         }
     }

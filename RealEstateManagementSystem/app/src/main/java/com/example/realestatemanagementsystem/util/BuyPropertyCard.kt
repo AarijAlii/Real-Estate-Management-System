@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +47,7 @@ import com.example.realestatemanagementsystem.AppDatabase
 import com.example.realestatemanagementsystem.Appointment.AppointmentViewModel
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -64,14 +66,17 @@ fun BuyPropertyCards(
     navHostController: NavHostController,
     onCompare: (Property?) -> Unit,
     favoriteViewModel: FavoriteViewModel,
-    onBuy: () -> Unit,
-    onclick: () -> Unit
+    onclick: () -> Unit,
+    userProfileViewModel : UserProfileViewModel
 ) {
     var selectedDate by remember { mutableStateOf<Date?>(null) }
     var isDialogOpen by remember { mutableStateOf(false) }
     val imageDao = AppDatabase.getDatabase(LocalContext.current).imageDao()
 
-
+    val userProfile by userProfileViewModel.appointmentSellerProfile.collectAsState()
+    LaunchedEffect(property.email){
+        userProfileViewModel.getuserProfileForAppointment(property.email)
+    }
 
 
 
@@ -101,7 +106,7 @@ fun BuyPropertyCards(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .height(400.dp)
+            .height(450.dp)
             .clickable { onclick() }
             .shadow(8.dp, RoundedCornerShape(12.dp))
     ) {
@@ -180,7 +185,8 @@ fun BuyPropertyCards(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Button(onClick={onCompare(property)}, colors = ButtonColors(
+                Button(onClick={onCompare(property)
+                }, colors = ButtonColors(
                     contentColor = Color.White,
                     disabledContainerColor = Color.Gray,
                     containerColor = Color.Red,
@@ -192,6 +198,7 @@ fun BuyPropertyCards(
                 Button(
                     onClick = {
                         isDialogOpen = true
+
                     },
                     colors = ButtonColors(
                         contentColor = Color.White,
@@ -235,14 +242,17 @@ fun BuyPropertyCards(
         DatePickerDialog(onDateSelected = { date->
             selectedDate = date
 
-        }, onDismiss = { isDialogOpen = false })
+
+        }, onDismiss = { isDialogOpen = false
+            val formattedDate = selectedDate?.let {
+                val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                sdf.format(it)  // Format the selected date
+            } ?: "No date selected"
+             appointmentViewModel.insertAppointment(propertyId=propertyId, buyerEmail = email, ownerEmail = property.email, date = formattedDate)
+        })
 
     }
-    val formattedDate = selectedDate?.let {
-        val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-        sdf.format(it)  // Format the selected date
-    } ?: "No date selected"
-    appointmentViewModel.insertAppointment(propertyId=propertyId, buyerEmail = email, ownerEmail = property.email, date = formattedDate)
+
     }
 
 

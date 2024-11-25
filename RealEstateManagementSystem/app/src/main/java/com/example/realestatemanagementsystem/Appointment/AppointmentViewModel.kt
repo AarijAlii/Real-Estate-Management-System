@@ -2,7 +2,8 @@ package com.example.realestatemanagementsystem.Appointment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.Flow
+import com.example.realestatemanagementsystem.Appoitnment.Appointment
+import com.example.realestatemanagementsystem.Appoitnment.AppointmentDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,7 +24,5 @@ class AppointmentViewModel(private val appointmentDao: AppointmentDao) : ViewMod
         _upComingAppointment.value=appointmentDao.getAppointmentsByBuyer(buyerEmail)}
     }
 
-    fun getAppointmentsByOwner(ownerEmail: String): Flow<List<Appointment>> {
-        return appointmentDao.getAppointmentsByOwner(ownerEmail)
-    }
+
 }

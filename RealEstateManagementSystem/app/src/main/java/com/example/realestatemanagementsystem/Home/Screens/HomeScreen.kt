@@ -1,7 +1,6 @@
 package com.example.realestatemanagementsystem.Home.Screens
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import coil.compose.AsyncImage
 import com.example.realestatemanagementsystem.Appointment.AppointmentViewModel
 import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.Navigation.getNavigationItems
@@ -140,8 +140,8 @@ fun HomeScreen(
                                 .padding(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.house_file),
+                            AsyncImage(
+                                model=userProfile?.imageUrl,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(64.dp)
@@ -262,7 +262,8 @@ fun HomeScreen(
                            3 -> AppointmentScreen(
                                appointmentViewModel = appointmentViewModel,
                                 userProfileViewModel=profileViewModel,
-                               email = email
+                               email = email,
+                               innerPadding = innerPadding
                            )
                            4-> {
                                PropertyComparisonTable(viewModel,innerPadding)}

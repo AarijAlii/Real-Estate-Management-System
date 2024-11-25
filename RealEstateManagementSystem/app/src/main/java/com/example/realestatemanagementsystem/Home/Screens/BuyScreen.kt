@@ -248,20 +248,20 @@ fun BuyScreen(
                     modifier = Modifier,
                     property = property ,
                     navHostController = navHostController,
-
-                    onBuy =:: refreshBuyProperties,
                     email = email,
                     propertyId =property.propertyId,
                     favoriteViewModel =favoriteViewModel,
+                    userProfileViewModel = profileViewModel,
                     onCompare = { property->
                         onCompare(property as Property)
 
-                    }
+                    },
+                    onclick = {showPopup=true
+                        selectedProperty=property}
 
-                ){
-                    showPopup=true
-                    selectedProperty=property
-                }
+                )
+
+
 
 
             }

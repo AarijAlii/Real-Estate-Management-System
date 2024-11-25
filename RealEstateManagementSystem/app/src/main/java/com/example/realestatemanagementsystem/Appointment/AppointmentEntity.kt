@@ -1,8 +1,7 @@
-package com.example.realestatemanagementsystem.Appointment
+package com.example.realestatemanagementsystem.Appoitnment
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
@@ -27,7 +26,8 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
             parentColumns = ["propertyId"],
             childColumns = ["propertyId"],
             onDelete = ForeignKey.CASCADE
-        )
+        ),
+
     ]
 )
 data class Appointment(
@@ -36,5 +36,6 @@ data class Appointment(
     val propertyId: Int,
     val ownerEmail: String,
     val buyerEmail: String,
+
     val date: String
 )

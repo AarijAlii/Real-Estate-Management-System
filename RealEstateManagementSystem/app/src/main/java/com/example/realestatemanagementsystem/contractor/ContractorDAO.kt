@@ -40,7 +40,7 @@ interface ContractorDao {
 
     @Query("""
         SELECT contractor.contractorId, contractor.email, contractor.experience, contractor.contact, contractor.speciality, contractor.overallRating,
-               user_profile.firstName, user_profile.lastName
+               user_profile.firstName, user_profile.lastName,user_profile.imageUrl
         FROM contractor
         INNER JOIN user_profile
         ON contractor.email = user_profile.email

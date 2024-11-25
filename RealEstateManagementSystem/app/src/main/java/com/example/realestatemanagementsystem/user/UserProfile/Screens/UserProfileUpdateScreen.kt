@@ -1,10 +1,15 @@
 package com.example.realestatemanagementsystem.user.UserProfile.Screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -21,6 +26,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -28,7 +35,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.realestatemanagementsystem.Navigation.Screen
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -45,7 +53,21 @@ fun UserProfileUpdateScreen(
 
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+
+    val context = LocalContext.current
+    val clientId = "68edc80df54e62f"
+
+    var imageUris by remember { mutableStateOf<Uri?>(null) }
     var errorMessage by remember { mutableStateOf("") }
+
+    // Image picker
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent() // Single content (photo)
+    ) { uri: Uri? ->
+        // Handle the selected single image URI
+        imageUris = uri
+    }
+
     LaunchedEffect(email) {
         try {
             // Fetch the user profile from the database in a coroutine
@@ -173,18 +195,34 @@ fun UserProfileUpdateScreen(
 
                     )
 
+                    if (imageUris!=null) {
+
+
+                                AsyncImage(
+                                    model=imageUris,
+                                    contentDescription = "Selected image",
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .size(100.dp), // Adjust size as needed
+                                    contentScale = ContentScale.Crop
+                                )
+
+
+                    }
                     Button(
                         onClick = {
                             // Create a UserProfile instance
-                            profileViewModel.updateUserrProfile(
+                            val userProfile = UserProfile(
                                 email = email,
                                 firstName = firstName,
                                 lastName = lastName,
                                 contact = contact,
                                 city = city,
                                 region = region,
-                                postalCode = postalCode
-                            )
+                                postalCode = postalCode,
+
+                                )
+                            profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
                             navHostController.navigate("home_screen/$email")// Save the user profile using the ViewModel
 
                         },
@@ -198,6 +236,14 @@ fun UserProfileUpdateScreen(
 
                     ) {
                         Text("Save")
+                    }
+                    Button(onClick = {imagePickerLauncher.launch("image/*")},modifier=Modifier.fillMaxWidth() , colors = ButtonColors(
+                        contentColor = Color.White,
+                        disabledContainerColor = Color.Gray,
+                        containerColor = Color.Red,
+                        disabledContentColor = Color.White,
+                    )){
+                        Text(text = "Add Photo")
                     }
                 }
             }

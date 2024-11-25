@@ -8,5 +8,6 @@ data class ContractorWithUserProfile(
     val speciality: String,
     val overallRating: Float,
     val firstName: String,
-    val lastName: String
+    val lastName: String,
+    val imageUrl: String
 )

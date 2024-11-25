@@ -65,7 +65,16 @@ fun SellPropertyCards(modifier: Modifier = Modifier, area:String, city:String, s
     ) {
         Column(modifier = Modifier) {
             // Image part: Ensure the image takes the full width of the card and is aligned to the start
+            if (imageUrls.value.isNotEmpty()) {
+                // Use rememberAsyncImagePainter to cache the image
 
+                DisplayImages(imageUrls.value)
+            }
+            else{
+                Box(modifier=Modifier.height(200.dp).fillMaxWidth(), contentAlignment = Alignment.Center){
+                    Text("No Image Available")
+                }
+            }
             // Price and area row
             Row(
                 verticalAlignment = Alignment.Bottom,

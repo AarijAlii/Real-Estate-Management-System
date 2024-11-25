@@ -22,5 +22,6 @@ data class Contractor(
     val experience: String,
     val contact: String,
     val speciality: String,
-    val overallRating: Float = 0.0f
+    val overallRating: Float = 0.0f,
+    val imageUrl: String? = null
 )
