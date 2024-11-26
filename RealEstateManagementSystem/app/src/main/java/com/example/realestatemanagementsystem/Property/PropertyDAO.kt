@@ -2,7 +2,11 @@ package com.example.realestatemanagementsystem.Property
 
 
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
 import com.example.realestatemanagementsystem.image.ImageEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -29,8 +33,8 @@ interface PropertyDao {
     @Query("SELECT * FROM property WHERE email = :email AND isSold = 0")
     suspend fun getCurrentListings(email: String): List<Property>
 
-    @Query("SELECT * FROM property where isSold = 0")
-    suspend fun getAllBuyingProperties(): List<Property>
+    @Query("SELECT * FROM property where isSold = 0 AND email!= :email")
+    suspend fun getAllBuyingProperties(email:String): List<Property>
 
     @Query("SELECT * FROM property WHERE email = :email AND isSold = 1")
     suspend fun getSoldListings(email: String): List<Property>
@@ -108,7 +112,8 @@ interface PropertyDao {
             (:noOfRooms IS NULL OR rooms = :noOfRooms) AND
             (:bedrooms IS NULL OR bedrooms = :bedrooms) AND
             (:garage IS NULL OR garage = :garage) AND
-            (isSold = 0)
+            (isSold = 0) AND
+            (email!=:email)
        """
     )
     fun filterProperties(
@@ -121,6 +126,7 @@ interface PropertyDao {
         noOfRooms: Int?,
         bedrooms: Int?,
         garage: Boolean?,
+        email:String
 
         ): Flow<List<Property>>
 

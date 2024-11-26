@@ -53,12 +53,19 @@ fun PropertyComparisonTable( viewModel: PropertyViewModel, innerPadding: Padding
 
         // Displaying comparison values
         ComparisonRow("Price", compareList) { property -> property?.price?.let { formatPrice(it) } ?: "-" }
+        Spacer(Modifier.padding(16.dp))
         ComparisonRow("City", compareList) { property -> property?.city ?: "-" }
+        Spacer(Modifier.padding(16.dp))
         ComparisonRow("State", compareList) { property -> property?.state ?: "-" }
+        Spacer(Modifier.padding(16.dp))
         ComparisonRow("Bedrooms", compareList) { property -> property?.bedrooms?.toString() ?: "-" }
+        Spacer(Modifier.padding(16.dp))
         ComparisonRow("Bathrooms", compareList) { property -> property?.rooms?.toString() ?: "-" }
+        Spacer(Modifier.padding(16.dp))
         ComparisonRow("Area", compareList) { property -> property?.area?.toString() ?: "-" }
+        Spacer(Modifier.padding(16.dp))
         ComparisonRow("Garage", compareList) { property -> property?.garage?.toString() ?: "-" }
+        Spacer(Modifier.padding(16.dp))
 
         Divider(modifier = Modifier.wrapContentWidth())
 
