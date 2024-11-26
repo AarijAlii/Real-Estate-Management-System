@@ -330,7 +330,7 @@ Column(modifier=Modifier.weight(2f).verticalScroll(scrollState).imePadding()) {
                         // Launch coroutine for suspend function
                         coroutineScope.launch {
                             propertyViewModel.addProperty(newProperty, imageUris, context, clientId)
-                            navController.navigate("home_screen/$email"){}
+                            navController.navigate("home_screen/$email")
                         }
                     } else {
                         errorMessage = "Please select at least one image."

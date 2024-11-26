@@ -335,10 +335,7 @@ import com.example.realestatemanagementsystem.Property.PropertyViewModel
 
                         )
                         propertyViewModel.updateeProperty(newProperty)
-                        navController.navigate("home_screen/$email"){
-                            popUpTo("create_listing_screen/$email"){
-                                inclusive=true
-                            }}
+                        navController.navigate("home_screen/$email")
                     }
 
                 }) {

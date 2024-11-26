@@ -250,6 +250,8 @@ fun UserProfileScreen(
                                 // Launch coroutine for suspend function
 
                                     profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
+
+                                if(profileViewModel.errorMessage.value==null)
                                     navHostController.navigate("home_screen/$email")
 
                             } else {

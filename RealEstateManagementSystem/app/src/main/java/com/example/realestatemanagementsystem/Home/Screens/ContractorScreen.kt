@@ -137,7 +137,7 @@ fun ContractorScreen(modifier: Modifier = Modifier,contractorViewModel: Contract
                   shape = RoundedCornerShape(12.dp)
               ) ){  ContractorFormScreen(email = email, contractorViewModel = contractorViewModel, onRegistrationComplete = {
                 showDialog=false
-                navHostController.popBackStack()
+
             })}
         }
 

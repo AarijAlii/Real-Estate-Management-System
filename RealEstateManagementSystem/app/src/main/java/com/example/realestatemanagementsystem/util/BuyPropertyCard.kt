@@ -50,6 +50,7 @@ import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -96,6 +97,7 @@ fun BuyPropertyCards(
 
     val context = LocalContext.current
     val application = context.applicationContext as Application
+    val currentDate = LocalDate.now()
 
     // Fetch images for the property
 
@@ -248,7 +250,28 @@ fun BuyPropertyCards(
                 val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
                 sdf.format(it)  // Format the selected date
             } ?: "No date selected"
-             appointmentViewModel.insertAppointment(propertyId=propertyId, buyerEmail = email, ownerEmail = property.email, date = formattedDate)
+
+            // Parse the formatted date back into LocalDate
+            val currentDate = LocalDate.now()
+            val selectedLocalDate = selectedDate?.let {
+                val sdf = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                val date = sdf.parse(formattedDate)
+                date?.toInstant()?.atZone(java.time.ZoneId.systemDefault())?.toLocalDate()  // Convert to LocalDate
+            }
+
+            // Check if the selected date is today or in the future
+            if (selectedLocalDate != null && (selectedLocalDate.isEqual(currentDate) || selectedLocalDate.isAfter(currentDate))) {
+                // Only insert the appointment if the date is today or in the future
+                appointmentViewModel.insertAppointment(
+                    propertyId = propertyId,
+                    buyerEmail = email,
+                    ownerEmail = property.email,
+                    date = formattedDate
+                )
+            } else {
+                // Optionally show a message or log that the date was invalid
+
+            }
         })
 
     }
