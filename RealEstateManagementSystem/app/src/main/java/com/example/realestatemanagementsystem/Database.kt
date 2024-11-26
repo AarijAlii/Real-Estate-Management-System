@@ -163,7 +163,7 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
                 `contractorId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 `email` TEXT NOT NULL,
                 `experience` TEXT NOT NULL,
-                `rate` TEXT NOT NULL,
+                `contact` TEXT NOT NULL,
                 `speciality` TEXT NOT NULL,
                 `overallRating` REAL NOT NULL DEFAULT 0.0,
                 `imageUrl` TEXT NOT NULL,

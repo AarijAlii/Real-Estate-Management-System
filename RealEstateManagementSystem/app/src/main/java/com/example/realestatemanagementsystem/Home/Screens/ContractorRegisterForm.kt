@@ -32,7 +32,7 @@ fun ContractorFormScreen(
 ) {
 
     var experience by remember { mutableStateOf("") }
-    var Rates by remember { mutableStateOf("") }
+    var contact by remember { mutableStateOf("") }
     var speciality by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") } // To store error message
 
@@ -64,9 +64,9 @@ fun ContractorFormScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
-                value = Rates,
-                onValueChange = { Rates = it },
-                label = { Text("Rates in PKR") }
+                value = contact,
+                onValueChange = { contact = it },
+                label = { Text("Contact Number") }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -86,7 +86,7 @@ fun ContractorFormScreen(
                             contractorViewModel.insertContractor(
                                 email = email,
                                 experience = experience,
-                                Rate = Rates,
+                                contact = contact,
                                 speciality = speciality,
                                 overallRating = 0.0f,
                             )

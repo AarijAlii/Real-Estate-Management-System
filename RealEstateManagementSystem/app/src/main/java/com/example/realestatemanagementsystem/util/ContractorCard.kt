@@ -125,7 +125,7 @@ fun ContractorCard(modifier: Modifier = Modifier,innerPadding:PaddingValues,cont
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = contractor.rate,
+                        text = contractor.contact,
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.Black
                     )

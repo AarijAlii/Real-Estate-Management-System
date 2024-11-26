@@ -56,6 +56,7 @@ import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.contractor.ContractorViewModel
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.review.ReviewViewModel
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
@@ -84,8 +85,7 @@ fun HomeScreen(
     val items = getNavigationItems()
     val authState = authViewModel.authState.collectAsState()
     val allProperties by viewModel.unsoldProperties.collectAsState()
-    val userProfile by profileViewModel.userProfile.collectAsState()
-
+    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var profileErrorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
     val propertyErroMessage by viewModel.errorMessage.collectAsState()
@@ -108,17 +108,16 @@ fun HomeScreen(
 //    }
     LaunchedEffect(viewModel){
         try{
-            viewModel.getAllBuyingProperties(filter,email)
+            viewModel.getAllBuyingProperties(filter)
         }catch (e:Exception){
             Toast.makeText(getApplicationContext(),propertyErroMessage,Toast.LENGTH_SHORT).show()
         }
     }
-    profileViewModel.getUserProfile(email)
-    LaunchedEffect(userProfile?.imageUrl) {
+    LaunchedEffect(email) {
         try {
-           profileViewModel.getUserProfile(email)
-            isLoading=false
-
+            val profile = userProfileDao.getUserByEmail(email)
+            userProfile = profile
+            isLoading = false
         } catch (e: Exception) {
             profileErrorMessage = "Failed to load profile: ${e.message}"
             isLoading = false
@@ -150,7 +149,6 @@ fun HomeScreen(
                                     .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                                     .clickable {
                                         navHostController.navigate("update_profile_screen/${email}")
-                                        profileViewModel.getUserProfile(email)
                                     }
                             )
                             Spacer(modifier = Modifier.height(8.dp))

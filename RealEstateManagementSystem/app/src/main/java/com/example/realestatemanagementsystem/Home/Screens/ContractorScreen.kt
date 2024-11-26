@@ -1,11 +1,9 @@
 package com.example.realestatemanagementsystem.Home.Screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -146,9 +144,9 @@ fun ContractorScreen(modifier: Modifier = Modifier,contractorViewModel: Contract
 
 @Composable
 fun ContractorInfo(modifier: Modifier = Modifier,onDismiss:()->Unit,contractor: ContractorWithUserProfile,reviewViewModel: ReviewViewModel) {
-    val contractorReview by reviewViewModel.reviewWithUserInfo.collectAsState(emptyList())
+    val contractorReview by reviewViewModel.reviews.collectAsState(emptyList())
     LaunchedEffect(contractor.contractorId) {
-        reviewViewModel.getReviewWithUserInfo(contractor.contractorId)
+        reviewViewModel.getReviewsForContractor(contractor.contractorId)
     }
 
     Dialog(onDismissRequest = { onDismiss()}) {
@@ -195,17 +193,16 @@ fun ContractorInfo(modifier: Modifier = Modifier,onDismiss:()->Unit,contractor: 
                     Spacer(modifier=Modifier.height(8.dp))
                     Text("Name: ${contractor.firstName} ${contractor.lastName}")
                     Text("Email: ${contractor.email}")
-                    Text("Phone: ${contractor.rate}")
+                    Text("Phone: ${contractor.contact}")
                     Text("Rating: ${contractor.overallRating}")
                     Text("Deals in: ${contractor.speciality}")
                     Spacer(modifier=Modifier.height(16.dp))
                     Text(text= "Review: ", style = MaterialTheme.typography.titleLarge,modifier=Modifier.padding(bottom = 8.dp))
                     LazyColumn(){
                         items(contractorReview){review ->
-                            Row(horizontalArrangement = Arrangement.SpaceBetween){
-                                Text(review.user_name)
-                                Spacer(modifier=Modifier.weight(1f))
-                                Text("${review.rating}")}
+
+                                Text(review.email)
+                                Text("${review.rating}")
                                 Text(review.comment)
 
 

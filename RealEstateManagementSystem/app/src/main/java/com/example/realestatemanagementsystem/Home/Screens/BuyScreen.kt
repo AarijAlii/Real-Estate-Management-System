@@ -37,7 +37,6 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -60,8 +58,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import com.example.realestatemanagementsystem.AppDatabase
 import com.example.realestatemanagementsystem.Appointment.AppointmentViewModel
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyFilter
@@ -70,7 +66,6 @@ import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.example.realestatemanagementsystem.util.BuyPropertyCards
-import com.example.realestatemanagementsystem.util.DisplayImages
 import com.example.realestatemanagementsystem.util.FavoritePropertyCard
 import kotlinx.coroutines.launch
 
@@ -171,7 +166,7 @@ fun BuyScreen(
     favoriteViewModel.getFavoritessByEmail(email)
     fun refreshBuyProperties() {
         scope.launch {
-            viewModel.filterProperties(filter,email)
+            viewModel.getAllBuyingProperties(filter)
         }
     }
 
@@ -185,7 +180,7 @@ fun BuyScreen(
         ) {
 
             Column {
-                FiltersExample(viewModel,filter,email)
+                FiltersExample(viewModel,filter)
             }
             // Sort By Dropdown
             Box {
@@ -210,7 +205,7 @@ fun BuyScreen(
                                 isDropdownExpanded = false
 
                                 // Update sorting logic
-                                viewModel.sortProperties(option,email)
+                                viewModel.sortProperties(option)
                             }
                         )
 
@@ -243,7 +238,6 @@ fun BuyScreen(
 //
 //            }
 //        }
-        refreshBuyProperties()
         LazyColumn() {
             items(allProperties,key = {it.propertyId}) { property ->
                 // Display each property (replace with your card implementation)
@@ -288,7 +282,7 @@ fun BuyScreen(
     }
 }
 @Composable
-fun FiltersExample(viewModel: PropertyViewModel,filter: PropertyFilter,email:String) {
+fun FiltersExample(viewModel: PropertyViewModel,filter: PropertyFilter) {
     // States to control filter visibility and values
     var showFilters by remember { mutableStateOf(false) }
     val searchText = remember { mutableStateOf("") }
@@ -399,7 +393,7 @@ fun FiltersExample(viewModel: PropertyViewModel,filter: PropertyFilter,email:Str
                     filter.bedrooms = null
                     filter.garage = null
 
-                    viewModel.filterProperties(filter,email)
+                    viewModel.filterProperties(filter)
 
                 }
                 showFilters=false
@@ -440,20 +434,10 @@ fun PropertyDetailPopup(
 ) {
     viewModel.getUserProfileByEmail(property.email)
     val user by viewModel.sellerUserProfile.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-    val imageUrls = remember { mutableStateOf<List<String>>(emptyList()) }
-    val imageDao = AppDatabase.getDatabase(LocalContext.current).imageDao()
-    LaunchedEffect(property.propertyId){
-        imageUrls.value=imageDao.getImageUrlsForProperty(property.propertyId)
-
-    }
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
             .shadow(16.dp, RoundedCornerShape(16.dp))
-            .background(Color.White),
-
+            .background(Color.White)
 
     ) {
         IconButton(
@@ -472,16 +456,14 @@ fun PropertyDetailPopup(
         // Background layer with image
         Column {
             // Unscrollable Image Section
-            if (imageUrls.value.isNotEmpty()) {
-                // Use rememberAsyncImagePainter to cache the image
-
-                DisplayImages(imageUrls.value)
-            }
-            else{
-                Box(modifier=Modifier.height(200.dp).fillMaxWidth(), contentAlignment = Alignment.Center){
-                    Text("No Image Available")
-                }
-            }
+            Image(
+                painter = painterResource(id = R.drawable.house_file), // Replace with your image loader
+                contentDescription = "Property Image",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp) // Set a fixed height for the image
+                    .clip(MaterialTheme.shapes.medium)
+            )
 
             // Scrollable Details Section
             LazyColumn(
