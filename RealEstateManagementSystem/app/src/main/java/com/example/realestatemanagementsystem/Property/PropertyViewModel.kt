@@ -236,10 +236,10 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
             }
         }
     }
-    fun getAllBuyingProperties(filter: PropertyFilter) {
+    fun getAllBuyingProperties(filter: PropertyFilter,email:String) {
         viewModelScope.launch {
             try {
-                filterProperties(filter)
+                filterProperties(filter,email)
 
             } catch (e: Exception) {
                 _errorMessage.value = "Error fetching properties: ${e.message}"
@@ -248,13 +248,13 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
         }
     }
 
-    fun sortProperties(option: String) {
+    fun sortProperties(option: String,email:String) {
         viewModelScope.launch {
             try {
                 val sortedProperties = when (option) {
                     "Price: Low to High" -> _unsoldProperties.value.sortedBy { it.price }
                     "Price: High to Low" -> _unsoldProperties.value.sortedByDescending { it.price }
-                    else -> propertyDao.getAllBuyingProperties() // Default: unsorted or original list
+                    else -> propertyDao.getAllBuyingProperties(email) // Default: unsorted or original list
                 }
                 _unsoldProperties.value = sortedProperties
             } catch (e: Exception) {
@@ -333,14 +333,14 @@ class PropertyViewModel(private val propertyDao: PropertyDao, private val imageD
 
 
     fun filterProperties(
-       filter: PropertyFilter
-
+       filter: PropertyFilter,
+        email:String
         ) {
         viewModelScope.launch {
             try {
                 // Apply filters using the DAO method
                 propertyDao.filterProperties(
-                    filter.city, filter.state, filter.minPrice, filter.maxPrice, filter.zipCode, filter.type, filter.noOfRooms, filter.bedrooms, filter.garage
+                    filter.city, filter.state, filter.minPrice, filter.maxPrice, filter.zipCode, filter.type, filter.noOfRooms, filter.bedrooms, filter.garage,email
                 ).collect { result ->
                     // If no properties match the filter, set an empty list
                     if (result.isEmpty()) {

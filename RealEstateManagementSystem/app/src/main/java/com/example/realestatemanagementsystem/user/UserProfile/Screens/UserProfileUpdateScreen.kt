@@ -3,7 +3,6 @@ package com.example.realestatemanagementsystem.user.UserProfile.Screens
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
@@ -22,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -59,7 +58,7 @@ fun UserProfileUpdateScreen(
 
     var imageUris by remember { mutableStateOf<Uri?>(null) }
     var errorMessage by remember { mutableStateOf("") }
-
+    val scope= rememberCoroutineScope()
     // Image picker
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent() // Single content (photo)
@@ -212,6 +211,7 @@ fun UserProfileUpdateScreen(
                     Button(
                         onClick = {
                             // Create a UserProfile instance
+
                             val userProfile = UserProfile(
                                 email = email,
                                 firstName = firstName,
@@ -223,7 +223,10 @@ fun UserProfileUpdateScreen(
 
                                 )
                             profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
-                            navHostController.navigate("home_screen/$email")// Save the user profile using the ViewModel
+
+                            navHostController.navigate("home_screen/$email")
+
+                                    // Save the user profile using the ViewModel
 
                         },
                         colors = ButtonColors(

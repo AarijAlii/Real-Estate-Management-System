@@ -27,13 +27,13 @@ class ContractorViewModel(private val contractorDao: ContractorDao) : ViewModel(
     fun insertContractor(
         email: String,
         experience: String,
-        contact: String,
+        Rate: String,
         speciality: String,
         overallRating: Float = 0.0f,
 
         ) {
         viewModelScope.launch(Dispatchers.IO) {
-            contractorDao.insertContractor(email, experience, contact, speciality, overallRating)
+            contractorDao.insertContractor(email, experience, Rate, speciality, overallRating)
         }
     }
 
@@ -47,10 +47,10 @@ class ContractorViewModel(private val contractorDao: ContractorDao) : ViewModel(
         }
     }
 
-    fun updateContractor(id: Int, experience: String, contact: String, speciality: String) {
+    fun updateContractor(id: Int, experience: String, Rate: String, speciality: String) {
         viewModelScope.launch {
             try {
-                contractorDao.updateContractor(id, experience, contact, speciality)
+                contractorDao.updateContractor(id, experience, Rate, speciality)
                 Log.d("ContractorViewModel", "Contractor updated successfully")
             } catch (e: Exception) {
                 Log.e("ContractorViewModel", "Error updating contractor", e)
