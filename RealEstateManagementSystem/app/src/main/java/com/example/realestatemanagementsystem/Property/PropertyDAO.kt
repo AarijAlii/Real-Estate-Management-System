@@ -54,9 +54,9 @@ interface PropertyDao {
     @Query(
         """
         INSERT INTO property (
-            city, state, propertyNumber, rooms, bedrooms, garage, area, type, price, zipCode, email, isSold
+            city, state, propertyNumber, bathrooms, bedrooms, garage, area, type, price, zipCode, email, isSold
         ) VALUES (
-            :city, :state, :propertyNumber, :rooms, :bedrooms, :garage, :area, :type, :price, :zipCode, :email, :isSold
+            :city, :state, :propertyNumber, :bathrooms, :bedrooms, :garage, :area, :type, :price, :zipCode, :email, :isSold
         )
     """
     )
@@ -64,7 +64,7 @@ interface PropertyDao {
         city: String,
         state: String,
         propertyNumber: String,
-        rooms: Int,
+        bathrooms: Int,
         bedrooms: Int,
         garage: Int,
         area: Double,
@@ -78,7 +78,7 @@ interface PropertyDao {
     @Query(
         """
         UPDATE property 
-        SET city = :city, state = :state, propertyNumber = :propertyNumber, rooms = :rooms, bedrooms = :bedrooms, 
+        SET city = :city, state = :state, propertyNumber = :propertyNumber, bathrooms = :rooms, bedrooms = :bedrooms, 
             garage = :garage, area = :area, type = :type, price = :price, zipCode = :zipCode, isSold = :isSold
         WHERE propertyId = :propertyId
     """
@@ -109,7 +109,7 @@ interface PropertyDao {
             (:maxPrice IS NULL OR price <= :maxPrice) AND
             (:zipCode IS NULL OR zipcode LIKE :zipCode) AND
             (:type IS NULL OR type LIKE :type) AND
-            (:noOfRooms IS NULL OR rooms = :noOfRooms) AND
+            (:noOfRooms IS NULL OR bathrooms = :noOfRooms) AND
             (:bedrooms IS NULL OR bedrooms = :bedrooms) AND
             (:garage IS NULL OR garage = :garage) AND
             (isSold = 0) AND

@@ -60,7 +60,7 @@ fun PropertyComparisonTable( viewModel: PropertyViewModel, innerPadding: Padding
         Spacer(Modifier.padding(16.dp))
         ComparisonRow("Bedrooms", compareList) { property -> property?.bedrooms?.toString() ?: "-" }
         Spacer(Modifier.padding(16.dp))
-        ComparisonRow("Bathrooms", compareList) { property -> property?.rooms?.toString() ?: "-" }
+        ComparisonRow("Bathrooms", compareList) { property -> property?.bathrooms?.toString() ?: "-" }
         Spacer(Modifier.padding(16.dp))
         ComparisonRow("Area", compareList) { property -> property?.area?.toString() ?: "-" }
         Spacer(Modifier.padding(16.dp))

@@ -555,7 +555,7 @@ fun PropertyDetailPopup(
                 }
                 item{
                     Text(
-                        text = "Bathrooms: ${property.rooms}",
+                        text = "Bathrooms: ${property.bathrooms}",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )

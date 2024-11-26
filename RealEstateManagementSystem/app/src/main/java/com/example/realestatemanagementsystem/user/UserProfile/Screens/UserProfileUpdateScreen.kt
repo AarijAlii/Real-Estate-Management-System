@@ -100,7 +100,7 @@ fun UserProfileUpdateScreen(
             var city by remember { mutableStateOf(userProfile?.city ?: "") }
             var region by remember { mutableStateOf(userProfile?.region ?: "") }
             var postalCode by remember { mutableStateOf(userProfile?.postalCode ?: "") }
-            val overallRating = userProfile?.rating ?: "No ratings yet"
+            //val overallRating = userProfile?.rating ?: "No ratings yet"
             Column(verticalArrangement = Arrangement.Center,modifier = Modifier
 
                 .padding(16.dp)) {
@@ -230,8 +230,8 @@ fun UserProfileUpdateScreen(
                                 contact = contact,
                                 city = city,
                                 region = region,
-                                postalCode = postalCode,
-                                rating=0,
+                                postalCode = postalCode
+                                //rating=0,
 
                                 )
                                 // Launch coroutine for suspend function

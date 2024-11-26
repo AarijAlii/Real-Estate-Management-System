@@ -23,7 +23,7 @@ data class Property(
     val city: String,
     val state: String,
     val propertyNumber: String,
-    val rooms: Int,
+    val bathrooms: Int,
     val bedrooms: Int,
     val garage: Int,
     val area: Double,

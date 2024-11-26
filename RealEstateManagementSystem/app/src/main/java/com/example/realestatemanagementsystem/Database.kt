@@ -16,22 +16,19 @@ import com.example.realestatemanagementsystem.favorites.Favorite
 import com.example.realestatemanagementsystem.favorites.FavoriteDao
 import com.example.realestatemanagementsystem.image.ImageDao
 import com.example.realestatemanagementsystem.image.ImageEntity
-import com.example.realestatemanagementsystem.previousworks.PreviousWorks
-import com.example.realestatemanagementsystem.previousworks.PreviousWorksDao
 import com.example.realestatemanagementsystem.review.Review
 import com.example.realestatemanagementsystem.review.ReviewDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
 @Database(entities = [UserProfile::class, Property::class, ImageEntity::class,
-    Favorite::class, Contractor::class, PreviousWorks::class, Review::class, Appointment::class], version = 19)
+    Favorite::class, Contractor::class,  Review::class, Appointment::class], version = 22)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao
     abstract fun imageDao(): ImageDao
     abstract fun favoriteDao(): FavoriteDao
     abstract fun contractorDao(): ContractorDao
-    abstract fun previousWorksDao(): PreviousWorksDao
     abstract fun reviewDao(): ReviewDao
     abstract fun appointmentDao(): AppointmentDao
 
@@ -51,7 +48,8 @@ abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_5_4,MIGRATION_5_6, MIGRATION_6_7,MIGRATION_7_8, MIGRATION_8_9,
                     MIGRATION_9_10,MIGRATION_10_11, MIGRATION_11_12,  MIGRATION_13_12,
                     MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16,
-                    MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19) // Add the migration here
+                    MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19,MIGRATION_19_20,
+                    MIGRATION_20_21, MIGRATION_21_22) // Add the migration here
                     .build()
                 INSTANCE = db
                 db
@@ -616,3 +614,87 @@ val MIGRATION_18_19 = object : Migration(18, 19) {
     }
 }
 
+val MIGRATION_19_20 = object : Migration(19, 20) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Step 1: Create the new table without the `rating` column
+        db.execSQL(
+            """
+            CREATE TABLE user_profile_new (
+                email TEXT NOT NULL PRIMARY KEY,
+                firstName TEXT NOT NULL,
+                lastName TEXT NOT NULL,
+                contact TEXT NOT NULL UNIQUE,
+                city TEXT NOT NULL,
+                region TEXT NOT NULL,
+                postalCode TEXT NOT NULL,
+                imageUrl TEXT NOT NULL
+            )
+            """.trimIndent()
+        )
+
+        // Step 2: Copy data from the old table to the new table
+        db.execSQL(
+            """
+            INSERT INTO user_profile_new (email, firstName, lastName, contact, city, region, postalCode, imageUrl)
+            SELECT email, firstName, lastName, contact, city, region, postalCode, imageUrl
+            FROM user_profile
+            """.trimIndent()
+        )
+
+        // Step 3: Drop the old table
+        db.execSQL("DROP TABLE user_profile")
+
+        // Step 4: Rename the new table to the original name
+        db.execSQL("ALTER TABLE user_profile_new RENAME TO user_profile")
+    }
+}
+
+val MIGRATION_20_21 = object : Migration(20, 21) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Step 1: Create a new table with the updated schema
+        db.execSQL(
+            """
+            CREATE TABLE property_new (
+                propertyId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                city TEXT NOT NULL,
+                state TEXT NOT NULL,
+                propertyNumber TEXT NOT NULL,
+                bathrooms INTEGER NOT NULL, -- Renamed column
+                bedrooms INTEGER NOT NULL,
+                garage INTEGER NOT NULL,
+                area REAL NOT NULL,
+                type TEXT NOT NULL,
+                price REAL NOT NULL,
+                zipCode TEXT NOT NULL,
+                email TEXT NOT NULL,
+                isSold INTEGER NOT NULL DEFAULT 0,
+                FOREIGN KEY(email) REFERENCES user_profile(email) ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+
+        // Step 2: Copy data from the old table to the new table
+        db.execSQL(
+            """
+            INSERT INTO property_new (
+                propertyId, city, state, propertyNumber, bathrooms, bedrooms, garage, area, type, price, zipCode, email, isSold
+            )
+            SELECT propertyId, city, state, propertyNumber, rooms, bedrooms, garage, area, type, price, zipCode, email, isSold
+            FROM property
+            """.trimIndent()
+        )
+
+        // Step 3: Drop the old table
+        db.execSQL("DROP TABLE property")
+
+        // Step 4: Rename the new table to the original table name
+        db.execSQL("ALTER TABLE property_new RENAME TO property")
+    }
+}
+
+val MIGRATION_21_22 = object : Migration(21, 22) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Drop the `previous_works` table
+        db.execSQL("DROP TABLE IF EXISTS previous_works")
+    }
+}
