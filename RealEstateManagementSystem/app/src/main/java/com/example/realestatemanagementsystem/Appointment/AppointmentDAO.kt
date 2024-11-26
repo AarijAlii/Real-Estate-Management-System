@@ -1,4 +1,4 @@
-package com.example.realestatemanagementsystem.Appoitnment
+package com.example.realestatemanagementsystem.Appointment
 
 import androidx.room.Dao
 import androidx.room.Query

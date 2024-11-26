@@ -10,6 +10,4 @@ data class AppointmentDetails(
     val buyerName: String,
     val buyerContact: String,
     val ownerEmail: String
-
-
 )
