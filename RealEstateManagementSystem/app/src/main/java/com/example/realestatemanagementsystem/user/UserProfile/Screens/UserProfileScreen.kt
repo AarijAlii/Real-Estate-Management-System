@@ -243,17 +243,18 @@ fun UserProfileScreen(
                                 city = city,
                                 region = region,
                                 postalCode = postalCode,
+                                rating=0,
 
                             )
                             if (imageUris!=null) {
                                 // Launch coroutine for suspend function
-                                scope.launch {
+
                                     profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
                                     navHostController.navigate("home_screen/$email"){
                                         popUpTo("profile_screen/$email"){
                                             inclusive=true
                                         }}
-                                }
+
                             } else {
                                 errorMessage = "Please select at least one image."
                             }// Save the user profile using the ViewModel

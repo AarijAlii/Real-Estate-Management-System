@@ -75,5 +75,6 @@ interface UserProfileDao {
         email: String
     )
 
-
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateUserProfile(userProfile: UserProfile)
 }

@@ -107,15 +107,17 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
                             // Update the user profile with the image URL
                             val updatedProfile = userProfile.copy(imageUrl = imageUrl)
                             viewModelScope.launch {
+
                                 userProfileDao.updateUserr(
-                                    userProfile.firstName,
-                                    userProfile.lastName,
-                                    userProfile.contact,
-                                    userProfile.city,
-                                    userProfile.region,
-                                    userProfile.postalCode,
-                                    userProfile.imageUrl,
-                                    userProfile.email
+                                    updatedProfile.email,
+                                    updatedProfile.firstName,
+                                    updatedProfile.lastName,
+                                    updatedProfile.contact,
+                                    updatedProfile.city,
+                                    updatedProfile.region,
+                                    updatedProfile.postalCode,
+                                    updatedProfile.imageUrl,
+
                                 )
                             }
                         } else {
@@ -125,6 +127,7 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
                 } else {
                     // No image provided; save the profile as is
                     userProfileDao.updateUserr(
+                        userProfile.email,
                         userProfile.firstName,
                         userProfile.lastName,
                         userProfile.contact,
@@ -132,7 +135,7 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
                         userProfile.region,
                         userProfile.postalCode,
                         userProfile.imageUrl,
-                        userProfile.email
+
                     )
                 }
             } catch (e: Exception) {
@@ -156,17 +159,8 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
                             // Update the user profile with the image URL
                             val updatedProfile = userProfile.copy(imageUrl = imageUrl)
                             viewModelScope.launch {
-                                userProfileDao.createUserProfile(
-                                    userProfile.firstName,
-                                    userProfile.lastName,
-                                    userProfile.contact,
-                                    userProfile.city,
-                                    userProfile.region,
-                                    userProfile.postalCode,
-                                    userProfile.imageUrl,
-                                    userProfile.email
-                                )
-
+                                Log.d("lol","$updatedProfile")
+                                insertOrUpdateUserProfile(updatedProfile)
                             }
                         } else {
                             Log.e("SaveUserProfile", "Image upload failed.")
@@ -174,22 +168,17 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
                     }
                 } else {
                     // No image provided; save the profile as is
-                    userProfileDao.createUserProfile(
-                        userProfile.firstName,
-                        userProfile.lastName,
-                        userProfile.contact,
-                        userProfile.city,
-                        userProfile.region,
-                        userProfile.postalCode,
-                        userProfile.imageUrl,
-                        userProfile.email
-                    )
+                    insertOrUpdateUserProfile(userProfile)
                 }
             } catch (e: Exception) {
                 Log.e("SaveUserProfile", "Error saving profile: ${e.message}")
             }
         }
+    }
 
+    private suspend fun insertOrUpdateUserProfile(userProfile: UserProfile) {
+        userProfileDao.insertOrUpdateUserProfile(userProfile)
+        Log.d("SaveUserProfile", "User profile saved successfully: $userProfile")
     }
 
 }

@@ -56,6 +56,7 @@ import com.example.realestatemanagementsystem.R
 import com.example.realestatemanagementsystem.contractor.ContractorViewModel
 import com.example.realestatemanagementsystem.favorites.FavoriteViewModel
 import com.example.realestatemanagementsystem.review.ReviewViewModel
+import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
 import com.example.realestatemanagementsystem.user.authentication.FirebaseCode.AuthState
@@ -84,8 +85,8 @@ fun HomeScreen(
     val items = getNavigationItems()
     val authState = authViewModel.authState.collectAsState()
     val allProperties by viewModel.unsoldProperties.collectAsState()
-    val userProfile by profileViewModel.userProfile.collectAsState()
-
+    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+    var errorMessage by remember { mutableStateOf("") }
     var profileErrorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
     val propertyErroMessage by viewModel.errorMessage.collectAsState()
@@ -93,7 +94,17 @@ fun HomeScreen(
     var selectedIndex by remember { mutableStateOf(0) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val filter=PropertyFilter()
-
+    LaunchedEffect(email) {
+        try {
+            // Fetch the user profile from the database in a coroutine
+            val profile = userProfileDao.getUserByEmail(email)
+            userProfile = profile
+            isLoading = false
+        } catch (e: Exception) {
+            errorMessage = "Failed to load profile: ${e.message}"
+            isLoading = false
+        }
+    }
 
     LaunchedEffect(authState.value) {
         if (authState.value is AuthState.Failed) {
