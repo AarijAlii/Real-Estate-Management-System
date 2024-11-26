@@ -39,6 +39,7 @@ import coil.compose.AsyncImage
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserProfileUpdateScreen(
@@ -222,9 +223,19 @@ fun UserProfileUpdateScreen(
                                 postalCode = postalCode,
 
                                 )
-                            profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
 
-                            navHostController.navigate("home_screen/$email")
+                            if (imageUris!=null) {
+                                // Launch coroutine for suspend function
+                                scope.launch {
+                                    profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
+                                    navHostController.navigate("home_screen/$email"){
+                                        popUpTo("update_profile_screen/$email"){
+                                            inclusive=true
+                                        }}
+                                }
+                            } else {
+                                errorMessage = "Please select at least one image."
+                            }
 
                                     // Save the user profile using the ViewModel
 

@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +47,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserProfileScreen(
@@ -59,7 +61,7 @@ fun UserProfileScreen(
 
     var userProfile by remember { mutableStateOf<UserProfile?>(null) }
     var isLoading by remember { mutableStateOf(true) }
-
+    val scope=rememberCoroutineScope()
     val context = LocalContext.current
     val clientId = "68edc80df54e62f"
 
@@ -243,8 +245,18 @@ fun UserProfileScreen(
                                 postalCode = postalCode,
 
                             )
-                            profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
-                            navHostController.navigate("home_screen/$email")// Save the user profile using the ViewModel
+                            if (imageUris!=null) {
+                                // Launch coroutine for suspend function
+                                scope.launch {
+                                    profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
+                                    navHostController.navigate("home_screen/$email"){
+                                        popUpTo("profile_screen/$email"){
+                                            inclusive=true
+                                        }}
+                                }
+                            } else {
+                                errorMessage = "Please select at least one image."
+                            }// Save the user profile using the ViewModel
 
                         },
                         colors = ButtonColors(
