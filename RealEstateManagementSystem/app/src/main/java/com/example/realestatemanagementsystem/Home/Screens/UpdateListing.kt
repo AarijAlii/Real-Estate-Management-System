@@ -79,7 +79,7 @@ import com.example.realestatemanagementsystem.Property.PropertyViewModel
         var city by remember { mutableStateOf(property?.city?:"") }
         var state by remember { mutableStateOf(property?.state?:"") }
         var propertyNumber by remember { mutableStateOf(property?.propertyNumber?:"") }
-        var rooms by remember { mutableStateOf(property?.rooms.toString()?:"") }
+        var rooms by remember { mutableStateOf(property?.bathrooms.toString()?:"") }
         var bedrooms by remember { mutableStateOf(property?.bedrooms.toString()?:"") }
         var garage by remember { mutableStateOf(property?.garage.toString()?:"") }
         var area by remember { mutableStateOf(property?.area.toString()?:"") }
@@ -322,7 +322,7 @@ import com.example.realestatemanagementsystem.Property.PropertyViewModel
                             city = city,
                             state = state,
                             propertyNumber = propertyNumber,
-                            rooms = rooms.toInt(),
+                            bathrooms = rooms.toInt(),
                             bedrooms = bedrooms.toInt(),
                             garage = garage.toInt(),
                             area = area.toDouble(),

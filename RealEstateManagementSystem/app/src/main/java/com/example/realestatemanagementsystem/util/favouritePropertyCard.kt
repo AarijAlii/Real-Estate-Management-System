@@ -134,7 +134,7 @@ fun FavoritePropertyCard(
             ) {
                 Text(text = "${property.bedrooms} Bedrooms", fontSize = 12.sp, fontWeight = FontWeight.Light)
                 Spacer(modifier = Modifier.width(8.dp))  // Space between text
-                Text(text = "${property.rooms} Bathrooms", fontSize = 12.sp, fontWeight = FontWeight.Light)
+                Text(text = "${property.bathrooms} Bathrooms", fontSize = 12.sp, fontWeight = FontWeight.Light)
             }
             // Address text
             Row(horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {

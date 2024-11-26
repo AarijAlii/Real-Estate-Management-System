@@ -164,7 +164,7 @@ fun BuyPropertyCards(
                     fontWeight = FontWeight.Light
                 )
                 Text(
-                    text = "${property.rooms} Bathrooms",
+                    text = "${property.bathrooms} Bathrooms",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Light
                 )

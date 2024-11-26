@@ -6,8 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.realestatemanagementsystem.Appoitnment.Appointment
-import com.example.realestatemanagementsystem.Appoitnment.AppointmentDao
+import com.example.realestatemanagementsystem.Appointment.Appointment
+import com.example.realestatemanagementsystem.Appointment.AppointmentDao
 import com.example.realestatemanagementsystem.Property.Property
 import com.example.realestatemanagementsystem.Property.PropertyDao
 import com.example.realestatemanagementsystem.contractor.Contractor
@@ -16,22 +16,19 @@ import com.example.realestatemanagementsystem.favorites.Favorite
 import com.example.realestatemanagementsystem.favorites.FavoriteDao
 import com.example.realestatemanagementsystem.image.ImageDao
 import com.example.realestatemanagementsystem.image.ImageEntity
-import com.example.realestatemanagementsystem.previousworks.PreviousWorks
-import com.example.realestatemanagementsystem.previousworks.PreviousWorksDao
 import com.example.realestatemanagementsystem.review.Review
 import com.example.realestatemanagementsystem.review.ReviewDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
 @Database(entities = [UserProfile::class, Property::class, ImageEntity::class,
-    Favorite::class, Contractor::class, PreviousWorks::class, Review::class, Appointment::class], version = 12)
+    Favorite::class, Contractor::class,  Review::class, Appointment::class], version = 22)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao
     abstract fun imageDao(): ImageDao
     abstract fun favoriteDao(): FavoriteDao
     abstract fun contractorDao(): ContractorDao
-    abstract fun previousWorksDao(): PreviousWorksDao
     abstract fun reviewDao(): ReviewDao
     abstract fun appointmentDao(): AppointmentDao
 
@@ -49,7 +46,10 @@ abstract class AppDatabase : RoomDatabase() {
                     "app_database"
                 ) .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4,MIGRATION_4_5,
                     MIGRATION_5_4,MIGRATION_5_6, MIGRATION_6_7,MIGRATION_7_8, MIGRATION_8_9,
-                    MIGRATION_9_10,MIGRATION_10_11, MIGRATION_11_12) // Add the migration here
+                    MIGRATION_9_10,MIGRATION_10_11, MIGRATION_11_12,  MIGRATION_13_12,
+                    MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16,
+                    MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19,MIGRATION_19_20,
+                    MIGRATION_20_21, MIGRATION_21_22) // Add the migration here
                     .build()
                 INSTANCE = db
                 db
@@ -357,3 +357,344 @@ val MIGRATION_11_12 = object : Migration(11, 12) {
     }
 }
 
+val MIGRATION_13_12 = object : Migration(13, 12) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Remove the triggers for each table
+        db.execSQL("DROP TRIGGER IF EXISTS log_insert_property")
+        db.execSQL("DROP TRIGGER IF EXISTS log_update_property")
+        db.execSQL("DROP TRIGGER IF EXISTS log_delete_property")
+
+        // Repeat for other triggers if you have added them for other tables.
+
+        // Drop the log table
+        db.execSQL("DROP TABLE IF EXISTS log_table")
+    }
+}
+
+val MIGRATION_12_13 = object : Migration(12, 13) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Create the ChangeLog table
+        db.execSQL(
+            """
+            CREATE TABLE ChangeLog (
+                log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                table_name TEXT NOT NULL,
+                operation TEXT NOT NULL,  -- INSERT, UPDATE, DELETE
+                column_name TEXT,  -- Which column was changed
+                old_value TEXT,    -- Old value for UPDATE/DELETE operations
+                new_value TEXT,    -- New value for INSERT/UPDATE operations
+                changed_by TEXT,   -- Email or user who made the change
+                change_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        """
+        )
+    }
+}
+
+
+val MIGRATION_13_14 = object : Migration(13, 14) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        // Create a trigger for INSERT on property table
+        db.execSQL(
+            """
+            CREATE TRIGGER property_insert_trigger
+            AFTER INSERT ON property
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, new_value, changed_by)
+                VALUES ('property', 'INSERT', 'propertyId', NEW.propertyId, NEW.email);
+            END;
+            """
+        )
+
+        // Create a trigger for DELETE on property table (for auditing purposes, even with cascading deletes)
+        db.execSQL(
+            """
+            CREATE TRIGGER property_delete_trigger
+            AFTER DELETE ON property
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, old_value, changed_by)
+                VALUES ('property', 'DELETE', 'propertyId', OLD.propertyId, OLD.email);
+            END;
+            """
+        )
+    }
+}
+
+val MIGRATION_14_15 = object : Migration(14, 15) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        // Trigger for INSERT on appointments
+        db.execSQL(
+            """
+            CREATE TRIGGER appointments_insert_trigger
+            AFTER INSERT ON appointments
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, new_value, changed_by)
+                VALUES ('appointments', 'INSERT', 'appointmentId', NEW.appointmentId, NEW.ownerEmail);
+            END;
+            """
+        )
+
+        // Trigger for DELETE on appointments
+        db.execSQL(
+            """
+            CREATE TRIGGER appointments_delete_trigger
+            AFTER DELETE ON appointments
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, old_value, changed_by)
+                VALUES ('appointments', 'DELETE', 'appointmentId', OLD.appointmentId, OLD.ownerEmail);
+            END;
+            """
+        )
+    }
+}
+
+val MIGRATION_15_16 = object : Migration(15, 16) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        // Trigger for INSERT on property_images
+        db.execSQL(
+            """
+            CREATE TRIGGER property_images_insert_trigger
+            AFTER INSERT ON property_images
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, new_value, changed_by)
+                VALUES ('property_images', 'INSERT', 'propertyId', NEW.propertyId, NULL);
+            END;
+            """
+        )
+
+        // Trigger for DELETE on property_images
+        db.execSQL(
+            """
+            CREATE TRIGGER property_images_delete_trigger
+            AFTER DELETE ON property_images
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, old_value, changed_by)
+                VALUES ('property_images', 'DELETE', 'propertyId', OLD.propertyId, NULL);
+            END;
+            """
+        )
+    }
+}
+
+val MIGRATION_16_17 = object : Migration(16, 17) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        // Trigger for INSERT on contractor
+        db.execSQL(
+            """
+            CREATE TRIGGER contractor_insert_trigger
+            AFTER INSERT ON contractor
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, new_value, changed_by)
+                VALUES ('contractor', 'INSERT', 'contractorId', NEW.contractorId, NEW.email);
+            END;
+            """
+        )
+
+        // Trigger for DELETE on contractor
+        db.execSQL(
+            """
+            CREATE TRIGGER contractor_delete_trigger
+            AFTER DELETE ON contractor
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, old_value, changed_by)
+                VALUES ('contractor', 'DELETE', 'contractorId', OLD.contractorId, OLD.email);
+            END;
+            """
+        )
+    }
+}
+
+val MIGRATION_17_18 = object : Migration(17, 18) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        // Trigger for INSERT on review
+        db.execSQL(
+            """
+            CREATE TRIGGER review_insert_trigger
+            AFTER INSERT ON review
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, new_value, changed_by)
+                VALUES ('review', 'INSERT', 'reviewId', NEW.reviewId, NEW.email);
+            END;
+            """
+        )
+
+
+                // Trigger for INSERT on favorites
+                db.execSQL(
+                    """
+            CREATE TRIGGER favorites_insert_trigger
+            AFTER INSERT ON favorites
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, new_value, changed_by)
+                VALUES ('favorites', 'INSERT', 'propertyId', NEW.propertyId, NEW.email);
+            END;
+            """
+                )
+
+                // Trigger for DELETE on favorites
+                db.execSQL(
+                    """
+            CREATE TRIGGER favorites_delete_trigger
+            AFTER DELETE ON favorites
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, old_value, changed_by)
+                VALUES ('favorites', 'DELETE', 'propertyId', OLD.propertyId, OLD.email);
+            END;
+            """
+                )
+
+            }
+        }
+
+val MIGRATION_18_19 = object : Migration(18, 19) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+
+        // Trigger for INSERT on user_profile
+        db.execSQL(
+            """
+            CREATE TRIGGER user_profile_insert_trigger
+            AFTER INSERT ON user_profile
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, new_value, changed_by)
+                VALUES ('user_profile', 'INSERT', 'email', NEW.email, NEW.email);
+            END;
+            """
+        )
+
+        // Trigger for UPDATE on user_profile
+        db.execSQL(
+            """
+            CREATE TRIGGER user_profile_update_trigger
+            AFTER UPDATE ON user_profile
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, old_value, new_value, changed_by)
+                VALUES 
+                ('user_profile', 'UPDATE', 'firstName', OLD.firstName, NEW.firstName, NEW.email),
+                ('user_profile', 'UPDATE', 'lastName', OLD.lastName, NEW.lastName, NEW.email),
+                ('user_profile', 'UPDATE', 'contact', OLD.contact, NEW.contact, NEW.email),
+                ('user_profile', 'UPDATE', 'city', OLD.city, NEW.city, NEW.email),
+                ('user_profile', 'UPDATE', 'region', OLD.region, NEW.region, NEW.email),
+                ('user_profile', 'UPDATE', 'postalCode', OLD.postalCode, NEW.postalCode, NEW.email),
+                ('user_profile', 'UPDATE', 'rating', OLD.rating, NEW.rating, NEW.email),
+                ('user_profile', 'UPDATE', 'imageUrl', OLD.imageUrl, NEW.imageUrl, NEW.email);
+            END;
+            """
+        )
+
+        // Trigger for DELETE on user_profile
+        db.execSQL(
+            """
+            CREATE TRIGGER user_profile_delete_trigger
+            AFTER DELETE ON user_profile
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO ChangeLog (table_name, operation, column_name, old_value, changed_by)
+                VALUES ('user_profile', 'DELETE', 'email', OLD.email, OLD.email);
+            END;
+            """
+        )
+    }
+}
+
+val MIGRATION_19_20 = object : Migration(19, 20) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Step 1: Create the new table without the `rating` column
+        db.execSQL(
+            """
+            CREATE TABLE user_profile_new (
+                email TEXT NOT NULL PRIMARY KEY,
+                firstName TEXT NOT NULL,
+                lastName TEXT NOT NULL,
+                contact TEXT NOT NULL UNIQUE,
+                city TEXT NOT NULL,
+                region TEXT NOT NULL,
+                postalCode TEXT NOT NULL,
+                imageUrl TEXT NOT NULL
+            )
+            """.trimIndent()
+        )
+
+        // Step 2: Copy data from the old table to the new table
+        db.execSQL(
+            """
+            INSERT INTO user_profile_new (email, firstName, lastName, contact, city, region, postalCode, imageUrl)
+            SELECT email, firstName, lastName, contact, city, region, postalCode, imageUrl
+            FROM user_profile
+            """.trimIndent()
+        )
+
+        // Step 3: Drop the old table
+        db.execSQL("DROP TABLE user_profile")
+
+        // Step 4: Rename the new table to the original name
+        db.execSQL("ALTER TABLE user_profile_new RENAME TO user_profile")
+    }
+}
+
+val MIGRATION_20_21 = object : Migration(20, 21) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Step 1: Create a new table with the updated schema
+        db.execSQL(
+            """
+            CREATE TABLE property_new (
+                propertyId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                city TEXT NOT NULL,
+                state TEXT NOT NULL,
+                propertyNumber TEXT NOT NULL,
+                bathrooms INTEGER NOT NULL, -- Renamed column
+                bedrooms INTEGER NOT NULL,
+                garage INTEGER NOT NULL,
+                area REAL NOT NULL,
+                type TEXT NOT NULL,
+                price REAL NOT NULL,
+                zipCode TEXT NOT NULL,
+                email TEXT NOT NULL,
+                isSold INTEGER NOT NULL DEFAULT 0,
+                FOREIGN KEY(email) REFERENCES user_profile(email) ON DELETE CASCADE
+            )
+            """.trimIndent()
+        )
+
+        // Step 2: Copy data from the old table to the new table
+        db.execSQL(
+            """
+            INSERT INTO property_new (
+                propertyId, city, state, propertyNumber, bathrooms, bedrooms, garage, area, type, price, zipCode, email, isSold
+            )
+            SELECT propertyId, city, state, propertyNumber, rooms, bedrooms, garage, area, type, price, zipCode, email, isSold
+            FROM property
+            """.trimIndent()
+        )
+
+        // Step 3: Drop the old table
+        db.execSQL("DROP TABLE property")
+
+        // Step 4: Rename the new table to the original table name
+        db.execSQL("ALTER TABLE property_new RENAME TO property")
+    }
+}
+
+val MIGRATION_21_22 = object : Migration(21, 22) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Drop the `previous_works` table
+        db.execSQL("DROP TABLE IF EXISTS previous_works")
+    }
+}
