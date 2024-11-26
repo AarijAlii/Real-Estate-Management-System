@@ -91,53 +91,55 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
     }
 
 
-    fun updateUserProfile(
-        email: String,
-        firstName: String,
-        lastName: String,
-        contact: String,
-        city: String,
-        region: String,
-        postalCode: String
+
+    fun updateuserrprofile(
+        userProfile: UserProfile,
+        imageUri: Uri?,
+        context: Context,
+        clientId: String
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                val updatedProfile = _userProfile.value?.copy(
-                    firstName = firstName,
-                    lastName = lastName,
-                    contact = contact,
-                    city = city,
-                    region = region,
-                    postalCode = postalCode
-                )
-                if (updatedProfile != null) {
-                    userProfileDao.updateUser(updatedProfile)
-                    _userProfile.value = updatedProfile
+                if (imageUri != null) {
+                    // Upload the image and retrieve the URL
+                    ImageUploader.uploadImageToImgur(context, imageUri, clientId) { imageUrl ->
+                        if (imageUrl != null) {
+                            // Update the user profile with the image URL
+                            val updatedProfile = userProfile.copy(imageUrl = imageUrl)
+                            viewModelScope.launch {
+                                userProfileDao.updateUserr(
+                                    userProfile.firstName,
+                                    userProfile.lastName,
+                                    userProfile.contact,
+                                    userProfile.city,
+                                    userProfile.region,
+                                    userProfile.postalCode,
+                                    userProfile.imageUrl,
+                                    userProfile.email
+                                )
+                            }
+                        } else {
+                            Log.e("SaveUserProfile", "Image upload failed.")
+                        }
+                    }
+                } else {
+                    // No image provided; save the profile as is
+                    userProfileDao.updateUserr(
+                        userProfile.firstName,
+                        userProfile.lastName,
+                        userProfile.contact,
+                        userProfile.city,
+                        userProfile.region,
+                        userProfile.postalCode,
+                        userProfile.imageUrl,
+                        userProfile.email
+                    )
                 }
             } catch (e: Exception) {
-                _errorMessage.value = "Error updating profile: ${e.message}"
+                Log.e("SaveUserProfile", "Error saving profile: ${e.message}")
             }
         }
-    }
 
-    fun updateUserrProfile(
-        email: String,
-        firstName: String,
-        lastName: String,
-        contact: String,
-        city: String,
-        region: String,
-        postalCode: String
-    ) {
-        viewModelScope.launch {
-            try {
-                userProfileDao.updateUserr(
-                    email, firstName, lastName, contact, city, region, postalCode
-                )
-            } catch (e: Exception) {
-                _errorMessage.value = "Error updating profile: ${e.message}"
-            }
-        }
     }
     fun saveUserProfile(
         userProfile: UserProfile,
@@ -154,7 +156,17 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
                             // Update the user profile with the image URL
                             val updatedProfile = userProfile.copy(imageUrl = imageUrl)
                             viewModelScope.launch {
-                                insertOrUpdateUserProfile(updatedProfile)
+                                userProfileDao.createUserProfile(
+                                    userProfile.firstName,
+                                    userProfile.lastName,
+                                    userProfile.contact,
+                                    userProfile.city,
+                                    userProfile.region,
+                                    userProfile.postalCode,
+                                    userProfile.imageUrl,
+                                    userProfile.email
+                                )
+
                             }
                         } else {
                             Log.e("SaveUserProfile", "Image upload failed.")
@@ -162,7 +174,16 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
                     }
                 } else {
                     // No image provided; save the profile as is
-                    insertOrUpdateUserProfile(userProfile)
+                    userProfileDao.createUserProfile(
+                        userProfile.firstName,
+                        userProfile.lastName,
+                        userProfile.contact,
+                        userProfile.city,
+                        userProfile.region,
+                        userProfile.postalCode,
+                        userProfile.imageUrl,
+                        userProfile.email
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("SaveUserProfile", "Error saving profile: ${e.message}")
@@ -170,8 +191,5 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
         }
 
     }
-    private suspend fun insertOrUpdateUserProfile(userProfile: UserProfile) {
-        userProfileDao.insertOrUpdateUserProfile(userProfile)
-        Log.d("SaveUserProfile", "User profile saved successfully: $userProfile")
-    }
+
 }

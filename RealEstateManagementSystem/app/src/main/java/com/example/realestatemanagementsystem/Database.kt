@@ -24,7 +24,7 @@ import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 
 @Database(entities = [UserProfile::class, Property::class, ImageEntity::class,
-    Favorite::class, Contractor::class, PreviousWorks::class, Review::class, Appointment::class], version = 11)
+    Favorite::class, Contractor::class, PreviousWorks::class, Review::class, Appointment::class], version = 12)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun propertyDao(): PropertyDao

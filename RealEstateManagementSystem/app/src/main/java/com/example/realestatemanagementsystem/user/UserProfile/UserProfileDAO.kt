@@ -29,7 +29,8 @@ interface UserProfileDao {
             contact = :contact,
             city = :city,
             region = :region,
-            postalCode = :postalCode
+            postalCode = :postalCode,
+            imageUrl = :imageUrl
         WHERE email = :email
     """)
     suspend fun updateUserr(
@@ -39,9 +40,40 @@ interface UserProfileDao {
         contact: String,
         city: String,
         region: String,
-        postalCode: String
+        postalCode: String,
+        imageUrl: String
     )
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdateUserProfile(userProfile: UserProfile)
+    @Query("""
+    INSERT INTO user_profile (
+        firstName, 
+        lastName, 
+        contact, 
+        city, 
+        region, 
+        postalCode, 
+        imageUrl, 
+        email
+    ) VALUES (
+        :firstName, 
+        :lastName, 
+        :contact, 
+        :city, 
+        :region, 
+        :postalCode, 
+        :imageUrl, 
+        :email
+    )
+""")
+    suspend fun createUserProfile(
+        firstName: String,
+        lastName: String,
+        contact: String,
+        city: String,
+        region: String,
+        postalCode: String,
+        imageUrl: String,
+        email: String
+    )
+
 
 }

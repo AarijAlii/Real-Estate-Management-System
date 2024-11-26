@@ -279,6 +279,7 @@ fun HomeScreen(
             }
         } else {
             Text("User profile not found.")
+            navHostController.navigate(Screen.LoginScreen.route)
         }
 
         if (profileErrorMessage.isNotEmpty()) {

@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.realestatemanagementsystem.Navigation.Screen
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfile
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileDao
 import com.example.realestatemanagementsystem.user.UserProfile.UserProfileViewModel
@@ -227,7 +228,7 @@ fun UserProfileUpdateScreen(
                             if (imageUris!=null) {
                                 // Launch coroutine for suspend function
                                 scope.launch {
-                                    profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
+                                    profileViewModel.updateuserrprofile(userProfile, imageUris, context, clientId)
                                     navHostController.navigate("home_screen/$email"){
                                         popUpTo("update_profile_screen/$email"){
                                             inclusive=true
@@ -264,6 +265,7 @@ fun UserProfileUpdateScreen(
 
         } else {
             Text("User profile not found.")
+            navHostController.navigate(Screen.LoginScreen.route)
         }
 
         if (errorMessage.isNotEmpty()) {
