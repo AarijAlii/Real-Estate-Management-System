@@ -250,10 +250,7 @@ fun UserProfileScreen(
                                 // Launch coroutine for suspend function
 
                                     profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
-                                    navHostController.navigate("home_screen/$email"){
-                                        popUpTo("profile_screen/$email"){
-                                            inclusive=true
-                                        }}
+                                    navHostController.navigate("home_screen/$email")
 
                             } else {
                                 errorMessage = "Please select at least one image."
@@ -269,7 +266,7 @@ fun UserProfileScreen(
                         modifier = Modifier.fillMaxWidth()
 
                     ) {
-                        Text("Save")
+                        Text("Create Profile")
                     }
                     Button(onClick = {imagePickerLauncher.launch("image/*")},modifier=Modifier.fillMaxWidth() , colors = ButtonColors(
                         contentColor = Color.White,

@@ -223,7 +223,6 @@ fun UserProfileUpdateScreen(
                     Button(
                         onClick = {
                             // Create a UserProfile instance
-
                             val userProfile = UserProfile(
                                 email = email,
                                 firstName = firstName,
@@ -235,15 +234,11 @@ fun UserProfileUpdateScreen(
                                 rating=0,
 
                                 )
-
-                            if (imageUris!=null) {
                                 // Launch coroutine for suspend function
 
-                                    profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
+                                profileViewModel.saveUserProfile(userProfile, imageUris, context, clientId)
                                     navHostController.navigate("home_screen/$email")
-                            } else {
-                                errorMessage = "Please select at least one image."
-                            }
+
 
                                     // Save the user profile using the ViewModel
 

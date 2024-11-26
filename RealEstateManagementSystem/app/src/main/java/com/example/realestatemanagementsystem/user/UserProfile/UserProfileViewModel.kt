@@ -167,8 +167,10 @@ class UserProfileViewModel(private val appDatabase: AppDatabase) : ViewModel() {
                         }
                     }
                 } else {
-                    // No image provided; save the profile as is
-                    insertOrUpdateUserProfile(userProfile)
+                    //in case of no image
+                    val oldUserProfile = userProfileDao.getUserByEmail(userProfile.email)
+                    val newUserProfile = userProfile.copy(imageUrl = oldUserProfile.imageUrl)
+                    insertOrUpdateUserProfile(newUserProfile)
                 }
             } catch (e: Exception) {
                 Log.e("SaveUserProfile", "Error saving profile: ${e.message}")
